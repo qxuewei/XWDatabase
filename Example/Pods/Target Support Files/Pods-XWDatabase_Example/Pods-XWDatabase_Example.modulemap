@@ -1,0 +1,6 @@
+framework module Pods_XWDatabase_Example {
+  umbrella header "Pods-XWDatabase_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

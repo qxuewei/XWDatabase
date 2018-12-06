@@ -1,0 +1,25 @@
+PODS:
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - XWDatabase (0.1.0):
+    - FMDB
+
+DEPENDENCIES:
+  - XWDatabase (from `../`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - FMDB
+
+EXTERNAL SOURCES:
+  XWDatabase:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  XWDatabase: 72d1d5cde939790c6d5ca3d39ba021c9e9a03a03
+
+PODFILE CHECKSUM: 643f73656ace9dcdf483d46679a21c8a81199359
+
+COCOAPODS: 1.6.0.beta.2
