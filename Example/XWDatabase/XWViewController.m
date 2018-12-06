@@ -20,7 +20,9 @@
 {
     [super viewDidLoad];
     
-    [self saveOnePerson];
+//    [self saveOnePerson];
+    
+    [self getOnePerson];
 }
 
 - (void)saveOnePerson
@@ -28,6 +30,14 @@
     XWPerson *person = [XWPerson testPerson:1];
     [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
         NSLog(@"saveOnePerson (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+- (void)getOnePerson {
+    XWPerson *person = [XWPerson new];
+    person.cardID = @"1";
+    [XWDatabase getModel:person completion:^(XWPerson * obj) {
+        NSLog(@"getOnePerson (%@)",obj);
     }];
 }
 

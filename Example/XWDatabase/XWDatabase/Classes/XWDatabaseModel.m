@@ -77,8 +77,8 @@ static NSDateFormatter *_databaseModelToolDateFormatter;
     NSMutableDictionary *ivarOriginDict = [[self classIvarNameTypeDict:cls] mutableCopy];
     NSDictionary *dictionaryOcTypeToSqliteType = [self dictionaryOcTypeToSqliteType];
     [ivarOriginDict enumerateKeysAndObjectsUsingBlock:^(NSString * name, NSString * originType, BOOL * _Nonnull stop) {
-        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
-        NSLog(@"%@  isKeyExist: (%d)",originType,isKeyExist);
+//        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
+//        NSLog(@"%@  isKeyExist: (%d)",originType,isKeyExist);
         ivarOriginDict[name] = dictionaryOcTypeToSqliteType[originType];
     }];
     return ivarOriginDict.copy;
