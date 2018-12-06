@@ -77,6 +77,8 @@ static NSDateFormatter *_databaseModelToolDateFormatter;
     NSMutableDictionary *ivarOriginDict = [[self classIvarNameTypeDict:cls] mutableCopy];
     NSDictionary *dictionaryOcTypeToSqliteType = [self dictionaryOcTypeToSqliteType];
     [ivarOriginDict enumerateKeysAndObjectsUsingBlock:^(NSString * name, NSString * originType, BOOL * _Nonnull stop) {
+//        NSLog(@"%@",originType);
+//        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
         ivarOriginDict[name] = dictionaryOcTypeToSqliteType[originType];
     }];
     return ivarOriginDict.copy;
@@ -156,22 +158,28 @@ static NSDateFormatter *_databaseModelToolDateFormatter;
 
 #pragma mark - private
 + (NSDictionary *)dictionaryOcTypeToSqliteType {
+    
     return @{
              @"d": @"real",     // double
              @"f": @"real",     // float
+             @"s": @"integer",  // short
              @"i": @"integer",  // int
              @"q": @"integer",  // long
+             @"l": @"integer",  // long
+             @"I": @"integer",  // NSInteger
              @"Q": @"integer",  // long long
              @"B": @"integer",  // bool
+             @"c": @"integer",  // bool
              @"NSData": @"blob",
              @"NSDate": @"text",
              @"NSDictionary": @"text",
              @"NSMutableDictionary": @"text",
              @"NSArray": @"text",
              @"NSMutableArray": @"text",
-             @"NSString": @"text"
-//             pPoint = "{CGPoint=\"x\"d\"y\"d}";
-//             pRect = "{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}";
+             @"NSString": @"text",
+             @"{CGPoint=\"x\"d\"y\"d}": @"text",
+             @"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}": @"text",
+             @"{CGSize=\"width\"d\"height\"d}" : @"text"
              };
 }
 

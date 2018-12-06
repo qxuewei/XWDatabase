@@ -7,6 +7,8 @@
 //
 
 #import "XWViewController.h"
+#import "XWPerson.h"
+#import "XWDatabase.h"
 
 @interface XWViewController ()
 
@@ -17,13 +19,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+    [self saveOnePerson];
 }
 
-- (void)didReceiveMemoryWarning
+- (void)saveOnePerson
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    XWPerson *person = [XWPerson testPerson:1];
+    [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
+        NSLog(@"saveOnePerson (%@)",isSuccess?@"成功":@"失败");
+    }];
 }
 
 @end

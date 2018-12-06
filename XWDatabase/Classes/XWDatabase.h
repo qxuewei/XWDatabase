@@ -12,19 +12,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^XWDatabaseCompletion)(BOOL isSuccess);                    /// 操作回调
-typedef void(^XWDatabaseReturnSql)(NSString *sql);                      /// 生成 Sql 语句
 typedef void(^XWDatabaseReturnObject)(id _Nullable obj);                /// 返回对象
 typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返回对象数组
 
 @interface XWDatabase : NSObject
-
-/**
- 根据模型创建数据库表
- 
- @param cls 模型类
- @completion 是否创建数据库表 成功/失败
- */
-+ (void)creatTableFromClass:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion;
 
 #pragma mark - 增
 /**

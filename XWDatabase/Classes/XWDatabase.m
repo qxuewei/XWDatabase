@@ -493,7 +493,6 @@ fprintf(stderr, "-------\n");                                               \
     } else if ([ivarType isEqualToString:@"NSDictionary"]) {
         NSString *string = [resultSet stringForColumn:ivarName];
         NSDictionary *dict = [XWDatabaseModel dictWithString:string];
-        
         [model setValue:dict forKey:ivarName];
         
     } else if ([ivarType isEqualToString:@"q"] || [ivarType isEqualToString:@"l"]) {
@@ -552,6 +551,8 @@ fprintf(stderr, "-------\n");                                               \
      @"I":@"NSInteger",
      @"Q":@"NSUInteger",
      @"B":@"BOOL",
+     
+     https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100
      */
 }
 
