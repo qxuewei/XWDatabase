@@ -155,10 +155,13 @@
     for (NSString *ivarName in ivarNames) {
         id value = [obj valueForKey:ivarName];
         NSString *valueString = [self stringWithValue:value];
+        NSString *save;
         if (valueString) {
-            NSString *save = [NSString stringWithFormat:@"%@ = %@",ivarName, valueString];
-            [updateArrM addObject:save];
+            save = [NSString stringWithFormat:@"%@ = %@",ivarName, valueString];
+        } else {
+            save = [NSString stringWithFormat:@"%@ = %@",ivarName, @"''"];
         }
+        [updateArrM addObject:save];
     }
     NSString *primaryKey = [obj.class xw_primaryKey];
     NSString *primaryKeyObject = [NSString stringWithFormat:@"%@",[obj valueForKey:primaryKey]];

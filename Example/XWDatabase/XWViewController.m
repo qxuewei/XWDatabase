@@ -21,7 +21,7 @@
     [super viewDidLoad];
     
 //    /// 增
-//    [self saveOnePerson];
+    [self saveOnePerson];
 //    [self saveModels];
 //
 //    /// 删
@@ -32,7 +32,7 @@
     [self updateModel];
 //
 //    /// 查
-//    [self getOnePerson];
+    [self getOnePerson];
 //    [self getModels];
 //    [self getModelsSortAge];
 //    [self getModelsCondition];
