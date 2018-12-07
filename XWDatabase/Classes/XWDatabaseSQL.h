@@ -41,12 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
  查询表内所有数据 (可按照某字段排序)
  
  @param cls 模型
- @param sortColum 排序字段
+ @param sortColumn 排序字段
  @param isOrderDesc 是否降序
  @param condition 自定义条件
  @return 符合条件的表内所有数据
  */
-+ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls sortColum:(NSString *)sortColum isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition;
++ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition;
 
 /**
  查找某条数据d是否存在
@@ -73,6 +73,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj;
 
 /**
+ 更新单个对象SQL
+ 
+ @param obj 模型
+ @param updatePropertys 自定义更新的字段
+ @return 保存单个对象SQL
+ */
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys;
+
+/**
  更新主键SQL
  
  @param cls 类
@@ -87,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param columName 字段名
  @return 更新字段值 SQL
  */
-+ (NSString *)updateColum:(Class<XWDatabaseModelProtocol>)cls columName:(NSString *)columName;
++ (NSString *)updateColumn:(Class<XWDatabaseModelProtocol>)cls columName:(NSString *)columName;
 
 /**
  删除表 SQL

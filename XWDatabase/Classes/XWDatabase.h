@@ -60,6 +60,16 @@ typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返�
  */
 + (void)updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion;
 
+/**
+ 更新模型
+ 
+ @param obj 模型
+ @param updatePropertys 所更新的字段数组
+ @param completion 保存 成功/失败
+ */
++ (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys completion:(XWDatabaseCompletion)completion;
+
+
 #pragma mark - 查
 /**
  查询模型
@@ -81,11 +91,11 @@ typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返�
  查询模型数组 - 按某字段排序
  
  @param cls 模型类
- @param sortColum 排序字段
+ @param sortColumn 排序字段
  @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColum:(NSString *)sortColum isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects)completion;
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects)completion;
 
 /**
  查询模型数组 - 自定义条件
@@ -100,12 +110,12 @@ typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返�
  查询模型数组 - 自定义条件 + 按某字段排序
  
  @param cls 模型类
- @param sortColum 排序字段
+ @param sortColumn 排序字段
  @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
  @param condition 条件
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColum:(NSString * _Nullable)sortColum isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects)completion;
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects)completion;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -29,8 +29,8 @@
 //    [self clearModel];
 //
 //    /// 改
-//    [self updateModel];
-//    
+    [self updateModel];
+//
 //    /// 查
 //    [self getOnePerson];
 //    [self getModels];
@@ -89,8 +89,14 @@
     person.cardID = @"2";
     person.name = @"新名字";
     
+    /// 自定义成员变量更新
+//    [XWDatabase updateModel:person updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
+//        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败");
+//    }];
+    
+    /// 整个模型更新
     [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
-        NSLog(@" <XWDatabase> saveModel (%@)",isSuccess?@"成功":@"失败");
+        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败");
     }];
 }
 
@@ -116,7 +122,7 @@
 /// 获取数据库中所有该模型存储的数据 - 按 age 字段降序排列
 - (void)getModelsSortAge
 {
-    [XWDatabase getModels:XWPerson.class sortColum:@"age" isOrderDesc:YES completion:^(NSArray * _Nullable objs) {
+    [XWDatabase getModels:XWPerson.class sortColumn:@"age" isOrderDesc:YES completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ -- age: %zd",person.cardID,person.age);
@@ -138,7 +144,7 @@
 /// 获取数据库中所有该模型存储的数据 - 自定义查找条件可排序 (例如模糊查询 name 含 学伟 的数据, 并且按 age 升序排序)
 - (void)getModelsConditionSort
 {
-    [XWDatabase getModels:XWPerson.class sortColum:@"age" isOrderDesc:NO condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
+    [XWDatabase getModels:XWPerson.class sortColumn:@"age" isOrderDesc:NO condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);

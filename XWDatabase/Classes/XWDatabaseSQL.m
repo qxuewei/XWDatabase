@@ -68,12 +68,12 @@
  查询表内所有数据 (可按照某字段排序)
 
  @param cls 模型
- @param sortColum 排序字段
+ @param sortColumn 排序字段
  @param isOrderDesc 是否降序
  @param condition 自定义条件
  @return 符合条件的表内所有数据
  */
-+ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls sortColum:(NSString *)sortColum isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition {
++ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition {
     /// 查询语句：select * from 表名 where 条件子句 group by 分组字句 having ... order by 排序子句
     /// select * from person order by id desc
     NSString *tableName = [XWDatabaseModel tableName:cls];
@@ -83,8 +83,8 @@
         [searchSql appendString:[NSString stringWithFormat:@" WHERE %@",condition]];
     }
     
-    if (sortColum && sortColum.length > 0) {
-        [searchSql appendString:[NSString stringWithFormat:@" ORDER BY %@",sortColum]];
+    if (sortColumn && sortColumn.length > 0) {
+        [searchSql appendString:[NSString stringWithFormat:@" ORDER BY %@",sortColumn]];
         if (isOrderDesc) {
             [searchSql appendString:@" DESC"];
         }
@@ -139,31 +139,33 @@
  @return 保存单个对象SQL
  */
 + (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj {
+    return [self p_updateOneObjSql:obj customIvarNames:nil];
+}
+
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys {
+    return [self p_updateOneObjSql:obj customIvarNames:updatePropertys];
+}
+
++ (NSString *)p_updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj customIvarNames:(NSArray <NSString *> *)customIvarNames {
+    
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
     NSDictionary *classIvarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:obj.class];
-    NSArray *ivarNames = classIvarNameTypeDict.allKeys;
+    NSArray *ivarNames = ( customIvarNames && customIvarNames.count > 0) ? customIvarNames : classIvarNameTypeDict.allKeys;
     NSMutableArray *updateArrM = [[NSMutableArray alloc] init];
-    
     for (NSString *ivarName in ivarNames) {
         id value = [obj valueForKey:ivarName];
-        if (!value) {
-            continue ;
-        }
         NSString *valueString = [self stringWithValue:value];
         if (valueString) {
             NSString *save = [NSString stringWithFormat:@"%@ = %@",ivarName, valueString];
             [updateArrM addObject:save];
         }
     }
-    
     NSString *primaryKey = [obj.class xw_primaryKey];
     NSString *primaryKeyObject = [NSString stringWithFormat:@"%@",[obj valueForKey:primaryKey]];
-    
     NSString *updateSql = [NSString stringWithFormat:@"UPDATE %@ SET %@ WHERE %@ = '%@'",tableName,[updateArrM componentsJoinedByString:@","],primaryKey,primaryKeyObject];
-//    NSLog(@"saveOneObjSql: %@ \n",updateSql);
+    //    NSLog(@"saveOneObjSql: %@ \n",updateSql);
     return updateSql;
 }
-
 
 /**
  更新主键SQL
@@ -187,7 +189,7 @@
  @param columName 字段名
  @return 更新字段值 SQL
  */
-+ (NSString *)updateColum:(Class<XWDatabaseModelProtocol>)cls columName:(NSString *)columName {
++ (NSString *)updateColumn:(Class<XWDatabaseModelProtocol>)cls columName:(NSString *)columName {
     //update tem_table set name = (select name from XWStuModel where tem_table.stuNum = XWStuModel.stuNum)
     NSString *tempTableName = [XWDatabaseModel tempTableName:cls];
     NSString *tableName = [XWDatabaseModel tableName:cls];

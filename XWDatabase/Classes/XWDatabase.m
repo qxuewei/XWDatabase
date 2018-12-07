@@ -88,16 +88,14 @@ fprintf(stderr, "-------\n");                                               \
  @param completion 成功/失败
  */
 + (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion {
-    if (!obj) {
+    if (!obj || ![self isPrimaryKey:obj.class]) {
         completion ? completion(NO) : nil;
         return;
     }
-    if (![self isPrimaryKey:obj.class]) {
-        completion ? completion(NO) : nil;
-        return;
-    }
-    NSString *deleteColumnSql = [XWDatabaseSQL deleteColumn:obj];
-    [self p_executeUpdate:deleteColumnSql completion:completion];
+    [XWLivingThread executeTaskInMain:^{
+        NSString *deleteColumnSql = [XWDatabaseSQL deleteColumn:obj];
+        [self p_executeUpdate:deleteColumnSql completion:completion];
+    }];
 }
 
 /**
@@ -111,8 +109,10 @@ fprintf(stderr, "-------\n");                                               \
         completion ? completion(NO) : nil;
         return;
     }
-    NSString *clearColumnSql = [XWDatabaseSQL clearColumn:cls];
-    [self p_executeUpdate:clearColumnSql completion:completion];
+    [XWLivingThread executeTaskInMain:^{
+        NSString *clearColumnSql = [XWDatabaseSQL clearColumn:cls];
+        [self p_executeUpdate:clearColumnSql completion:completion];
+    }];
 }
 
 #pragma mark  改
@@ -130,6 +130,24 @@ fprintf(stderr, "-------\n");                                               \
     }
     [XWLivingThread executeTaskInMain:^{
         [self p_updateTable:cls completion:completion];
+    }];
+}
+
+/**
+ 更新模型
+ 
+ @param obj 模型
+ @param updatePropertys 所更新的字段数组
+ @param completion 保存 成功/失败
+ */
++ (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys completion:(XWDatabaseCompletion)completion {
+    if (!obj || !updatePropertys || updatePropertys.count == 0 || ![self isPrimaryKey:obj.class]) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj updatePropertys:updatePropertys];
+        [self p_executeUpdate:updateModelSQL completion:completion];
     }];
 }
 
@@ -160,19 +178,19 @@ fprintf(stderr, "-------\n");                                               \
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects)completion {
-    [self getModels:cls sortColum:nil isOrderDesc:NO condition:nil completion:completion];
+    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:nil completion:completion];
 }
 
 /**
  查询模型数组 - 按某字段排序
  
  @param cls 模型类
- @param sortColum 排序字段
+ @param sortColumn 排序字段
  @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColum:(NSString *)sortColum isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects)completion {
-    [self getModels:cls sortColum:sortColum isOrderDesc:isOrderDesc condition:nil completion:completion];
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects)completion {
+    [self getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
 }
 
 /**
@@ -183,19 +201,19 @@ fprintf(stderr, "-------\n");                                               \
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion {
-    [self getModels:cls sortColum:nil isOrderDesc:NO condition:condition completion:completion];
+    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
 }
 
 /**
  查询模型数组 - 自定义条件 + 按某字段排序
  
  @param cls 模型类
- @param sortColum 排序字段
+ @param sortColumn 排序字段
  @param isOrderDesc 是否降序
  @param condition 条件
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColum:(NSString *)sortColum isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion {
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion {
     if (!completion) {
         return;
     }
@@ -204,7 +222,7 @@ fprintf(stderr, "-------\n");                                               \
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        [self p_getModels:cls sortColum:sortColum isOrderDesc:isOrderDesc condition:condition completion:completion];
+        [self p_getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition completion:completion];
     }];
 }
 
@@ -214,17 +232,16 @@ fprintf(stderr, "-------\n");                                               \
 
 #pragma mark  增
 + (void)creatTableFromClass:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
-    if (!cls || !completion) {
+    if (!cls) {
         return;
     }
     if (![self isPrimaryKey:cls]) {
-        completion(NO);
+        completion ? completion(NO) : nil;
         return;
     }
-    NSString *creatTableSql = [XWDatabaseSQL createTableSql:cls isTtemporary:NO];
-    [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
-        BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:creatTableSql database:database];
-        completion(isSuccess);
+    [XWLivingThread executeTaskInMain:^{
+        NSString *creatTableSql = [XWDatabaseSQL createTableSql:cls isTtemporary:NO];
+        [self p_executeUpdate:creatTableSql completion:completion];
     }];
 }
 
@@ -380,7 +397,7 @@ fprintf(stderr, "-------\n");                                               \
                 if (![columnNamesSorted containsObject:ivar]) {
                     continue;
                 }
-                NSString *updateColumSql = [XWDatabaseSQL updateColum:cls columName:ivar];
+                NSString *updateColumSql = [XWDatabaseSQL updateColumn:cls columName:ivar];
                 [sqls addObject:updateColumSql];
             }
             
@@ -431,10 +448,10 @@ fprintf(stderr, "-------\n");                                               \
     }];
 }
 
-+ (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls sortColum:(NSString *)sortColum isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion {
++ (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion {
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
-        NSString *searchSql = [XWDatabaseSQL searchSql:cls sortColum:sortColum isOrderDesc:isOrderDesc condition:condition];
+        NSString *searchSql = [XWDatabaseSQL searchSql:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition];
         FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
         Class modelClass = cls;
         NSMutableArray *models = [[NSMutableArray alloc] init];
