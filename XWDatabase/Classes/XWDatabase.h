@@ -82,7 +82,7 @@ typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返�
  
  @param cls 模型类
  @param sortColum 排序字段
- @param isOrderDesc 是否降序
+ @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColum:(NSString *)sortColum isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects)completion;
@@ -101,7 +101,7 @@ typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返�
  
  @param cls 模型类
  @param sortColum 排序字段
- @param isOrderDesc 是否降序
+ @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
  @param condition 条件
  @param completion 结果
  */

@@ -6,12 +6,12 @@
 //  Copyright © 2018 邱学伟. All rights reserved.
 //
 
-#import "XWDatabase.h"
-#import "XWDatabaseModel.h"
-#import "XWDatabaseSQL.h"
-#import "XWDatabaseQueue.h"
 #import "FMDB.h"
+#import "XWDatabase.h"
+#import "XWDatabaseSQL.h"
 #import "XWLivingThread.h"
+#import "XWDatabaseModel.h"
+#import "XWDatabaseQueue.h"
 
 /// NSLog 宏定义
 //重写NSLog,Debug模式下打印日志和当前行数
@@ -24,16 +24,10 @@ __LINE__, __func__);                                                        \
 (NSLog)((format), ##__VA_ARGS__);                                           \
 fprintf(stderr, "-------\n");                                               \
 } while (0)
-#define NSLogRect(rect) NSLog(@"%s x:%.4f, y:%.4f, w:%.4f, h:%.4f", #rect, rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
-#define NSLogSize(size) NSLog(@"%s w:%.4f, h:%.4f", #size, size.width, size.height)
-#define NSLogPoint(point) NSLog(@"%s x:%.4f, y:%.4f", #point, point.x, point.y)
 
 #else
 
 #define NSLog(FORMAT, ...) nil
-#define NSLogRect(rect) nil
-#define NSLogSize(size) nil
-#define NSLogPoint(point) nil
 
 #endif
 
@@ -174,7 +168,7 @@ fprintf(stderr, "-------\n");                                               \
  
  @param cls 模型类
  @param sortColum 排序字段
- @param isOrderDesc 是否降序
+ @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColum:(NSString *)sortColum isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects)completion {
@@ -406,7 +400,6 @@ fprintf(stderr, "-------\n");                                               \
                 }
                 
                 if (idx == sqls.count - 1) {
-                    NSLog(@"++ 事务操作 updateTable(%@) ++ (%@)",cls,@"成功");
                     completion ? completion(YES) : nil;
                 }
             }];
@@ -460,7 +453,6 @@ fprintf(stderr, "-------\n");                                               \
 }
 
 #pragma mark  通用
-
 + (void)p_executeUpdate:(NSString *)sql completion:(XWDatabaseCompletion)completion {
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:sql database:database];
@@ -484,6 +476,11 @@ fprintf(stderr, "-------\n");                                               \
     if ([ivarType isEqualToString:@"NSString"]) {
         NSString *string = [resultSet stringForColumn:ivarName];
         [model setValue:string forKey:ivarName];
+        
+    } else if ([ivarType isEqualToString:@"NSNumber"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSNumber *number = [XWDatabaseModel numberWithString:string];
+        [model setValue:number forKey:ivarName];
         
     } else if ([ivarType isEqualToString:@"NSArray"]) {
         NSString *string = [resultSet stringForColumn:ivarName];
@@ -534,6 +531,21 @@ fprintf(stderr, "-------\n");                                               \
         NSString *string = [resultSet stringForColumn:ivarName];
         NSDate *date = [XWDatabaseModel dateWithString:string];
         [model setValue:date forKey:ivarName];
+        
+    } else if ([ivarType isEqualToString:@"{CGPoint=\"x\"d\"y\"d}"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        CGPoint point = CGPointFromString(string);
+        [model setValue:@(point) forKey:ivarName];
+        
+    } else if ([ivarType isEqualToString:@"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        CGRect rect = CGRectFromString(string);
+        [model setValue:@(rect) forKey:ivarName];
+        
+    } else if ([ivarType isEqualToString:@"{CGSize=\"width\"d\"height\"d}"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        CGSize size = CGSizeFromString(string);
+        [model setValue:@(size) forKey:ivarName];
         
     } else {
         [model setValue:[resultSet objectForColumn:ivarName] forKey:ivarName];

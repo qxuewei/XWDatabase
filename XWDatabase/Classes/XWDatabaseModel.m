@@ -11,7 +11,8 @@
 
 @implementation XWDatabaseModel
 static NSString * const kDatabaseModelToolDateFormatter = @"yyyy-MM-dd HH:mm:ss zzz";
-static NSDateFormatter *_databaseModelToolDateFormatter;
+static NSDateFormatter *_dateFormatter;
+static NSNumberFormatter *_numberFormatter;
 
 #pragma mark - Public
 /**
@@ -77,8 +78,8 @@ static NSDateFormatter *_databaseModelToolDateFormatter;
     NSMutableDictionary *ivarOriginDict = [[self classIvarNameTypeDict:cls] mutableCopy];
     NSDictionary *dictionaryOcTypeToSqliteType = [self dictionaryOcTypeToSqliteType];
     [ivarOriginDict enumerateKeysAndObjectsUsingBlock:^(NSString * name, NSString * originType, BOOL * _Nonnull stop) {
-        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
-        NSLog(@"%@  isKeyExist: (%d)",originType,isKeyExist);
+//        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
+//        NSLog(@"%@  isKeyExist: (%d)",originType,isKeyExist);
         ivarOriginDict[name] = dictionaryOcTypeToSqliteType[originType];
     }];
     return ivarOriginDict.copy;
@@ -137,7 +138,7 @@ static NSDateFormatter *_databaseModelToolDateFormatter;
     return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
 }
 
-///  NSData -> NSString
+/// NSData -> NSString
 + (NSString *)stringWithData:(NSData *)data {
     return [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
@@ -146,7 +147,7 @@ static NSDateFormatter *_databaseModelToolDateFormatter;
     return [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
 }
 
-///  NSDate -> NSString
+/// NSDate -> NSString
 + (NSString *)stringWithDate:(NSDate *)date {
     return [[self dateFormatter] stringFromDate:date];
 }
@@ -155,6 +156,14 @@ static NSDateFormatter *_databaseModelToolDateFormatter;
     return [[self dateFormatter] dateFromString:string];
 }
 
+/// NSNumber -> NSString
++ (NSString *)stringWithNumber:(NSNumber *)number {
+    return [number stringValue];
+}
+/// NSString -> NSNumber
++ (NSNumber *)numberWithString:(NSString *)string {
+    return [[self numberFormatter] numberFromString:string];
+}
 
 #pragma mark - private
 + (NSDictionary *)dictionaryOcTypeToSqliteType {
@@ -177,6 +186,7 @@ static NSDateFormatter *_databaseModelToolDateFormatter;
              @"NSArray": @"text",
              @"NSMutableArray": @"text",
              @"NSString": @"text",
+             @"NSNumber": @"text",
              @"{CGPoint=\"x\"d\"y\"d}": @"text",
              @"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}": @"text",
              @"{CGSize=\"width\"d\"height\"d}" : @"text"
@@ -184,10 +194,18 @@ static NSDateFormatter *_databaseModelToolDateFormatter;
 }
 
 + (NSDateFormatter *)dateFormatter {
-    if (!_databaseModelToolDateFormatter) {
-        _databaseModelToolDateFormatter = [[NSDateFormatter alloc] init];
-        _databaseModelToolDateFormatter.dateFormat = kDatabaseModelToolDateFormatter;
+    if (!_dateFormatter) {
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        _dateFormatter.dateFormat = kDatabaseModelToolDateFormatter;
     }
-    return _databaseModelToolDateFormatter;
+    return _dateFormatter;
+}
+
++ (NSNumberFormatter *)numberFormatter {
+    if (!_numberFormatter) {
+        _numberFormatter = [[NSNumberFormatter alloc] init];
+        _numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+    }
+    return _numberFormatter;
 }
 @end

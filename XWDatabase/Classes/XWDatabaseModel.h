@@ -71,16 +71,20 @@ NS_ASSUME_NONNULL_BEGIN
 /// NSDictionary -> NSArray
 + (NSDictionary *)dictWithString:(NSString *)string;
 
-///  NSData -> NSString
+/// NSData -> NSString
 + (NSString *)stringWithData:(NSData *)data;
 /// NSString -> NSData
 + (NSData *)dataWithString:(NSString *)string;
 
-///  NSDate -> NSString
+/// NSDate -> NSString
 + (NSString *)stringWithDate:(NSDate *)date;
 /// NSString -> NSDate
 + (NSDate *)dateWithString:(NSString *)string;
 
+/// NSNumber -> NSString
++ (NSString *)stringWithNumber:(NSNumber *)number;
+/// NSString -> NSNumber
++ (NSNumber *)numberWithString:(NSString *)string;
 @end
 
 NS_ASSUME_NONNULL_END

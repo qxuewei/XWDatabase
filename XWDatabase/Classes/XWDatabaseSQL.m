@@ -89,7 +89,6 @@
             [searchSql appendString:@" DESC"];
         }
     }
-    NSLog(@"++ searchSql %@",searchSql);
     return searchSql;
 }
 
@@ -257,7 +256,10 @@
 + (NSString *)stringWithValue:(id)value {
     NSString *valueStr;
     NSString *string;
-    if ([value isKindOfClass:[NSArray class]]) {
+    
+    if ([value isKindOfClass:[NSNumber class]]) {
+        string = [XWDatabaseModel stringWithNumber:value];
+    } else if ([value isKindOfClass:[NSArray class]]) {
         string = [XWDatabaseModel stringWithArray:value];
     } else if ([value isKindOfClass:[NSDictionary class]]) {
         string = [XWDatabaseModel stringWithDict:value];

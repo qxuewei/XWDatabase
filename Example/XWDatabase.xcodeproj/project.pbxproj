@@ -25,12 +25,6 @@
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		A00136135CC71F5F01EA6645 /* Pods_XWDatabase_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EBCA384703DBEDF2B54239A /* Pods_XWDatabase_Tests.framework */; };
 		B60AD8BE21B94B69008EAAD8 /* XWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8BD21B94B69008EAAD8 /* XWPerson.m */; };
-		B60AD8CF21B95D94008EAAD8 /* XWDatabaseSQL.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8C121B95D94008EAAD8 /* XWDatabaseSQL.m */; };
-		B60AD8D021B95D94008EAAD8 /* XWDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8C221B95D94008EAAD8 /* XWDatabase.m */; };
-		B60AD8D121B95D94008EAAD8 /* XWDatabaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8C321B95D94008EAAD8 /* XWDatabaseModel.m */; };
-		B60AD8D221B95D94008EAAD8 /* XWLivingThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8C421B95D94008EAAD8 /* XWLivingThread.m */; };
-		B60AD8D421B95D94008EAAD8 /* XWDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8C621B95D94008EAAD8 /* XWDatabaseQueue.m */; };
-		B60AD8D521B95D94008EAAD8 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = B60AD8CE21B95D94008EAAD8 /* .gitkeep */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,18 +67,6 @@
 		B5FA3CE9020B7FFC9481E924 /* Pods-XWDatabase_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Tests.debug.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Tests/Pods-XWDatabase_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		B60AD8BC21B94B69008EAAD8 /* XWPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWPerson.h; sourceTree = "<group>"; };
 		B60AD8BD21B94B69008EAAD8 /* XWPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWPerson.m; sourceTree = "<group>"; };
-		B60AD8C121B95D94008EAAD8 /* XWDatabaseSQL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseSQL.m; sourceTree = "<group>"; };
-		B60AD8C221B95D94008EAAD8 /* XWDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabase.m; sourceTree = "<group>"; };
-		B60AD8C321B95D94008EAAD8 /* XWDatabaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseModel.m; sourceTree = "<group>"; };
-		B60AD8C421B95D94008EAAD8 /* XWLivingThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWLivingThread.m; sourceTree = "<group>"; };
-		B60AD8C621B95D94008EAAD8 /* XWDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseQueue.m; sourceTree = "<group>"; };
-		B60AD8C721B95D94008EAAD8 /* XWDatabaseModelProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseModelProtocol.h; sourceTree = "<group>"; };
-		B60AD8C821B95D94008EAAD8 /* XWDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabase.h; sourceTree = "<group>"; };
-		B60AD8C921B95D94008EAAD8 /* XWDatabaseSQL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseSQL.h; sourceTree = "<group>"; };
-		B60AD8CA21B95D94008EAAD8 /* XWLivingThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWLivingThread.h; sourceTree = "<group>"; };
-		B60AD8CB21B95D94008EAAD8 /* XWDatabaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseModel.h; sourceTree = "<group>"; };
-		B60AD8CC21B95D94008EAAD8 /* XWDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseQueue.h; sourceTree = "<group>"; };
-		B60AD8CE21B95D94008EAAD8 /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		E1783A826DDC7C8231DD92B7 /* Pods-XWDatabase_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Example.debug.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Example/Pods-XWDatabase_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		E45C402B94584D43E49BAE7B /* Pods-XWDatabase_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Tests.release.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Tests/Pods-XWDatabase_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		F7FB80C88141C7798F6B25DA /* Pods-XWDatabase_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Example.release.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Example/Pods-XWDatabase_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -153,7 +135,6 @@
 		6003F593195388D20070C39A /* Example for XWDatabase */ = {
 			isa = PBXGroup;
 			children = (
-				B60AD8BF21B95D94008EAAD8 /* XWDatabase */,
 				B60AD8BB21B94B69008EAAD8 /* Model */,
 				6003F59C195388D20070C39A /* XWAppDelegate.h */,
 				6003F59D195388D20070C39A /* XWAppDelegate.m */,
@@ -215,41 +196,6 @@
 				B60AD8BD21B94B69008EAAD8 /* XWPerson.m */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		B60AD8BF21B95D94008EAAD8 /* XWDatabase */ = {
-			isa = PBXGroup;
-			children = (
-				B60AD8C021B95D94008EAAD8 /* Classes */,
-				B60AD8CD21B95D94008EAAD8 /* Assets */,
-			);
-			path = XWDatabase;
-			sourceTree = "<group>";
-		};
-		B60AD8C021B95D94008EAAD8 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				B60AD8C821B95D94008EAAD8 /* XWDatabase.h */,
-				B60AD8C221B95D94008EAAD8 /* XWDatabase.m */,
-				B60AD8CB21B95D94008EAAD8 /* XWDatabaseModel.h */,
-				B60AD8C321B95D94008EAAD8 /* XWDatabaseModel.m */,
-				B60AD8C721B95D94008EAAD8 /* XWDatabaseModelProtocol.h */,
-				B60AD8CC21B95D94008EAAD8 /* XWDatabaseQueue.h */,
-				B60AD8C621B95D94008EAAD8 /* XWDatabaseQueue.m */,
-				B60AD8C921B95D94008EAAD8 /* XWDatabaseSQL.h */,
-				B60AD8C121B95D94008EAAD8 /* XWDatabaseSQL.m */,
-				B60AD8CA21B95D94008EAAD8 /* XWLivingThread.h */,
-				B60AD8C421B95D94008EAAD8 /* XWLivingThread.m */,
-			);
-			path = Classes;
-			sourceTree = "<group>";
-		};
-		B60AD8CD21B95D94008EAAD8 /* Assets */ = {
-			isa = PBXGroup;
-			children = (
-				B60AD8CE21B95D94008EAAD8 /* .gitkeep */,
-			);
-			path = Assets;
 			sourceTree = "<group>";
 		};
 		BF2E3FC4880B66283217DDA5 /* Pods */ = {
@@ -348,7 +294,6 @@
 			files = (
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
-				B60AD8D521B95D94008EAAD8 /* .gitkeep in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 			);
@@ -375,12 +320,14 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-XWDatabase_Example/Pods-XWDatabase_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/FMDB/FMDB.framework",
+				"${BUILT_PRODUCTS_DIR}/XWDatabase/XWDatabase.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FMDB.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/XWDatabase.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -439,14 +386,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F59E195388D20070C39A /* XWAppDelegate.m in Sources */,
-				B60AD8CF21B95D94008EAAD8 /* XWDatabaseSQL.m in Sources */,
 				6003F5A7195388D20070C39A /* XWViewController.m in Sources */,
-				B60AD8D221B95D94008EAAD8 /* XWLivingThread.m in Sources */,
-				B60AD8D421B95D94008EAAD8 /* XWDatabaseQueue.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				B60AD8BE21B94B69008EAAD8 /* XWPerson.m in Sources */,
-				B60AD8D021B95D94008EAAD8 /* XWDatabase.m in Sources */,
-				B60AD8D121B95D94008EAAD8 /* XWDatabaseModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
