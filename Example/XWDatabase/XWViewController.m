@@ -90,14 +90,14 @@
     person.name = @"新名字";
     
     /// 自定义成员变量更新
-//    [XWDatabase updateModel:person updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
-//        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败");
-//    }];
+    [XWDatabase updateModel:person updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败`");
+    }];
     
     /// 整个模型更新
-    [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
-        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败");
-    }];
+//    [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
+//        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败");
+//    }];
 }
 
 #pragma mark - 查
