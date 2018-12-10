@@ -105,12 +105,23 @@ fprintf(stderr, "-------\n");                                               \
  @param completion 成功/失败
  */
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
+    [self clearModel:cls condition:nil completion:completion];
+}
+
+/**
+ 删除指定模型所有数据
+ 
+ @param cls 模型类
+ @param condition 自定义条件 (为空删除所有数据,有值根据自定义的条件删除)
+ @param completion 成功/失败
+ */
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition completion:(XWDatabaseCompletion)completion {
     if (!cls) {
         completion ? completion(NO) : nil;
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        NSString *clearColumnSql = [XWDatabaseSQL clearColumn:cls];
+        NSString *clearColumnSql = [XWDatabaseSQL clearColumn:cls condition:condition];
         [self p_executeUpdate:clearColumnSql completion:completion];
     }];
 }
@@ -259,7 +270,6 @@ fprintf(stderr, "-------\n");                                               \
         NSString *searchSql = [XWDatabaseSQL isExistSql:obj];
         [XWDatabaseQueue executeStatementQuerySql:searchSql database:database completion:^(int count) {
             if (count < 0) {
-                NSLog(@"++ 数据库不存在!!!!!");
                 completion ? completion(NO) : nil;
                 return ;
             }
@@ -278,49 +288,51 @@ fprintf(stderr, "-------\n");                                               \
 
 + (void)p_saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion)completion {
     
+    
     [[XWDatabaseQueue shareInstance] inTransaction:^(FMDatabase * _Nonnull database, BOOL * _Nonnull rollback) {
-        
-        NSObject *firstObj = objs.firstObject;
-        
-        NSString *creatTableSql = [XWDatabaseSQL createTableSql:firstObj.class isTtemporary:NO];
-        BOOL isCreatTableSuccess = [XWDatabaseQueue executeUpdateSql:creatTableSql database:database];
-        if (!isCreatTableSuccess) {
-            completion ? completion(NO) : nil;
-            *rollback = YES;
-            return ;
-        }
-        __block NSMutableArray *updateSqls = [[NSMutableArray alloc] init];
-        
-        for (NSObject <XWDatabaseModelProtocol> *obj in objs) {
-            NSString *searchSql = [XWDatabaseSQL isExistSql:obj];
-            [XWDatabaseQueue executeStatementQuerySql:searchSql database:database completion:^(int count) {
-                if (count < 0) {
-                    completion ? completion(NO) : nil;
-                    *rollback = YES;
-                    return ;
-                }
-                if (count) {
-                    NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj];
-                    [updateSqls addObject:updateSql];
-                } else {
-                    NSString *saveSql = [XWDatabaseSQL saveOneObjSql:obj];
-                    [updateSqls addObject:saveSql];
-                }
-            }];
-        }
-        
-        [updateSqls enumerateObjectsUsingBlock:^(NSString * sql, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (![database executeUpdate:sql]) {
+        @autoreleasepool {
+            
+            NSObject *firstObj = objs.firstObject;
+            NSString *creatTableSql = [XWDatabaseSQL createTableSql:firstObj.class isTtemporary:NO];
+            BOOL isCreatTableSuccess = [XWDatabaseQueue executeUpdateSql:creatTableSql database:database];
+            if (!isCreatTableSuccess) {
                 completion ? completion(NO) : nil;
                 *rollback = YES;
                 return ;
             }
-            if (idx == updateSqls.count - 1) {
-                completion ? completion(YES) : nil;
-                return;
+            __block NSMutableArray *updateSqls = [[NSMutableArray alloc] init];
+            
+            for (NSObject <XWDatabaseModelProtocol> *obj in objs) {
+                NSString *searchSql = [XWDatabaseSQL isExistSql:obj];
+                [XWDatabaseQueue executeStatementQuerySql:searchSql database:database completion:^(int count) {
+                    if (count < 0) {
+                        completion ? completion(NO) : nil;
+                        *rollback = YES;
+                        return ;
+                    }
+                    if (count) {
+                        NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj];
+                        [updateSqls addObject:updateSql];
+                    } else {
+                        NSString *saveSql = [XWDatabaseSQL saveOneObjSql:obj];
+                        [updateSqls addObject:saveSql];
+                    }
+                }];
             }
-        }];
-        
+            
+            [updateSqls enumerateObjectsUsingBlock:^(NSString * sql, NSUInteger idx, BOOL * _Nonnull stop) {
+                if (![database executeUpdate:sql]) {
+                    completion ? completion(NO) : nil;
+                    *rollback = YES;
+                    return ;
+                }
+                if (idx == updateSqls.count - 1) {
+                    completion ? completion(YES) : nil;
+                    return;
+                }
+            }];
+            
+        }
     }];
 }
 #pragma mark  删
@@ -451,21 +463,25 @@ fprintf(stderr, "-------\n");                                               \
 + (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion {
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
-        NSString *searchSql = [XWDatabaseSQL searchSql:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition];
-        FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
-        Class modelClass = cls;
-        NSMutableArray *models = [[NSMutableArray alloc] init];
-        NSDictionary *ivarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:modelClass];
-        while (resultSet.next) {
-            id model = [[modelClass alloc] init];
-            [ivarNameTypeDict enumerateKeysAndObjectsUsingBlock:^(NSString * ivarName, NSString * ivarType, BOOL * _Nonnull stop) {
-                [self p_setModel:model resultSet:resultSet ivarName:ivarName ivarType:ivarType];
-            }];
-            if (model) {
-                [models addObject:model];
+        @autoreleasepool {
+            
+            NSString *searchSql = [XWDatabaseSQL searchSql:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition];
+            FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
+            Class modelClass = cls;
+            NSMutableArray *models = [[NSMutableArray alloc] init];
+            NSDictionary *ivarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:modelClass];
+            while (resultSet.next) {
+                id model = [[modelClass alloc] init];
+                [ivarNameTypeDict enumerateKeysAndObjectsUsingBlock:^(NSString * ivarName, NSString * ivarType, BOOL * _Nonnull stop) {
+                    [self p_setModel:model resultSet:resultSet ivarName:ivarName ivarType:ivarType];
+                }];
+                if (model) {
+                    [models addObject:model];
+                }
             }
+            completion ? completion(models) : nil;
+            
         }
-        completion ? completion(models) : nil;
     }];
 }
 
@@ -494,6 +510,11 @@ fprintf(stderr, "-------\n");                                               \
         NSString *string = [resultSet stringForColumn:ivarName];
         [model setValue:string forKey:ivarName];
         
+    } else if ([ivarType isEqualToString:@"NSMutableString"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSMutableString *stringM = [NSMutableString stringWithString:string];
+        [model setValue:stringM forKey:ivarName];
+        
     } else if ([ivarType isEqualToString:@"NSNumber"]) {
         NSString *string = [resultSet stringForColumn:ivarName];
         NSNumber *number = [XWDatabaseModel numberWithString:string];
@@ -504,10 +525,20 @@ fprintf(stderr, "-------\n");                                               \
         NSArray *array = [XWDatabaseModel arrayWithString:string];
         [model setValue:array forKey:ivarName];
         
+    } else if ([ivarType isEqualToString:@"NSMutableArray"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSArray *array = [XWDatabaseModel arrayWithString:string];
+        [model setValue:array.mutableCopy forKey:ivarName];
+        
     } else if ([ivarType isEqualToString:@"NSDictionary"]) {
         NSString *string = [resultSet stringForColumn:ivarName];
         NSDictionary *dict = [XWDatabaseModel dictWithString:string];
         [model setValue:dict forKey:ivarName];
+        
+    } else if ( [ivarType isEqualToString:@"NSMutableDictionary"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSDictionary *dict = [XWDatabaseModel dictWithString:string];
+        [model setValue:dict.mutableCopy forKey:ivarName];
         
     } else if ([ivarType isEqualToString:@"q"] || [ivarType isEqualToString:@"l"]) {
         [model setValue:[resultSet objectForColumn:ivarName] forKey:ivarName];
@@ -544,10 +575,40 @@ fprintf(stderr, "-------\n");                                               \
         NSData *data = [XWDatabaseModel dataWithString:string];
         [model setValue:data forKey:ivarName];
         
+    } else if ([ivarType isEqualToString:@"NSMutableData"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSData *data = [XWDatabaseModel dataWithString:string];
+        [model setValue:data.mutableCopy forKey:ivarName];
+        
+    } else if ([ivarType isEqualToString:@"NSSet"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSSet *set = [XWDatabaseModel setWithString:string];
+        [model setValue:set forKey:ivarName];
+        
+    } else if ([ivarType isEqualToString:@"NSMutableSet"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSSet *set = [XWDatabaseModel setWithString:string];
+        [model setValue:set.mutableCopy forKey:ivarName];
+        
     } else if ([ivarType isEqualToString:@"NSDate"]) {
         NSString *string = [resultSet stringForColumn:ivarName];
         NSDate *date = [XWDatabaseModel dateWithString:string];
         [model setValue:date forKey:ivarName];
+        
+    } else if ([ivarType isEqualToString:@"NSAttributedString"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSAttributedString *attributedString = [XWDatabaseModel attributedStringWithString:string];
+        [model setValue:attributedString forKey:ivarName];
+        
+    } else if ([ivarType isEqualToString:@"NSMutableAttributedString"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSAttributedString *attributedString = [XWDatabaseModel attributedStringWithString:string];
+        [model setValue:attributedString.mutableCopy forKey:ivarName];
+        
+    } else if ([ivarType isEqualToString:@"NSIndexPath"]) {
+        NSString *string = [resultSet stringForColumn:ivarName];
+        NSIndexPath *indexPath = [XWDatabaseModel indexPathWithString:string];
+        [model setValue:indexPath forKey:ivarName];
         
     } else if ([ivarType isEqualToString:@"{CGPoint=\"x\"d\"y\"d}"]) {
         NSString *string = [resultSet stringForColumn:ivarName];

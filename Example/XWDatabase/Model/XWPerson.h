@@ -18,11 +18,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy)   NSString *sex;
 @property (nonatomic, assign) NSInteger age;
 @property (nonatomic, strong) NSDate *birthday;
-@property (nonatomic, strong) NSData *icon;
-@property (nonatomic, strong) NSArray *girls;
-@property (nonatomic, strong) NSDictionary *books;
+@property (nonatomic, strong) NSMutableData *icon;
+@property (nonatomic, strong) NSMutableArray *girls;
+@property (nonatomic, strong) NSMutableDictionary *books;
 @property (nonatomic, strong) NSNumber *number;
 @property (nonatomic, strong) NSNumber *floatNumber;
+@property (nonatomic, strong) NSSet *pSet;
+@property (nonatomic, strong) NSMutableSet *pSetM;
+@property (nonatomic, strong) NSAttributedString *pAttributedString;
+@property (nonatomic, strong) NSMutableAttributedString *pMutableAttributedString;
+@property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, assign) CGFloat pCGFloat;
 @property (nonatomic, assign) float pFloat;
 @property (nonatomic, assign) int pInt;
@@ -38,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGSize pSize;
 
 + (XWPerson *)testPerson:(int)index;
+
 @end
 
 NS_ASSUME_NONNULL_END

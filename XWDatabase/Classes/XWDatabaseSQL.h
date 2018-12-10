@@ -126,9 +126,10 @@ NS_ASSUME_NONNULL_BEGIN
  清空表中所有字段
  
  @param cls 模型类
+ @param condition 条件
  @return 是否删除成功
  */
-+ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls;
++ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable )condition;
 
 @end
 

@@ -27,6 +27,10 @@
     return @"cardID";
 }
 
++ (NSSet<NSString *> *)xw_ignoreColumnNames {
+    return [NSSet setWithObject:@"floatNumber"];
+}
+
 /// 测试数据
 + (XWPerson *)testPerson:(int)index {
     XWPerson *person = [[XWPerson alloc] init];
@@ -35,8 +39,8 @@
     person.name = person.age % 2 == 0 ? @"极客学伟" : @"www.qiuxuewei.com";
     person.sex = @"male";
     person.birthday = [NSDate date];
-    person.girls = @[@"小妹",@"校花",@"小baby"];
-    person.books = @{@"name":@"iOS 从入门到掉头发"};
+    person.girls = @[@"小妹",@"校花",@"小baby"].mutableCopy;
+    person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
     person.number = [NSNumber numberWithBool:YES];
     person.floatNumber = [NSNumber numberWithFloat:3.1415926];
 //    UIImage *image = [UIImage imageNamed:@"icon"];
@@ -54,6 +58,12 @@
     person.pPoint = CGPointMake(10, 10);
     person.pRect = CGRectMake(0, 0, 100, 100);
     person.pSize = CGSizeMake(200, 300);
+    person.pSet = [NSSet setWithObjects:@"Set",@(123),nil];
+    person.pSetM = [NSMutableSet setWithObjects:@"MutableSet",@(456), nil];
+    person.pAttributedString = [[NSAttributedString alloc] initWithString:@"NSAttributedString"];
+    person.pMutableAttributedString = [[NSMutableAttributedString alloc] initWithString:@"NSMutableAttributedString"];
+    
+    person.indexPath = [NSIndexPath indexPathForItem:1 inSection:2];
     
     return person;
 }

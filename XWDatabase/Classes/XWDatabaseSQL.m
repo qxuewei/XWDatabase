@@ -42,11 +42,11 @@
  现有表 建表语句
 
  @param cls 类
- @return 表 建表语句
+ @return 表 建表语句   (SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '表名')
+ 获取当前表的建表SQL -> (CREATE TABLE XWPerson(pRect text,birthday text,pFloat real,pLong integer,sex text,icon blob,floatNumber text,pCGFloat real,pBooll integer,books text,name text,cardID text,pBOOL integer,pUInteger integer,pSize text,number text,pPoint text,pDouble real,pLongLong integer,girls text,age integer,pInt integer,pInteger integer,primary key(cardID)))
  */
 + (NSString *)queryCreateTableSql:(Class<XWDatabaseModelProtocol>)cls {
     NSString *tableName = [XWDatabaseModel tableName:cls];
-    //SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'XWStuModel'
     return [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type = 'table' AND name = '%@'",tableName];
 }
 
@@ -108,7 +108,7 @@
 
 
 /**
- 保存单个对象SQL
+ 保存单个对象SQL 
 
  @param obj 模型
  @return 保存单个对象SQL
@@ -243,12 +243,17 @@
  清空表中所有字段
  
  @param cls 模型类
+ @param condition 条件
  @return 是否删除成功
  */
-+ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls {
++ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition {
     /// DELETE FROM COMPANY WHERE ID = 7
     NSString *tableName = [XWDatabaseModel tableName:cls];
-    return [NSString stringWithFormat:@"DELETE FROM %@",tableName];
+    if (condition && condition.length > 0) {
+        return [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ ",tableName,condition];
+    } else {
+        return [NSMutableString stringWithFormat:@"DELETE FROM %@",tableName];
+    }
 }
 
 #pragma mark - private
@@ -261,7 +266,6 @@
 + (NSString *)stringWithValue:(id)value {
     NSString *valueStr;
     NSString *string;
-    
     if ([value isKindOfClass:[NSNumber class]]) {
         string = [XWDatabaseModel stringWithNumber:value];
     } else if ([value isKindOfClass:[NSArray class]]) {
@@ -272,6 +276,12 @@
         string = [XWDatabaseModel stringWithData:value];
     } else if ([value isKindOfClass:[NSDate class]]) {
         string = [XWDatabaseModel stringWithDate:value];
+    } else if ([value isKindOfClass:[NSSet class]]) {
+        string = [XWDatabaseModel stringWithSet:value];
+    } else if ([value isKindOfClass:[NSAttributedString class]]) {
+        string = [XWDatabaseModel stringWithAttributedString:value];
+    } else if ([value isKindOfClass:[NSIndexPath class]]) {
+        string = [XWDatabaseModel stringWithIndexPath:value];
     } else {
         string = [NSString stringWithFormat:@"%@",value];
     }

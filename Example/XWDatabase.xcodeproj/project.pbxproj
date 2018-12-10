@@ -25,11 +25,12 @@
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		A00136135CC71F5F01EA6645 /* Pods_XWDatabase_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EBCA384703DBEDF2B54239A /* Pods_XWDatabase_Tests.framework */; };
 		B60AD8BE21B94B69008EAAD8 /* XWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8BD21B94B69008EAAD8 /* XWPerson.m */; };
-		B62AC23721BA24B8000FCFCC /* XWDatabaseSQL.m in Sources */ = {isa = PBXBuildFile; fileRef = B62AC22B21BA24B8000FCFCC /* XWDatabaseSQL.m */; };
-		B62AC23821BA24B8000FCFCC /* XWDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = B62AC22C21BA24B8000FCFCC /* XWDatabase.m */; };
-		B62AC23921BA24B8000FCFCC /* XWDatabaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B62AC22D21BA24B8000FCFCC /* XWDatabaseModel.m */; };
-		B62AC23A21BA24B8000FCFCC /* XWLivingThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B62AC22E21BA24B8000FCFCC /* XWLivingThread.m */; };
-		B62AC23C21BA24B8000FCFCC /* XWDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = B62AC23021BA24B8000FCFCC /* XWDatabaseQueue.m */; };
+		B696CF9121BE68AE000C7A03 /* XWDatabaseSQL.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8521BE68AE000C7A03 /* XWDatabaseSQL.m */; };
+		B696CF9221BE68AE000C7A03 /* XWDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8621BE68AE000C7A03 /* XWDatabase.m */; };
+		B696CF9321BE68AE000C7A03 /* XWDatabaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8721BE68AE000C7A03 /* XWDatabaseModel.m */; };
+		B696CF9421BE68AE000C7A03 /* XWLivingThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8821BE68AE000C7A03 /* XWLivingThread.m */; };
+		B696CF9521BE68AE000C7A03 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = B696CF8921BE68AE000C7A03 /* .gitkeep */; };
+		B696CF9621BE68AE000C7A03 /* XWDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8A21BE68AE000C7A03 /* XWDatabaseQueue.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,17 +73,18 @@
 		B5FA3CE9020B7FFC9481E924 /* Pods-XWDatabase_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Tests.debug.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Tests/Pods-XWDatabase_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		B60AD8BC21B94B69008EAAD8 /* XWPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWPerson.h; sourceTree = "<group>"; };
 		B60AD8BD21B94B69008EAAD8 /* XWPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWPerson.m; sourceTree = "<group>"; };
-		B62AC22B21BA24B8000FCFCC /* XWDatabaseSQL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseSQL.m; sourceTree = "<group>"; };
-		B62AC22C21BA24B8000FCFCC /* XWDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabase.m; sourceTree = "<group>"; };
-		B62AC22D21BA24B8000FCFCC /* XWDatabaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseModel.m; sourceTree = "<group>"; };
-		B62AC22E21BA24B8000FCFCC /* XWLivingThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWLivingThread.m; sourceTree = "<group>"; };
-		B62AC23021BA24B8000FCFCC /* XWDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseQueue.m; sourceTree = "<group>"; };
-		B62AC23121BA24B8000FCFCC /* XWDatabaseModelProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseModelProtocol.h; sourceTree = "<group>"; };
-		B62AC23221BA24B8000FCFCC /* XWDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabase.h; sourceTree = "<group>"; };
-		B62AC23321BA24B8000FCFCC /* XWDatabaseSQL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseSQL.h; sourceTree = "<group>"; };
-		B62AC23421BA24B8000FCFCC /* XWLivingThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWLivingThread.h; sourceTree = "<group>"; };
-		B62AC23521BA24B8000FCFCC /* XWDatabaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseModel.h; sourceTree = "<group>"; };
-		B62AC23621BA24B8000FCFCC /* XWDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseQueue.h; sourceTree = "<group>"; };
+		B696CF8521BE68AE000C7A03 /* XWDatabaseSQL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseSQL.m; sourceTree = "<group>"; };
+		B696CF8621BE68AE000C7A03 /* XWDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabase.m; sourceTree = "<group>"; };
+		B696CF8721BE68AE000C7A03 /* XWDatabaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseModel.m; sourceTree = "<group>"; };
+		B696CF8821BE68AE000C7A03 /* XWLivingThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWLivingThread.m; sourceTree = "<group>"; };
+		B696CF8921BE68AE000C7A03 /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
+		B696CF8A21BE68AE000C7A03 /* XWDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseQueue.m; sourceTree = "<group>"; };
+		B696CF8B21BE68AE000C7A03 /* XWDatabaseModelProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseModelProtocol.h; sourceTree = "<group>"; };
+		B696CF8C21BE68AE000C7A03 /* XWDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabase.h; sourceTree = "<group>"; };
+		B696CF8D21BE68AE000C7A03 /* XWDatabaseSQL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseSQL.h; sourceTree = "<group>"; };
+		B696CF8E21BE68AE000C7A03 /* XWLivingThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWLivingThread.h; sourceTree = "<group>"; };
+		B696CF8F21BE68AE000C7A03 /* XWDatabaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseModel.h; sourceTree = "<group>"; };
+		B696CF9021BE68AE000C7A03 /* XWDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseQueue.h; sourceTree = "<group>"; };
 		E1783A826DDC7C8231DD92B7 /* Pods-XWDatabase_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Example.debug.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Example/Pods-XWDatabase_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		E45C402B94584D43E49BAE7B /* Pods-XWDatabase_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Tests.release.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Tests/Pods-XWDatabase_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		F7FB80C88141C7798F6B25DA /* Pods-XWDatabase_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Example.release.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Example/Pods-XWDatabase_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -151,7 +153,7 @@
 		6003F593195388D20070C39A /* Example for XWDatabase */ = {
 			isa = PBXGroup;
 			children = (
-				B62AC22A21BA24B8000FCFCC /* Classes */,
+				B696CF8421BE68AE000C7A03 /* Classes */,
 				B60AD8BB21B94B69008EAAD8 /* Model */,
 				6003F59C195388D20070C39A /* XWAppDelegate.h */,
 				6003F59D195388D20070C39A /* XWAppDelegate.m */,
@@ -215,20 +217,21 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		B62AC22A21BA24B8000FCFCC /* Classes */ = {
+		B696CF8421BE68AE000C7A03 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				B62AC23221BA24B8000FCFCC /* XWDatabase.h */,
-				B62AC22C21BA24B8000FCFCC /* XWDatabase.m */,
-				B62AC23521BA24B8000FCFCC /* XWDatabaseModel.h */,
-				B62AC22D21BA24B8000FCFCC /* XWDatabaseModel.m */,
-				B62AC23121BA24B8000FCFCC /* XWDatabaseModelProtocol.h */,
-				B62AC23621BA24B8000FCFCC /* XWDatabaseQueue.h */,
-				B62AC23021BA24B8000FCFCC /* XWDatabaseQueue.m */,
-				B62AC23321BA24B8000FCFCC /* XWDatabaseSQL.h */,
-				B62AC22B21BA24B8000FCFCC /* XWDatabaseSQL.m */,
-				B62AC23421BA24B8000FCFCC /* XWLivingThread.h */,
-				B62AC22E21BA24B8000FCFCC /* XWLivingThread.m */,
+				B696CF8521BE68AE000C7A03 /* XWDatabaseSQL.m */,
+				B696CF8621BE68AE000C7A03 /* XWDatabase.m */,
+				B696CF8721BE68AE000C7A03 /* XWDatabaseModel.m */,
+				B696CF8821BE68AE000C7A03 /* XWLivingThread.m */,
+				B696CF8921BE68AE000C7A03 /* .gitkeep */,
+				B696CF8A21BE68AE000C7A03 /* XWDatabaseQueue.m */,
+				B696CF8B21BE68AE000C7A03 /* XWDatabaseModelProtocol.h */,
+				B696CF8C21BE68AE000C7A03 /* XWDatabase.h */,
+				B696CF8D21BE68AE000C7A03 /* XWDatabaseSQL.h */,
+				B696CF8E21BE68AE000C7A03 /* XWLivingThread.h */,
+				B696CF8F21BE68AE000C7A03 /* XWDatabaseModel.h */,
+				B696CF9021BE68AE000C7A03 /* XWDatabaseQueue.h */,
 			);
 			name = Classes;
 			path = ../../XWDatabase/Classes;
@@ -330,6 +333,7 @@
 			files = (
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
+				B696CF9521BE68AE000C7A03 /* .gitkeep in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 			);
@@ -420,14 +424,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F59E195388D20070C39A /* XWAppDelegate.m in Sources */,
-				B62AC23721BA24B8000FCFCC /* XWDatabaseSQL.m in Sources */,
+				B696CF9121BE68AE000C7A03 /* XWDatabaseSQL.m in Sources */,
 				6003F5A7195388D20070C39A /* XWViewController.m in Sources */,
-				B62AC23A21BA24B8000FCFCC /* XWLivingThread.m in Sources */,
-				B62AC23C21BA24B8000FCFCC /* XWDatabaseQueue.m in Sources */,
+				B696CF9421BE68AE000C7A03 /* XWLivingThread.m in Sources */,
+				B696CF9621BE68AE000C7A03 /* XWDatabaseQueue.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				B60AD8BE21B94B69008EAAD8 /* XWPerson.m in Sources */,
-				B62AC23821BA24B8000FCFCC /* XWDatabase.m in Sources */,
-				B62AC23921BA24B8000FCFCC /* XWDatabaseModel.m in Sources */,
+				B696CF9221BE68AE000C7A03 /* XWDatabase.m in Sources */,
+				B696CF9321BE68AE000C7A03 /* XWDatabaseModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

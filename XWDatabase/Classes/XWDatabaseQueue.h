@@ -65,22 +65,6 @@ typedef void(^XWDatabaseQueueQueryResults)(NSArray < FMResultSet *>  * _Nullable
  */
 + (void)executeStatementQuerySql:(NSString *)sql database:(FMDatabase *)database completion:(XWDatabaseQueueQueryCountResult)completion;
 
-/**
- 执行更新操作 (多语句)
- 
- @param sqls 所执行的 SQLs
- @param completion 完成回调
- */
-- (void)executeUpdateSqlSqls:(NSArray < NSString *> *)sqls completion:(XWDatabaseQueueUpdateResult)completion;
-
-/**
- 执行查询操作 (多语句)
- 
- @param sqls 所执行的 SQLs
- @param completion 完成回调
- */
-- (void)executeQuerySqlSqls:(NSArray < NSString *> *)sqls completion:(XWDatabaseQueueQueryResults)completion;
-
 @end
 
 NS_ASSUME_NONNULL_END

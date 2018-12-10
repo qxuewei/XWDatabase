@@ -15,8 +15,6 @@
 @interface XWDatabaseQueue () {
     FMDatabase *_db;
     FMDatabaseQueue *_queue;
-    FMDatabaseQueue *_updateSqlsQueue;
-    FMDatabaseQueue *_querySqlsQueue;
 }
 @property (nonatomic, copy) NSString *databasePath;
 @property (nonatomic, strong) FMDatabase *dataBase;
@@ -123,63 +121,7 @@ static XWDatabaseQueue *_defaultManager;
     }];
 }
 
-/**
- 执行更新操作 (多语句)
- 
- @param sqls 所执行的 SQLs
- @param completion 完成回调
- */
-- (void)executeUpdateSqlSqls:(NSArray < NSString *> *)sqls completion:(XWDatabaseQueueUpdateResult)completion {
-    if (!sqls || sqls.count == 0 || !completion) {
-        return;
-    }
-    if (!_updateSqlsQueue) {
-        completion(NO);
-        return;
-    }
-    [_updateSqlsQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-        [sqls enumerateObjectsUsingBlock:^(NSString * _Nonnull sql, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (![db executeUpdate:sql]) {
-                NSLog(@"+++ 事务 %@ 执行失败!!",sql);
-                completion(NO);
-                *rollback = YES;
-                return ;
-            }
-            if (idx == sqls.count - 1) {
-                completion(YES);
-                return;
-            }
-        }];
-    }];
-}
-
-/**
- 执行查询操作 (多语句)
- 
- @param sqls 所执行的 SQLs
- @param completion 完成回调
- */
-- (void)executeQuerySqlSqls:(NSArray < NSString *> *)sqls completion:(XWDatabaseQueueQueryResults)completion {
-    if (!sqls || sqls.count == 0 || !completion) {
-        return;
-    }
-    if (!_querySqlsQueue) {
-        completion(nil);
-        return;
-    }
-    [_querySqlsQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-        __block NSMutableArray <FMResultSet *> *resultSets = [[NSMutableArray alloc] init];
-        [sqls enumerateObjectsUsingBlock:^(NSString * _Nonnull sql, NSUInteger idx, BOOL * _Nonnull stop) {
-            FMResultSet *set = [db executeQuery:sql];
-            if (set) {
-                [resultSets addObject:set];
-            }
-        }];
-        completion(resultSets);
-    }];
-}
-
-#pragma mark - Life
+#pragma mark - Life Cycle
 + (instancetype)allocWithZone:(struct _NSZone *)zone {
     if (!_defaultManager) {
         static dispatch_once_t onceToken;
@@ -202,8 +144,6 @@ static XWDatabaseQueue *_defaultManager;
     if (self = [super init]) {
         _db                 = [FMDatabase databaseWithPath:self.databasePath];
         _queue              = [FMDatabaseQueue databaseQueueWithPath:self.databasePath];
-        _updateSqlsQueue    = [FMDatabaseQueue databaseQueueWithPath:self.databasePath flags:1];
-        _querySqlsQueue     = [FMDatabaseQueue databaseQueueWithPath:self.databasePath flags:2];
     }
     return self;
 }

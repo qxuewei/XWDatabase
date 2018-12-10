@@ -85,6 +85,21 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)stringWithNumber:(NSNumber *)number;
 /// NSString -> NSNumber
 + (NSNumber *)numberWithString:(NSString *)string;
+
+/// NSSet -> NSString
++ (NSString *)stringWithSet:(NSSet *)set;
+/// NSString -> NSSet
++ (NSSet *)setWithString:(NSString *)string;
+
+/// NSAttributedString -> NSString
++ (NSString *)stringWithAttributedString:(NSAttributedString *)attributedString;
+/// NSString -> NSAttributedString
++ (NSAttributedString *)attributedStringWithString:(NSString *)string;
+
+/// NSAttributedString -> NSString
++ (NSString *)stringWithIndexPath:(NSIndexPath *)indexPath;
+/// NSString -> NSAttributedString
++ (NSIndexPath *)indexPathWithString:(NSString *)string;
 @end
 
 NS_ASSUME_NONNULL_END

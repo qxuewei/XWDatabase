@@ -165,34 +165,51 @@ static NSNumberFormatter *_numberFormatter;
     return [[self numberFormatter] numberFromString:string];
 }
 
-#pragma mark - private
-+ (NSDictionary *)dictionaryOcTypeToSqliteType {
-    
-    return @{
-             @"d": @"real",     // double
-             @"f": @"real",     // float
-             @"s": @"integer",  // short
-             @"i": @"integer",  // int
-             @"q": @"integer",  // long
-             @"l": @"integer",  // long
-             @"I": @"integer",  // NSInteger
-             @"Q": @"integer",  // long long
-             @"B": @"integer",  // bool
-             @"c": @"integer",  // bool
-             @"NSData": @"blob",
-             @"NSDate": @"text",
-             @"NSDictionary": @"text",
-             @"NSMutableDictionary": @"text",
-             @"NSArray": @"text",
-             @"NSMutableArray": @"text",
-             @"NSString": @"text",
-             @"NSNumber": @"text",
-             @"{CGPoint=\"x\"d\"y\"d}": @"text",
-             @"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}": @"text",
-             @"{CGSize=\"width\"d\"height\"d}" : @"text"
-             };
+/// NSSet -> NSString
++ (NSString *)stringWithSet:(NSSet *)set {
+    NSArray *array = [set allObjects];
+    return [self stringWithArray:array];
+}
+/// NSString -> NSSet
++ (NSSet *)setWithString:(NSString *)string {
+    NSArray *array = [self arrayWithString:string];
+    return [NSSet setWithArray:array];
 }
 
+/// NSAttributedString -> NSString
++ (NSString *)stringWithAttributedString:(NSAttributedString *)attributedString {
+    NSData *data = [attributedString dataFromRange:NSMakeRange(0, attributedString.length) documentAttributes:@{NSDocumentTypeDocumentAttribute : NSRTFDTextDocumentType} error:nil];
+    return [self stringWithData:data];
+}
+/// NSString -> NSAttributedString
++ (NSAttributedString *)attributedStringWithString:(NSString *)string {
+    NSData *data = [self dataWithString:string];
+    return [[NSAttributedString alloc] initWithData:data options:@{NSDocumentTypeDocumentAttribute : NSRTFDTextDocumentType} documentAttributes:nil error:nil];
+}
+
+/// NSAttributedString -> NSString
++ (NSString *)stringWithIndexPath:(NSIndexPath *)indexPath {
+    if (@available(iOS 11.0, *)) {
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:indexPath requiringSecureCoding:YES error:nil];
+        return [self stringWithData:data];
+    } else {
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:indexPath];
+        return [self stringWithData:data];
+    }
+}
+/// NSString -> NSAttributedString
++ (NSIndexPath *)indexPathWithString:(NSString *)string {
+    NSData *data = [self dataWithString:string];
+    if (@available(iOS 11.0, *)) {
+        NSIndexPath *indexPath = [NSKeyedUnarchiver unarchivedObjectOfClass:NSIndexPath.class fromData:data error:nil];
+        return indexPath;
+    } else {
+        NSIndexPath *indexPath = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        return indexPath;
+    }
+}
+
+#pragma mark - private
 + (NSDateFormatter *)dateFormatter {
     if (!_dateFormatter) {
         _dateFormatter = [[NSDateFormatter alloc] init];
@@ -207,5 +224,38 @@ static NSNumberFormatter *_numberFormatter;
         _numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
     }
     return _numberFormatter;
+}
+
++ (NSDictionary *)dictionaryOcTypeToSqliteType {
+    return @{
+             @"d": @"real",     // double
+             @"f": @"real",     // float
+             @"s": @"integer",  // short
+             @"i": @"integer",  // int
+             @"q": @"integer",  // long
+             @"l": @"integer",  // long
+             @"I": @"integer",  // NSInteger
+             @"Q": @"integer",  // long long
+             @"B": @"integer",  // bool
+             @"c": @"integer",  // bool
+             @"NSData": @"blob",
+             @"NSMutableData": @"blob",
+             @"NSAttributedString": @"blob",
+             @"NSMutableAttributedString": @"blob",
+             @"NSIndexPath": @"blob",
+             @"NSDate": @"text",
+             @"NSDictionary": @"text",
+             @"NSMutableDictionary": @"text",
+             @"NSArray": @"text",
+             @"NSMutableArray": @"text",
+             @"NSString": @"text",
+             @"NSMutableString": @"text",
+             @"NSNumber": @"text",
+             @"NSSet": @"text",
+             @"NSMutableSet": @"text",
+             @"{CGPoint=\"x\"d\"y\"d}": @"text",
+             @"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}": @"text",
+             @"{CGSize=\"width\"d\"height\"d}" : @"text"
+             };
 }
 @end

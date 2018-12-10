@@ -1,6 +1,6 @@
 {
   "name": "XWDatabase",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "summary": "数据库工具类，直接操作模型读写数据库，FMDB封装",
   "description": "数据库工具类，直接操作模型读写数据库，FMDB封装",
   "homepage": "https://github.com/qxuewei/XWDatabase",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/qxuewei/XWDatabase.git",
-    "tag": "0.1.1"
+    "tag": "0.1.2"
   },
   "platforms": {
     "ios": "8.0"

@@ -4,7 +4,7 @@
 //
 //  Created by 邱学伟 on 2018/11/29.
 //  Copyright © 2018 邱学伟. All rights reserved.
-//
+//  V 1.0 版本一定会有各种不足,会持续优化完善
 
 #import <Foundation/Foundation.h>
 #import "XWDatabaseModelProtocol.h"
@@ -19,7 +19,7 @@ typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返�
 
 #pragma mark - 增
 /**
- 保存模型
+ 保存模型 (表中不存在插入, 已存在更新)
  
  @param obj 模型
  @param completion 保存 成功/失败
@@ -50,6 +50,15 @@ typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返�
  @param completion 成功/失败
  */
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion;
+
+/**
+ 删除指定模型所有数据 - 自定义条件
+ 
+ @param cls 模型类
+ @param condition 自定义条件 (为空删除所有数据,有值根据自定义的条件删除 eg: 条件 (age > 60) )
+ @param completion 成功/失败
+ */
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion)completion;
 
 #pragma mark - 改
 /**
