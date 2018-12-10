@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)renameTable:(Class<XWDatabaseModelProtocol>)cls;
 
 /**
- 删除表中某字段
+ 删除表中某条数据
  
  @param obj 模型
  @return 是否删除成功

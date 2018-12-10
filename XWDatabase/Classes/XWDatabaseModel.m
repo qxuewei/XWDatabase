@@ -22,7 +22,14 @@ static NSNumberFormatter *_numberFormatter;
  @return 表名
  */
 + (NSString *)tableName:(Class<XWDatabaseModelProtocol>)cls {
-    return NSStringFromClass(cls);
+    NSString *tableName = NSStringFromClass(cls);
+    if ([cls respondsToSelector:@selector(xw_customTableName)]) {
+        NSString *name = [cls xw_customTableName];
+        if (name && name.length > 0) {
+            tableName = name;
+        }
+    }
+    return tableName;
 }
 
 /**
@@ -45,9 +52,13 @@ static NSNumberFormatter *_numberFormatter;
     NSMutableDictionary *dictM = [[NSMutableDictionary alloc] init];
     unsigned int count = 0;
     Ivar *ivarList = class_copyIvarList(cls, &count);
-    NSSet *ignoreColumn = [[NSSet alloc] init];
+    NSSet *ignoreColumn;    /// 忽略的字段
     if ([cls respondsToSelector:@selector(xw_ignoreColumnNames)]) {
         ignoreColumn = [cls xw_ignoreColumnNames];
+    }
+    NSDictionary *customColumnMapping;  /// 自定义字段名
+    if ([cls respondsToSelector:@selector(xw_customColumnMapping)]) {
+        customColumnMapping = [cls xw_customColumnMapping];
     }
     for (int i = 0; i < count; i++) {
         Ivar ivar = ivarList[i];
@@ -56,12 +67,16 @@ static NSNumberFormatter *_numberFormatter;
         if ([ivarName hasPrefix:@"_"]) {
             ivarName = [ivarName substringFromIndex:1];
         }
-        if ([ignoreColumn containsObject:ivarName]) {
+        if (ignoreColumn && [ignoreColumn containsObject:ivarName]) {
             continue;
         }
         /// 成员变量类型
         NSString *ivarType = [NSString stringWithUTF8String:ivar_getTypeEncoding(ivar)];
         ivarType = [ivarType stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"@\""]];
+        
+        if (customColumnMapping && [customColumnMapping.allKeys containsObject:ivarName]) {
+            ivarName = customColumnMapping[ivarName];
+        }
         [dictM setObject:ivarType forKey:ivarName];
     }
     free(ivarList);

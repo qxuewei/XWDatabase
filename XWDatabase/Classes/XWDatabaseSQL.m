@@ -118,14 +118,25 @@
     NSDictionary *classIvarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:obj.class];
     NSArray *ivarNames = classIvarNameTypeDict.allKeys;
     NSMutableDictionary *insertSqlDict = [NSMutableDictionary dictionary];
-    for (NSString *ivarName in ivarNames) {
+    
+    NSDictionary *customColumnMapping;  /// 自定义字段名
+    if ([obj.class respondsToSelector:@selector(xw_customColumnMapping)]) {
+        customColumnMapping = [obj.class xw_customColumnMapping];
+    }
+    
+    for (NSString *ivar in ivarNames) {
+        NSString *ivarName = ivar;
+        if (customColumnMapping && [customColumnMapping.allValues containsObject:ivarName]) {
+            ivarName = [customColumnMapping allKeysForObject:ivarName].firstObject;
+        }
+        
         id value = [obj valueForKey:ivarName];
         if (!value) {
             continue ;
         }
         NSString *valueString = [self stringWithValue:value];
         if (valueString) {
-            [insertSqlDict setObject:valueString forKey:ivarName];
+            [insertSqlDict setObject:valueString forKey:ivar];
         }
     }
     NSString *saveOneObjSql = [NSString stringWithFormat:@"insert into %@(%@) values(%@)",tableName,[insertSqlDict.allKeys componentsJoinedByString:@","],[insertSqlDict.allValues componentsJoinedByString:@","]];
@@ -152,14 +163,26 @@
     NSDictionary *classIvarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:obj.class];
     NSArray *ivarNames = ( customIvarNames && customIvarNames.count > 0) ? customIvarNames : classIvarNameTypeDict.allKeys;
     NSMutableArray *updateArrM = [[NSMutableArray alloc] init];
-    for (NSString *ivarName in ivarNames) {
+    
+    NSDictionary *customColumnMapping;  /// 自定义字段名
+    if ([obj.class respondsToSelector:@selector(xw_customColumnMapping)]) {
+        customColumnMapping = [obj.class xw_customColumnMapping];
+    }
+    
+    for (NSString *ivar in ivarNames) {
+        
+        NSString *ivarName = ivar;
+        if (customColumnMapping && [customColumnMapping.allValues containsObject:ivarName]) {
+            ivarName = [customColumnMapping allKeysForObject:ivarName].firstObject;
+        }
+        
         id value = [obj valueForKey:ivarName];
         NSString *valueString = [self stringWithValue:value];
         NSString *save;
         if (valueString) {
-            save = [NSString stringWithFormat:@"%@ = %@",ivarName, valueString];
+            save = [NSString stringWithFormat:@"%@ = %@",ivar, valueString];
         } else {
-            save = [NSString stringWithFormat:@"%@ = %@",ivarName, @"''"];
+            save = [NSString stringWithFormat:@"%@ = %@",ivar, @"''"];
         }
         [updateArrM addObject:save];
     }
@@ -226,7 +249,7 @@
 }
 
 /**
- 删除表中某字段
+ 删除表中某条数据
 
  @param obj 模型
  @return 是否删除成功

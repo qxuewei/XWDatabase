@@ -21,22 +21,22 @@
     [super viewDidLoad];
     
     /// 增
-//    [self saveOnePerson];
+    [self saveOnePerson];
     [self saveModels];
 
     /// 删
-//    [self deleteModel];
-//    [self clearModel];
+    [self deleteModel];
+    [self clearModel];
 
     /// 改
-//    [self updateModel];
+    [self updateModel];
 
     /// 查
-//    [self getOnePerson];
-//    [self getModels];
+    [self getOnePerson];
+    [self getModels];
     [self getModelsSortAge];
-//    [self getModelsCondition];
-//    [self getModelsConditionSort];
+    [self getModelsCondition];
+    [self getModelsConditionSort];
     
 }
 

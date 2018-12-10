@@ -29,7 +29,6 @@
 		B696CF9221BE68AE000C7A03 /* XWDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8621BE68AE000C7A03 /* XWDatabase.m */; };
 		B696CF9321BE68AE000C7A03 /* XWDatabaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8721BE68AE000C7A03 /* XWDatabaseModel.m */; };
 		B696CF9421BE68AE000C7A03 /* XWLivingThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8821BE68AE000C7A03 /* XWLivingThread.m */; };
-		B696CF9521BE68AE000C7A03 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = B696CF8921BE68AE000C7A03 /* .gitkeep */; };
 		B696CF9621BE68AE000C7A03 /* XWDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8A21BE68AE000C7A03 /* XWDatabaseQueue.m */; };
 /* End PBXBuildFile section */
 
@@ -77,7 +76,6 @@
 		B696CF8621BE68AE000C7A03 /* XWDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabase.m; sourceTree = "<group>"; };
 		B696CF8721BE68AE000C7A03 /* XWDatabaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseModel.m; sourceTree = "<group>"; };
 		B696CF8821BE68AE000C7A03 /* XWLivingThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWLivingThread.m; sourceTree = "<group>"; };
-		B696CF8921BE68AE000C7A03 /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		B696CF8A21BE68AE000C7A03 /* XWDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseQueue.m; sourceTree = "<group>"; };
 		B696CF8B21BE68AE000C7A03 /* XWDatabaseModelProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabaseModelProtocol.h; sourceTree = "<group>"; };
 		B696CF8C21BE68AE000C7A03 /* XWDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDatabase.h; sourceTree = "<group>"; };
@@ -220,18 +218,17 @@
 		B696CF8421BE68AE000C7A03 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				B696CF8521BE68AE000C7A03 /* XWDatabaseSQL.m */,
-				B696CF8621BE68AE000C7A03 /* XWDatabase.m */,
-				B696CF8721BE68AE000C7A03 /* XWDatabaseModel.m */,
-				B696CF8821BE68AE000C7A03 /* XWLivingThread.m */,
-				B696CF8921BE68AE000C7A03 /* .gitkeep */,
-				B696CF8A21BE68AE000C7A03 /* XWDatabaseQueue.m */,
-				B696CF8B21BE68AE000C7A03 /* XWDatabaseModelProtocol.h */,
 				B696CF8C21BE68AE000C7A03 /* XWDatabase.h */,
-				B696CF8D21BE68AE000C7A03 /* XWDatabaseSQL.h */,
-				B696CF8E21BE68AE000C7A03 /* XWLivingThread.h */,
+				B696CF8621BE68AE000C7A03 /* XWDatabase.m */,
 				B696CF8F21BE68AE000C7A03 /* XWDatabaseModel.h */,
+				B696CF8721BE68AE000C7A03 /* XWDatabaseModel.m */,
+				B696CF8B21BE68AE000C7A03 /* XWDatabaseModelProtocol.h */,
 				B696CF9021BE68AE000C7A03 /* XWDatabaseQueue.h */,
+				B696CF8A21BE68AE000C7A03 /* XWDatabaseQueue.m */,
+				B696CF8D21BE68AE000C7A03 /* XWDatabaseSQL.h */,
+				B696CF8521BE68AE000C7A03 /* XWDatabaseSQL.m */,
+				B696CF8E21BE68AE000C7A03 /* XWLivingThread.h */,
+				B696CF8821BE68AE000C7A03 /* XWLivingThread.m */,
 			);
 			name = Classes;
 			path = ../../XWDatabase/Classes;
@@ -333,7 +330,6 @@
 			files = (
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
-				B696CF9521BE68AE000C7A03 /* .gitkeep in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 			);

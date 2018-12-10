@@ -19,6 +19,7 @@
  @return 主键的属性名
  */
 + (NSString *)xw_primaryKey;
+
 @optional
 
 /**
@@ -27,4 +28,18 @@
  @return 忽略的属性名数组
  */
 + (NSSet <NSString *>*)xw_ignoreColumnNames;
+
+/**
+ 自定义字段名映射表 (默认成员变量即变量名, 可自定义字段名 key: 成员变量(属性)名称  value: 自定义数据库表字段名)
+
+ @return 自定义字段名映射表
+ */
++ (NSDictionary *)xw_customColumnMapping;
+
+/**
+ 自定义表名 (默认属性类名)
+
+ @return 自定义表名
+ */
++ (NSString *)xw_customTableName;
 @end

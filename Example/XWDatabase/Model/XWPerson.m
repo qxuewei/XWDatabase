@@ -11,26 +11,7 @@
 
 @implementation XWPerson
 
-+ (void)initialize {
-    
-    /// 数据迁移
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
-            NSLog(@" <XWDatabase> updateTable (%@)",isSuccess?@"成功":@"失败");
-        }];
-    });
-}
-
-/// 主键
-+ (NSString *)xw_primaryKey {
-    return @"cardID";
-}
-
-+ (NSSet<NSString *> *)xw_ignoreColumnNames {
-    return [NSSet setWithObject:@"floatNumber"];
-}
-
+#pragma mark - public
 /// 测试数据
 + (XWPerson *)testPerson:(int)index {
     XWPerson *person = [[XWPerson alloc] init];
@@ -43,8 +24,8 @@
     person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
     person.number = [NSNumber numberWithBool:YES];
     person.floatNumber = [NSNumber numberWithFloat:3.1415926];
-//    UIImage *image = [UIImage imageNamed:@"icon"];
-//    person.icon = UIImageJPEGRepresentation(image, 0.5);
+    //    UIImage *image = [UIImage imageNamed:@"icon"];
+    //    person.icon = UIImageJPEGRepresentation(image, 0.5);
     person.pFloat = 1.1111;
     person.pInt = 3;
     person.pDouble = 2.2222;
@@ -67,4 +48,38 @@
     
     return person;
 }
+
+
+#pragma mark - Life Cycle
++ (void)initialize {
+    
+    /// 数据迁移
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
+            NSLog(@" <XWDatabase> updateTable (%@)",isSuccess?@"成功":@"失败");
+        }];
+    });
+}
+
+#pragma mark - XWDatabaseModelProtocol
+
+/// 主键
++ (NSString *)xw_primaryKey {
+    return @"cardID";
+}
+
+/// 忽略的成员变量
++ (NSSet<NSString *> *)xw_ignoreColumnNames {
+    return [NSSet setWithObject:@"floatNumber"];
+}
+
+/// 自定义字段名映射表 (默认成员变量即变量名, 可自定义字段名 key: 成员变量(属性)名称  value: 自定义数据库表字段名)
++ (NSDictionary *)xw_customColumnMapping {
+    return  @{
+              @"sex" : @"gender",
+              @"girls" : @"sweethearts"
+              };
+}
+
 @end
