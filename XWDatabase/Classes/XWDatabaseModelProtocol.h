@@ -12,6 +12,7 @@
 @protocol XWDatabaseModelProtocol <NSObject>
 
 @required
+@optional
 
 /**
  主键 不可更改/唯一性
@@ -20,7 +21,19 @@
  */
 + (NSString *)xw_primaryKey;
 
-@optional
+/**
+ 联合主键成员变量数组 (多个属性共同定义主键) - 优先级大于 'xw_primaryKey'
+
+ @return 联合主键成员变量数组
+ */
++ (NSArray < NSString * > *)xw_unionPrimaryKey;
+
+/**
+ 自定义对象映射  (key: 成员变量名称 value: 对象类)
+
+ @return 自定义对象映射
+ */
++ (NSDictionary *)xw_customModelMapping;
 
 /**
  忽略不保存数据库的属性
@@ -42,4 +55,5 @@
  @return 自定义表名
  */
 + (NSString *)xw_customTableName;
+
 @end

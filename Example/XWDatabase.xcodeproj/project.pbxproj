@@ -25,6 +25,8 @@
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		A00136135CC71F5F01EA6645 /* Pods_XWDatabase_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EBCA384703DBEDF2B54239A /* Pods_XWDatabase_Tests.framework */; };
 		B60AD8BE21B94B69008EAAD8 /* XWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8BD21B94B69008EAAD8 /* XWPerson.m */; };
+		B67AA12F21BF59BE003E52A3 /* NSObject+XWModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B67AA12E21BF59BE003E52A3 /* NSObject+XWModel.m */; };
+		B67AA13221BF5E18003E52A3 /* XWBook.m in Sources */ = {isa = PBXBuildFile; fileRef = B67AA13121BF5E18003E52A3 /* XWBook.m */; };
 		B696CF9121BE68AE000C7A03 /* XWDatabaseSQL.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8521BE68AE000C7A03 /* XWDatabaseSQL.m */; };
 		B696CF9221BE68AE000C7A03 /* XWDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8621BE68AE000C7A03 /* XWDatabase.m */; };
 		B696CF9321BE68AE000C7A03 /* XWDatabaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8721BE68AE000C7A03 /* XWDatabaseModel.m */; };
@@ -72,6 +74,10 @@
 		B5FA3CE9020B7FFC9481E924 /* Pods-XWDatabase_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Tests.debug.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Tests/Pods-XWDatabase_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		B60AD8BC21B94B69008EAAD8 /* XWPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWPerson.h; sourceTree = "<group>"; };
 		B60AD8BD21B94B69008EAAD8 /* XWPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWPerson.m; sourceTree = "<group>"; };
+		B67AA12D21BF59BE003E52A3 /* NSObject+XWModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+XWModel.h"; sourceTree = "<group>"; };
+		B67AA12E21BF59BE003E52A3 /* NSObject+XWModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+XWModel.m"; sourceTree = "<group>"; };
+		B67AA13021BF5E18003E52A3 /* XWBook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XWBook.h; sourceTree = "<group>"; };
+		B67AA13121BF5E18003E52A3 /* XWBook.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XWBook.m; sourceTree = "<group>"; };
 		B696CF8521BE68AE000C7A03 /* XWDatabaseSQL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseSQL.m; sourceTree = "<group>"; };
 		B696CF8621BE68AE000C7A03 /* XWDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabase.m; sourceTree = "<group>"; };
 		B696CF8721BE68AE000C7A03 /* XWDatabaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseModel.m; sourceTree = "<group>"; };
@@ -211,6 +217,8 @@
 			children = (
 				B60AD8BC21B94B69008EAAD8 /* XWPerson.h */,
 				B60AD8BD21B94B69008EAAD8 /* XWPerson.m */,
+				B67AA13021BF5E18003E52A3 /* XWBook.h */,
+				B67AA13121BF5E18003E52A3 /* XWBook.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -229,6 +237,8 @@
 				B696CF8521BE68AE000C7A03 /* XWDatabaseSQL.m */,
 				B696CF8E21BE68AE000C7A03 /* XWLivingThread.h */,
 				B696CF8821BE68AE000C7A03 /* XWLivingThread.m */,
+				B67AA12D21BF59BE003E52A3 /* NSObject+XWModel.h */,
+				B67AA12E21BF59BE003E52A3 /* NSObject+XWModel.m */,
 			);
 			name = Classes;
 			path = ../../XWDatabase/Classes;
@@ -422,11 +432,13 @@
 				6003F59E195388D20070C39A /* XWAppDelegate.m in Sources */,
 				B696CF9121BE68AE000C7A03 /* XWDatabaseSQL.m in Sources */,
 				6003F5A7195388D20070C39A /* XWViewController.m in Sources */,
+				B67AA13221BF5E18003E52A3 /* XWBook.m in Sources */,
 				B696CF9421BE68AE000C7A03 /* XWLivingThread.m in Sources */,
 				B696CF9621BE68AE000C7A03 /* XWDatabaseQueue.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				B60AD8BE21B94B69008EAAD8 /* XWPerson.m in Sources */,
 				B696CF9221BE68AE000C7A03 /* XWDatabase.m in Sources */,
+				B67AA12F21BF59BE003E52A3 /* NSObject+XWModel.m in Sources */,
 				B696CF9321BE68AE000C7A03 /* XWDatabaseModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

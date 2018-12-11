@@ -8,6 +8,7 @@
 
 #import "XWPerson.h"
 #import "XWDatabase.h"
+#import "XWBook.h"
 
 @implementation XWPerson
 
@@ -19,32 +20,32 @@
     person.age = 18 + arc4random_uniform(100);
     person.name = person.age % 2 == 0 ? @"极客学伟" : @"www.qiuxuewei.com";
     person.sex = @"male";
-    person.birthday = [NSDate date];
-    person.girls = @[@"小妹",@"校花",@"小baby"].mutableCopy;
-    person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
-    person.number = [NSNumber numberWithBool:YES];
-    person.floatNumber = [NSNumber numberWithFloat:3.1415926];
-    //    UIImage *image = [UIImage imageNamed:@"icon"];
-    //    person.icon = UIImageJPEGRepresentation(image, 0.5);
-    person.pFloat = 1.1111;
-    person.pInt = 3;
-    person.pDouble = 2.2222;
-    person.pLong = 88888888888888;
-    person.pLongLong = 999999999999;
-    person.pBOOL = YES;
-    person.pBooll = false;
-    person.pInteger = -10086;
-    person.pUInteger = 10010;
-    person.pCGFloat = 3.33;
-    person.pPoint = CGPointMake(10, 10);
-    person.pRect = CGRectMake(0, 0, 100, 100);
-    person.pSize = CGSizeMake(200, 300);
-    person.pSet = [NSSet setWithObjects:@"Set",@(123),nil];
-    person.pSetM = [NSMutableSet setWithObjects:@"MutableSet",@(456), nil];
-    person.pAttributedString = [[NSAttributedString alloc] initWithString:@"NSAttributedString"];
-    person.pMutableAttributedString = [[NSMutableAttributedString alloc] initWithString:@"NSMutableAttributedString"];
-    
-    person.indexPath = [NSIndexPath indexPathForItem:1 inSection:2];
+//    person.birthday = [NSDate date];
+//    person.girls = @[@"小妹",@"校花",@"小baby"].mutableCopy;
+//    person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
+//    person.number = [NSNumber numberWithBool:YES];
+//    person.floatNumber = [NSNumber numberWithFloat:3.1415926];
+//    //    UIImage *image = [UIImage imageNamed:@"icon"];
+//    //    person.icon = UIImageJPEGRepresentation(image, 0.5);
+//    person.pFloat = 1.1111;
+//    person.pInt = 3;
+//    person.pDouble = 2.2222;
+//    person.pLong = 88888888888888;
+//    person.pLongLong = 999999999999;
+//    person.pBOOL = YES;
+//    person.pBooll = false;
+//    person.pInteger = -10086;
+//    person.pUInteger = 10010;
+//    person.pCGFloat = 3.33;
+//    person.pPoint = CGPointMake(10, 10);
+//    person.pRect = CGRectMake(0, 0, 100, 100);
+//    person.pSize = CGSizeMake(200, 300);
+//    person.pSet = [NSSet setWithObjects:@"Set",@(123),nil];
+//    person.pSetM = [NSMutableSet setWithObjects:@"MutableSet",@(456), nil];
+//    person.pAttributedString = [[NSAttributedString alloc] initWithString:@"NSAttributedString"];
+//    person.pMutableAttributedString = [[NSMutableAttributedString alloc] initWithString:@"NSMutableAttributedString"];
+//
+//    person.indexPath = [NSIndexPath indexPathForItem:1 inSection:2];
     
     return person;
 }
@@ -67,6 +68,23 @@
 /// 主键
 + (NSString *)xw_primaryKey {
     return @"cardID";
+}
+
+/// 联合主键成员变量数组
++ (NSArray<NSString *> *)xw_unionPrimaryKey {
+    return @[@"cardID"];
+}
+
+/// 自定义对象映射
++ (NSDictionary *)xw_customModelMapping {
+    return @{
+             @"favoriteBook" : [XWBook class]
+             };
+}
+
+/// 自定义表名
++ (NSString *)xw_customTableName {
+    return @"Person";
 }
 
 /// 忽略的成员变量

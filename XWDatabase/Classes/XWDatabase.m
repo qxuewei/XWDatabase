@@ -12,6 +12,7 @@
 #import "XWLivingThread.h"
 #import "XWDatabaseModel.h"
 #import "XWDatabaseQueue.h"
+#import "NSObject+XWModel.h"
 
 /// NSLog 宏定义
 //重写NSLog,Debug模式下打印日志和当前行数
@@ -35,7 +36,6 @@ fprintf(stderr, "-------\n");                                               \
 @implementation XWDatabase
 
 #pragma mark - public
-
 #pragma mark  增
 /**
  保存模型
@@ -44,8 +44,7 @@ fprintf(stderr, "-------\n");                                               \
  @param completion 保存 成功/失败
  */
 + (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion {
-    
-    if (!obj || ![self isPrimaryKey:obj.class]) {
+    if (!obj) {
         completion ? completion(NO) : nil;
         return;
     }
@@ -63,13 +62,7 @@ fprintf(stderr, "-------\n");                                               \
  @param completion 保存 成功/失败
  */
 + (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion)completion {
-   
     if (!objs || objs.count == 0) {
-        completion ? completion(NO) : nil;
-        return;
-    }
-    NSObject *firstObj = objs.firstObject;
-    if (![self isPrimaryKey:firstObj.class]) {
         completion ? completion(NO) : nil;
         return;
     }
@@ -88,12 +81,16 @@ fprintf(stderr, "-------\n");                                               \
  @param completion 成功/失败
  */
 + (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion {
-    if (!obj || ![self isPrimaryKey:obj.class]) {
+    if (!obj) {
         completion ? completion(NO) : nil;
         return;
     }
     [XWLivingThread executeTaskInMain:^{
         NSString *deleteColumnSql = [XWDatabaseSQL deleteColumn:obj];
+        if (!deleteColumnSql) {
+            completion ? completion(NO) : nil;
+            return;
+        }
         [self p_executeUpdate:deleteColumnSql completion:completion];
     }];
 }
@@ -135,10 +132,11 @@ fprintf(stderr, "-------\n");                                               \
  */
 + (void)updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
     
-    if (!cls || ![self isPrimaryKey:cls]) {
+    if (!cls) {
         completion ? completion(NO) : nil;
         return;
     }
+    
     [XWLivingThread executeTaskInMain:^{
         [self p_updateTable:cls completion:completion];
     }];
@@ -152,12 +150,16 @@ fprintf(stderr, "-------\n");                                               \
  @param completion 保存 成功/失败
  */
 + (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys completion:(XWDatabaseCompletion)completion {
-    if (!obj || !updatePropertys || updatePropertys.count == 0 || ![self isPrimaryKey:obj.class]) {
+    if (!obj || !updatePropertys) {
         completion ? completion(NO) : nil;
         return;
     }
     [XWLivingThread executeTaskInMain:^{
         NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj updatePropertys:updatePropertys];
+        if (!updateModelSQL) {
+            completion ? completion(NO) : nil;
+            return ;
+        }
         [self p_executeUpdate:updateModelSQL completion:completion];
     }];
 }
@@ -260,27 +262,43 @@ fprintf(stderr, "-------\n");                                               \
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         
-        NSString *creatTableSql = [XWDatabaseSQL createTableSql:obj.class isTtemporary:NO];
-        BOOL isCreatTableSuccess = [XWDatabaseQueue executeUpdateSql:creatTableSql database:database];
-        if (!isCreatTableSuccess) {
+        if (![self p_createTable:obj.class database:database]) {
             completion ? completion(NO) : nil;
             return ;
         }
         
+        /// 不存在直接插入
+        void(^insertOperate)(void) = ^ {
+            NSString *saveSql = [XWDatabaseSQL saveOneObjSql:obj];
+            BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:saveSql database:database];
+            completion ? completion(isSuccess) : nil;
+        };
+        
         NSString *searchSql = [XWDatabaseSQL isExistSql:obj];
+        if (!searchSql) {
+            insertOperate();
+            return;
+        }
+        /// 已存在根据传入的模型全量更新
+        void(^updateOperate)(void) = ^ {
+            NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj];
+            if (!updateSql) {
+                completion ? completion(NO) : nil;
+                return ;
+            }
+            BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:updateSql database:database];
+            completion ? completion(isSuccess) : nil;
+        };
+        
         [XWDatabaseQueue executeStatementQuerySql:searchSql database:database completion:^(int count) {
             if (count < 0) {
                 completion ? completion(NO) : nil;
                 return ;
             }
             if (count) {
-                NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj];
-                BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:updateSql database:database];
-                completion ? completion(isSuccess) : nil;
+                updateOperate();
             } else {
-                NSString *saveSql = [XWDatabaseSQL saveOneObjSql:obj];
-                BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:saveSql database:database];
-                completion ? completion(isSuccess) : nil;
+                insertOperate();
             }
         }];
     }];
@@ -288,22 +306,38 @@ fprintf(stderr, "-------\n");                                               \
 
 + (void)p_saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion)completion {
     
-    
     [[XWDatabaseQueue shareInstance] inTransaction:^(FMDatabase * _Nonnull database, BOOL * _Nonnull rollback) {
         @autoreleasepool {
             
             NSObject *firstObj = objs.firstObject;
-            NSString *creatTableSql = [XWDatabaseSQL createTableSql:firstObj.class isTtemporary:NO];
-            BOOL isCreatTableSuccess = [XWDatabaseQueue executeUpdateSql:creatTableSql database:database];
-            if (!isCreatTableSuccess) {
+            if (![self p_createTable:firstObj.class database:database]) {
                 completion ? completion(NO) : nil;
                 *rollback = YES;
                 return ;
             }
+            
             __block NSMutableArray *updateSqls = [[NSMutableArray alloc] init];
+            
+            /// 添加插入语句
+            void(^appendInsertSql)(NSObject <XWDatabaseModelProtocol>*) = ^ (NSObject <XWDatabaseModelProtocol> *obj) {
+                NSString *insertSql = [XWDatabaseSQL saveOneObjSql:obj];
+                [updateSqls addObject:insertSql];
+            };
+            
+            /// 添加更新语句
+            void(^appendUpdateSql)(NSObject <XWDatabaseModelProtocol>*) = ^ (NSObject <XWDatabaseModelProtocol> *obj) {
+                NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj];
+                if (updateSql) {                
+                    [updateSqls addObject:updateSql];
+                }
+            };
             
             for (NSObject <XWDatabaseModelProtocol> *obj in objs) {
                 NSString *searchSql = [XWDatabaseSQL isExistSql:obj];
+                if (!searchSql) {
+                    appendInsertSql(obj);
+                    return;
+                }
                 [XWDatabaseQueue executeStatementQuerySql:searchSql database:database completion:^(int count) {
                     if (count < 0) {
                         completion ? completion(NO) : nil;
@@ -311,11 +345,9 @@ fprintf(stderr, "-------\n");                                               \
                         return ;
                     }
                     if (count) {
-                        NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj];
-                        [updateSqls addObject:updateSql];
+                        appendUpdateSql(obj);
                     } else {
-                        NSString *saveSql = [XWDatabaseSQL saveOneObjSql:obj];
-                        [updateSqls addObject:saveSql];
+                        appendInsertSql(obj);
                     }
                 }];
             }
@@ -331,18 +363,28 @@ fprintf(stderr, "-------\n");                                               \
                     return;
                 }
             }];
-            
         }
     }];
 }
 #pragma mark  删
 #pragma mark  改
+
+/*
+ <__NSArrayM 0x600000081a40>(
+ CREATE TABLE IF NOT EXISTS XWPerson_temp(xw_id INTEGER PRIMARY KEY AUTOINCREMENT,cardID text,gender text,number text,age integer,birthday text,name text,pDouble real),
+ INSERT INTO XWPerson_temp(xw_id) SELECT xw_id FROM Person,
+ UPDATE XWPerson_temp SET age = (SELECT age FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
+ UPDATE XWPerson_temp SET cardID = (SELECT cardID FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
+ UPDATE XWPerson_temp SET gender = (SELECT gender FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
+ UPDATE XWPerson_temp SET name = (SELECT name FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
+ UPDATE XWPerson_temp SET number = (SELECT number FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
+ UPDATE XWPerson_temp SET pDouble = (SELECT pDouble FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
+ drop table if exists Person,
+ alter table XWPerson_temp rename to Person
+ )
+ */
+
 + (void)p_updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
-    
-    if (![self isPrimaryKey:cls]) {
-        completion ? completion(NO) : nil;
-        return;
-    }
     
     [[XWDatabaseQueue shareInstance] inTransaction:^(FMDatabase * _Nonnull database, BOOL * _Nonnull rollback) {
         
@@ -354,8 +396,7 @@ fprintf(stderr, "-------\n");                                               \
         }
         if (!createTableSql || createTableSql.length == 0) {
             /// 本地数据库无当前表结构 -> 建表!
-            NSString *creatTableSql = [XWDatabaseSQL createTableSql:cls isTtemporary:NO];
-            BOOL isCreatTableSuccess = [XWDatabaseQueue executeUpdateSql:creatTableSql database:database];
+            BOOL isCreatTableSuccess = [self p_createTable:cls database:database];
             NSLog(@"++ 本地数据库无当前表结构 建表 (%@) -> (%@)",cls,isCreatTableSuccess?@"成功":@"失败");
             completion ? completion(isCreatTableSuccess) : nil;
             if (!isCreatTableSuccess) {
@@ -370,7 +411,7 @@ fprintf(stderr, "-------\n");                                               \
         NSArray *nameTypeArr = [nameTypeStr componentsSeparatedByString:@","];
         NSMutableArray *columnNamesSorted = [NSMutableArray array];
         for (NSString *nameTypeCase in nameTypeArr) {
-            if ([nameTypeCase containsString:@"primary"]) {
+            if ([nameTypeCase containsString:@"PRIMARY"]) {
                 continue;
             }
             //age integer
@@ -387,7 +428,7 @@ fprintf(stderr, "-------\n");                                               \
         }
         
         NSArray *ivarNamesSorted = [XWDatabaseModel sortedIvarNames:cls];
-        //        NSLog(@"sortedIvarNames : %@ \n\n columnNames:%@",ivarNamesSorted,columnNamesSorted);
+        NSLog(@"sortedIvarNames : %@ \n\n columnNames:%@",ivarNamesSorted,columnNamesSorted);
         BOOL isEqual = [ivarNamesSorted isEqualToArray:columnNamesSorted];
         if (isEqual) {  /// 模型字段和数据库表字段相同,无需更新
             NSLog(@"++ 表更新 %@ 模型字段和数据库表字段相同,无需更新",cls);
@@ -401,9 +442,9 @@ fprintf(stderr, "-------\n");                                               \
             [sqls addObject:creatTempTableSql];
             
             /// 更新主键
-            NSString *insertPrimarySql = [XWDatabaseSQL insertPrimary:cls];
-            [sqls addObject:insertPrimarySql];
-            
+            NSArray *insertPrimarys = [XWDatabaseSQL insertPrimarys:cls];
+            [sqls addObjectsFromArray:insertPrimarys];
+        
             /// 分别更新原有表字段
             for (NSString *ivar in ivarNamesSorted) {
                 if (![columnNamesSorted containsObject:ivar]) {
@@ -440,18 +481,24 @@ fprintf(stderr, "-------\n");                                               \
 + (void)p_getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject)completion {
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         NSString *isExistSql = [XWDatabaseSQL isExistSql:obj];
+        if (!isExistSql) {
+            completion ? completion(nil) : nil;
+            return ;
+        }
         [XWDatabaseQueue executeStatementQuerySql:isExistSql database:database completion:^(int count) {
             if (count > 0) {
                 NSString *searchSql = [XWDatabaseSQL searchSql:obj];
+                if (!searchSql) {
+                    completion ? completion(nil) : nil;
+                    return ;
+                }
                 FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
                 Class modelClass = obj.class;
                 id model = [[modelClass alloc] init];
-                
                 NSDictionary *customColumnMapping;  /// 自定义字段名
                 if ([modelClass respondsToSelector:@selector(xw_customColumnMapping)]) {
                     customColumnMapping = [modelClass xw_customColumnMapping];
                 }
-                
                 NSDictionary *ivarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:modelClass];
                 while (resultSet.next) {
                     [ivarNameTypeDict enumerateKeysAndObjectsUsingBlock:^(NSString * ivarName, NSString * ivarType, BOOL * _Nonnull stop) {
@@ -472,6 +519,10 @@ fprintf(stderr, "-------\n");                                               \
         @autoreleasepool {
             
             NSString *searchSql = [XWDatabaseSQL searchSql:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition];
+            if (!searchSql) {
+                completion ? completion(nil) : nil;
+                return ;
+            }
             FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
             Class modelClass = cls;
             NSDictionary *customColumnMapping;  /// 自定义字段名
@@ -496,6 +547,12 @@ fprintf(stderr, "-------\n");                                               \
 }
 
 #pragma mark  通用
+/// 建表
++ (BOOL)p_createTable:(Class<XWDatabaseModelProtocol>)cls database:(FMDatabase *)database {
+    NSString *creatTableSql = [XWDatabaseSQL createTableSql:cls isTtemporary:NO];
+    return [XWDatabaseQueue executeUpdateSql:creatTableSql database:database];
+}
+
 + (void)p_executeUpdate:(NSString *)sql completion:(XWDatabaseCompletion)completion {
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:sql database:database];
@@ -504,10 +561,10 @@ fprintf(stderr, "-------\n");                                               \
 }
 
 + (BOOL)isPrimaryKey:(Class<XWDatabaseModelProtocol>)cls {
-    if (![cls respondsToSelector:@selector(xw_primaryKey)]) {
-        NSLog(@"倘若希望使用 %@ 模型直接创建数据库,需要实现 +(NSString *)xw_primaryKey; 类方法(准守XWDatabaseModelProtocol 协议)",NSStringFromClass(cls));
-        return NO;
-    }
+//    if (![cls respondsToSelector:@selector(xw_primaryKey)]) {
+//        NSLog(@"倘若希望使用 %@ 模型直接创建数据库,需要实现 +(NSString *)xw_primaryKey; 类方法(准守XWDatabaseModelProtocol 协议)",NSStringFromClass(cls));
+//        return NO;
+//    }
     return YES;
 }
 

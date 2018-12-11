@@ -8,7 +8,7 @@
 
 #import "XWDatabaseSQL.h"
 #import "XWDatabaseModel.h"
-
+#import "NSObject+XWModel.h"
 
 /*
  查询语句：select * from 表名 where 条件子句 group by 分组字句 having ... order by 排序子句
@@ -24,49 +24,200 @@
 
 @implementation XWDatabaseSQL
 
+#pragma mark - 增
+//+ (NSArray <NSString *> *)createTableSqls:(Class<XWDatabaseModelProtocol>)cls {
+//    NSMutableArray *creatTableSqls = [[NSMutableArray alloc] init];
+//    NSString *sql = [self createTableSql:cls isTtemporary:NO];
+//    if (cls.xw_customModelMapping) {
+//        NSDictionary *xw_customModelMapping = cls.xw_customModelMapping;
+//        NSLog(@"xw_customModelMapping %@",xw_customModelMapping);
+//    }
+//}
+
+
 /**
  建表SQL
-
+ 
  @param cls 类
  @param isTtemporary 临时表
- @return 建表 sql
+ 
+ @return 建表 sql (CREATE TABLE IF NOT EXISTS Person(xw_id INTEGER PRIMARY KEY AUTOINCREMENT,cardID text,gender text,age integer,name text))
  */
 + (NSString *)createTableSql:(Class<XWDatabaseModelProtocol>)cls isTtemporary:(BOOL)isTtemporary {
     NSString *tableName = isTtemporary ? [XWDatabaseModel tempTableName:cls] : [XWDatabaseModel tableName:cls];
-    NSString *primaryKey = [cls xw_primaryKey];
-    return [NSString stringWithFormat:@"create table if not exists %@(%@,primary key(%@))",tableName,[XWDatabaseModel sqlWithCreatTable:cls],primaryKey];
+    return [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@(%@)",tableName,[XWDatabaseModel sqlWithCreatTable:cls]];
 }
-
 
 /**
- 现有表 建表语句
-
- @param cls 类
- @return 表 建表语句   (SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '表名')
- 获取当前表的建表SQL -> (CREATE TABLE XWPerson(pRect text,birthday text,pFloat real,pLong integer,sex text,icon blob,floatNumber text,pCGFloat real,pBooll integer,books text,name text,cardID text,pBOOL integer,pUInteger integer,pSize text,number text,pPoint text,pDouble real,pLongLong integer,girls text,age integer,pInt integer,pInteger integer,primary key(cardID)))
+ 保存单个对象SQL
+ 
+ @param obj 模型
+ @return 保存单个对象SQL (insert into Person(cardID,age,gender,name) values('1','50','male','极客学伟'))
  */
-+ (NSString *)queryCreateTableSql:(Class<XWDatabaseModelProtocol>)cls {
-    NSString *tableName = [XWDatabaseModel tableName:cls];
-    return [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type = 'table' AND name = '%@'",tableName];
++ (NSString *)saveOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj {
+    NSString *tableName = [XWDatabaseModel tableName:obj.class];
+    NSDictionary *classIvarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:obj.class];
+    NSArray *ivarNames = classIvarNameTypeDict.allKeys;
+    NSMutableDictionary *insertSqlDict = [NSMutableDictionary dictionary];
+    
+    for (NSString *ivar in ivarNames) {
+        NSString *ivarName = ivar;
+        
+        if (obj.xw_customColumnMapping && [obj.xw_customColumnMapping.allValues containsObject:ivarName]) {
+            ivarName = [obj.xw_customColumnMapping allKeysForObject:ivarName].firstObject;
+        }
+        
+        id value = [obj valueForKey:ivarName];
+        NSString *valueString = [self stringWithValue:value];
+        if (valueString) {
+            [insertSqlDict setObject:valueString forKey:ivar];
+        } else {
+            [insertSqlDict setObject:@"''" forKey:ivar];
+        }
+    }
+    NSString *saveOneObjSql = [NSString stringWithFormat:@"INSERT INTO  %@(%@) VALUES(%@)",tableName,[insertSqlDict.allKeys componentsJoinedByString:@","],[insertSqlDict.allValues componentsJoinedByString:@","]];
+    return saveOneObjSql;
 }
+
+/**
+ 批量更新主键SQLS
+ 
+ @param cls 模型
+ @return 批量更新主键SQLS
+ */
++ (NSArray *)insertPrimarys:(Class<XWDatabaseModelProtocol>)cls {
+    NSString *tempTableName = [XWDatabaseModel tempTableName:cls];
+    NSString *tableName = [XWDatabaseModel tableName:cls];
+    return @[[NSString stringWithFormat:@"INSERT INTO %@(xw_id) SELECT xw_id FROM %@",tempTableName,tableName]];
+}
+
+#pragma mark - 删
+/**
+ 删除表中某条数据
+ 
+ @param obj 模型
+ @return 是否删除成功
+ */
++ (NSString *)deleteColumn:(NSObject <XWDatabaseModelProtocol> *)obj {
+    /// DELETE FROM COMPANY WHERE ID = 7
+    NSString *tableName = [XWDatabaseModel tableName:obj.class];
+    NSString *queryCondition = [self queryCondition:obj];
+    if (!queryCondition) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ ",tableName,queryCondition];
+}
+
+/**
+ 清空表中所有字段
+ 
+ @param cls 模型类
+ @param condition 条件
+ @return 是否删除成功
+ */
++ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition {
+    /// DELETE FROM COMPANY WHERE ID = 7
+    NSString *tableName = [XWDatabaseModel tableName:cls];
+    if (condition && condition.length > 0) {
+        return [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ ",tableName,condition];
+    } else {
+        return [NSMutableString stringWithFormat:@"DELETE FROM %@",tableName];
+    }
+}
+
+/**
+ 删除表 SQL
+ 
+ @param cls 类
+ @return 删除表 SQL
+ */
++ (NSString *)dropTable:(Class<XWDatabaseModelProtocol>)cls {
+    /// drop table if exists tttt
+    NSString *tableName = [XWDatabaseModel tableName:cls];
+    return [NSString stringWithFormat:@"drop table if exists %@",tableName];
+}
+
+#pragma mark - 改
+/**
+ 更新单个对象SQL
+ 
+ @param obj 模型
+ @return 保存单个对象SQL
+ */
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj {
+    return [self p_updateOneObjSql:obj customIvarNames:nil];
+}
+
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys {
+    return [self p_updateOneObjSql:obj customIvarNames:updatePropertys];
+}
+
+/**
+ 更新字段值 SQL
+ 
+ @param cls 类
+ @param columName 字段名
+ @return 更新字段值 SQL
+ */
++ (NSString *)updateColumn:(Class<XWDatabaseModelProtocol>)cls columName:(NSString *)columName {
+    //update tem_table set name = (select name from XWStuModel where tem_table.stuNum = XWStuModel.stuNum)
+    NSString *tempTableName = [XWDatabaseModel tempTableName:cls];
+    NSString *tableName = [XWDatabaseModel tableName:cls];
+    return [NSString stringWithFormat:@"UPDATE %@ SET %@ = (SELECT %@ FROM %@ WHERE %@.xw_id = %@.xw_id)",tempTableName,columName,columName,tableName,tempTableName,tableName];
+    
+//    [NSString stringWithFormat:@"update %@ set %@ = (select %@ from %@ where %@.%@ = %@.%@)",tempTableName,columName,columName,tableName,tempTableName,primaryKey,tableName,primaryKey];
+}
+
+/**
+ 表重命名 SQL
+ 
+ @param cls 类
+ @return 表重命名 SQL
+ */
++ (NSString *)renameTable:(Class<XWDatabaseModelProtocol>)cls {
+    /// drop table if exists tttt
+    NSString *tableName = [XWDatabaseModel tableName:cls];
+    NSString *tempTableName = [XWDatabaseModel tempTableName:cls];
+    return [NSString stringWithFormat:@"alter table %@ rename to %@",tempTableName,tableName];
+}
+
+
+#pragma mark - 查
 
 /**
  查找某主键对象
-
+ 
  @param obj 模型
  @return 查找语句
  */
 + (NSString *)searchSql:(NSObject <XWDatabaseModelProtocol> *)obj {
     /// @"SELECT * FROM %@ WHERE %@ = '%@'"
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSString *primaryKey = [obj.class xw_primaryKey];
-    NSString *primaryKeyObject = [NSString stringWithFormat:@"%@",[obj valueForKey:primaryKey]];
-    return [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = '%@'",tableName,primaryKey,primaryKeyObject];
+    NSString *queryCondition = [self queryCondition:obj];
+    if (!queryCondition) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ ",tableName,queryCondition];
+}
+
+/**
+ 查找某条数据是否存在
+ 
+ @param obj 模型
+ @return 是否存在 (SELECT COUNT(*) FROM Person WHERE age = '42' AND cardID = '1')
+ */
++ (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj {
+    NSString *tableName = [XWDatabaseModel tableName:obj.class];
+    NSString *queryCondition = [self queryCondition:obj];
+    if (queryCondition) {
+        return [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@ WHERE %@",tableName,queryCondition];
+    }
+    return nil;
 }
 
 /**
  查询表内所有数据 (可按照某字段排序)
-
+ 
  @param cls 模型
  @param sortColumn 排序字段
  @param isOrderDesc 是否降序
@@ -93,193 +244,86 @@
 }
 
 /**
- 查找某条数据是否存在
-
- @param obj 模型
- @return 是否存在
- */
-+ (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj {
-    // SELECT COUNT(Name) AS countNum FROM Member WHERE Name = ?
-    NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSString *primaryKey = [obj.class xw_primaryKey];
-    NSString *primaryKeyObject = [NSString stringWithFormat:@"%@",[obj valueForKey:primaryKey]];
-    return [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@ WHERE %@ = '%@'",tableName,primaryKey,primaryKeyObject];
-}
-
-
-/**
- 保存单个对象SQL 
-
- @param obj 模型
- @return 保存单个对象SQL
- */
-+ (NSString *)saveOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj {
-    NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSDictionary *classIvarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:obj.class];
-    NSArray *ivarNames = classIvarNameTypeDict.allKeys;
-    NSMutableDictionary *insertSqlDict = [NSMutableDictionary dictionary];
-    
-    NSDictionary *customColumnMapping;  /// 自定义字段名
-    if ([obj.class respondsToSelector:@selector(xw_customColumnMapping)]) {
-        customColumnMapping = [obj.class xw_customColumnMapping];
-    }
-    
-    for (NSString *ivar in ivarNames) {
-        NSString *ivarName = ivar;
-        if (customColumnMapping && [customColumnMapping.allValues containsObject:ivarName]) {
-            ivarName = [customColumnMapping allKeysForObject:ivarName].firstObject;
-        }
-        
-        id value = [obj valueForKey:ivarName];
-        if (!value) {
-            continue ;
-        }
-        NSString *valueString = [self stringWithValue:value];
-        if (valueString) {
-            [insertSqlDict setObject:valueString forKey:ivar];
-        }
-    }
-    NSString *saveOneObjSql = [NSString stringWithFormat:@"insert into %@(%@) values(%@)",tableName,[insertSqlDict.allKeys componentsJoinedByString:@","],[insertSqlDict.allValues componentsJoinedByString:@","]];
-    return saveOneObjSql;
-}
-
-/**
- 更新单个对象SQL
+ 现有表 建表语句
  
- @param obj 模型
- @return 保存单个对象SQL
+ @param cls 类
+ @return 表 建表语句   (SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '表名')
+ 获取当前表的建表SQL -> (CREATE TABLE XWPerson(pRect text,birthday text,pFloat real,pLong integer,sex text,icon blob,floatNumber text,pCGFloat real,pBooll integer,books text,name text,cardID text,pBOOL integer,pUInteger integer,pSize text,number text,pPoint text,pDouble real,pLongLong integer,girls text,age integer,pInt integer,pInteger integer,primary key(cardID)))
  */
-+ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj {
-    return [self p_updateOneObjSql:obj customIvarNames:nil];
++ (NSString *)queryCreateTableSql:(Class<XWDatabaseModelProtocol>)cls {
+    NSString *tableName = [XWDatabaseModel tableName:cls];
+    return [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type = 'table' AND name = '%@'",tableName];
 }
 
-+ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys {
-    return [self p_updateOneObjSql:obj customIvarNames:updatePropertys];
-}
 
+
+
+#pragma mark - private
 + (NSString *)p_updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj customIvarNames:(NSArray <NSString *> *)customIvarNames {
+    
+    if (!obj.xw_primaryKey && !obj.xw_unionPrimaryKey) {
+        return nil;
+    }
+    
+    NSString *queryCondition = [self queryCondition:obj];
+    if (!queryCondition) {
+        return nil;
+    }
     
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
     NSDictionary *classIvarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:obj.class];
     NSArray *ivarNames = ( customIvarNames && customIvarNames.count > 0) ? customIvarNames : classIvarNameTypeDict.allKeys;
     NSMutableArray *updateArrM = [[NSMutableArray alloc] init];
     
-    NSDictionary *customColumnMapping;  /// 自定义字段名
-    if ([obj.class respondsToSelector:@selector(xw_customColumnMapping)]) {
-        customColumnMapping = [obj.class xw_customColumnMapping];
-    }
-    
-    for (NSString *ivar in ivarNames) {
-        
-        NSString *ivarName = ivar;
-        if (customColumnMapping && [customColumnMapping.allValues containsObject:ivarName]) {
-            ivarName = [customColumnMapping allKeysForObject:ivarName].firstObject;
+    for (NSString *ivarName in ivarNames) {
+        NSString *columnName = ivarName;
+        if (obj.xw_customColumnMapping && [obj.xw_customColumnMapping.allValues containsObject:ivarName]) {
+            columnName = [obj.xw_customColumnMapping allKeysForObject:ivarName].firstObject;
         }
-        
-        id value = [obj valueForKey:ivarName];
+        id value = [obj valueForKey:columnName];
         NSString *valueString = [self stringWithValue:value];
         NSString *save;
         if (valueString) {
-            save = [NSString stringWithFormat:@"%@ = %@",ivar, valueString];
+            save = [NSString stringWithFormat:@"%@ = %@",ivarName, valueString];
         } else {
-            save = [NSString stringWithFormat:@"%@ = %@",ivar, @"''"];
+            save = [NSString stringWithFormat:@"%@ = %@",ivarName, @"''"];
         }
         [updateArrM addObject:save];
     }
-    NSString *primaryKey = [obj.class xw_primaryKey];
-    NSString *primaryKeyObject = [NSString stringWithFormat:@"%@",[obj valueForKey:primaryKey]];
-    NSString *updateSql = [NSString stringWithFormat:@"UPDATE %@ SET %@ WHERE %@ = '%@'",tableName,[updateArrM componentsJoinedByString:@","],primaryKey,primaryKeyObject];
-    //    NSLog(@"saveOneObjSql: %@ \n",updateSql);
+    NSString *updateSql = [NSString stringWithFormat:@"UPDATE %@ SET %@ WHERE %@ ",tableName,[updateArrM componentsJoinedByString:@","],queryCondition];
     return updateSql;
 }
 
-/**
- 更新主键SQL
-
- @param cls 类
- @return 更新主键SQL
- */
-+ (NSString *)insertPrimary:(Class<XWDatabaseModelProtocol>)cls {
-    //insert into tem_table(stuNum) select stuNum from XWStuModel
-    NSString *tempTableName = [XWDatabaseModel tempTableName:cls];
-    NSString *tableName = [XWDatabaseModel tableName:cls];
-    NSString *primaryKey = [cls xw_primaryKey];
-    return [NSString stringWithFormat:@"insert into %@(%@) select %@ from %@",tempTableName,primaryKey,primaryKey,tableName];
-}
-
-
-/**
- 更新字段值 SQL
-
- @param cls 类
- @param columName 字段名
- @return 更新字段值 SQL
- */
-+ (NSString *)updateColumn:(Class<XWDatabaseModelProtocol>)cls columName:(NSString *)columName {
-    //update tem_table set name = (select name from XWStuModel where tem_table.stuNum = XWStuModel.stuNum)
-    NSString *tempTableName = [XWDatabaseModel tempTableName:cls];
-    NSString *tableName = [XWDatabaseModel tableName:cls];
-    NSString *primaryKey = [cls xw_primaryKey];
-    return [NSString stringWithFormat:@"update %@ set %@ = (select %@ from %@ where %@.%@ = %@.%@)",tempTableName,columName,columName,tableName,tempTableName,primaryKey,tableName,primaryKey];
-}
-
-/**
- 删除表 SQL
-
- @param cls 类
- @return 删除表 SQL
- */
-+ (NSString *)dropTable:(Class<XWDatabaseModelProtocol>)cls {
-    /// drop table if exists tttt
-    NSString *tableName = [XWDatabaseModel tableName:cls];
-    return [NSString stringWithFormat:@"drop table if exists %@",tableName];
-}
-
-/**
- 表重命名 SQL
- 
- @param cls 类
- @return 表重命名 SQL
- */
-+ (NSString *)renameTable:(Class<XWDatabaseModelProtocol>)cls {
-    /// drop table if exists tttt
-    NSString *tableName = [XWDatabaseModel tableName:cls];
-    NSString *tempTableName = [XWDatabaseModel tempTableName:cls];
-    return [NSString stringWithFormat:@"alter table %@ rename to %@",tempTableName,tableName];
-}
-
-/**
- 删除表中某条数据
-
- @param obj 模型
- @return 是否删除成功
- */
-+ (NSString *)deleteColumn:(NSObject <XWDatabaseModelProtocol> *)obj {
-    /// DELETE FROM COMPANY WHERE ID = 7
-    NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSString *primaryKey = [obj.class xw_primaryKey];
-    NSString *primaryKeyObject = [NSString stringWithFormat:@"%@",[obj valueForKey:primaryKey]];
-    return [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ = '%@'",tableName,primaryKey,primaryKeyObject];
-}
-
-/**
- 清空表中所有字段
- 
- @param cls 模型类
- @param condition 条件
- @return 是否删除成功
- */
-+ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition {
-    /// DELETE FROM COMPANY WHERE ID = 7
-    NSString *tableName = [XWDatabaseModel tableName:cls];
-    if (condition && condition.length > 0) {
-        return [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ ",tableName,condition];
-    } else {
-        return [NSMutableString stringWithFormat:@"DELETE FROM %@",tableName];
+/// 根据主键查询条件
++ (NSString *)queryCondition:(NSObject <XWDatabaseModelProtocol> *)obj {
+    if (obj.xw_unionPrimaryKey) {
+        NSMutableArray *unionArrayM = [[NSMutableArray alloc] init];
+        for (NSString *subPrimaryKey in obj.xw_unionPrimaryKey) {
+            id value = [obj valueForKey:subPrimaryKey];
+            NSString *valueString = [self stringWithValue:value];
+            if (!valueString) {
+                /// 联合主键任意对象为空均不做操作!
+                return nil;
+            }
+            [unionArrayM addObject:[NSString stringWithFormat:@"%@ = %@",subPrimaryKey,valueString]];
+        }
+        if (unionArrayM.count > 0) {
+            NSString *searchSql = [unionArrayM componentsJoinedByString:@" AND "];
+            return searchSql;
+        }
+        
+    } else if (obj.xw_primaryKey) {
+        NSString *primaryKey = [obj.class xw_primaryKey];
+        id value = [obj valueForKey:primaryKey];
+        NSString *valueString = [self stringWithValue:value];
+        if (valueString) {
+            return [NSString stringWithFormat:@"%@ = '%@'",primaryKey,valueString];
+        }
+        
     }
+    return nil;
 }
 
-#pragma mark - private
 /**
  对象转字符串(数据库存储)
  

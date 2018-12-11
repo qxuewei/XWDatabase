@@ -21,22 +21,22 @@
     [super viewDidLoad];
     
     /// 增
-    [self saveOnePerson];
+//    [self saveOnePerson];
     [self saveModels];
 
     /// 删
-    [self deleteModel];
-    [self clearModel];
+//    [self deleteModel];
+//    [self clearModel];
 
     /// 改
-    [self updateModel];
-
-    /// 查
-    [self getOnePerson];
+//    [self updateModel];
+//
+//    /// 查
+//    [self getOnePerson];
     [self getModels];
-    [self getModelsSortAge];
-    [self getModelsCondition];
-    [self getModelsConditionSort];
+//    [self getModelsSortAge];
+//    [self getModelsCondition];
+//    [self getModelsConditionSort];
     
 }
 
@@ -54,7 +54,7 @@
 - (void)saveModels
 {
     NSMutableArray *persons = [[NSMutableArray alloc] init];
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 100; i++) {
         [persons addObject:[XWPerson testPerson:i]];
     }
     [XWDatabase saveModels:persons completion:^(BOOL isSuccess) {
@@ -67,7 +67,8 @@
 - (void)deleteModel
 {
     XWPerson *person = [XWPerson new];
-    person.cardID = @"1";
+    person.cardID = @"9998";
+    person.age = 73;
     [XWDatabase deleteModel:person completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> deleteModel (%@)",isSuccess?@"成功":@"失败");
     }];
@@ -91,17 +92,19 @@
 {
     XWPerson *person = [XWPerson new];
     person.cardID = @"2";
+    person.age = 20;
     person.name = @"新名字";
+    person.pDouble = 9.99;
     
     /// 自定义成员变量更新
-    [XWDatabase updateModel:person updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
-        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败`");
-    }];
+//    [XWDatabase updateModel:person updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
+//        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败`");
+//    }];
     
     /// 整个模型更新
-//    [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
-//        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败");
-//    }];
+    [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败");
+    }];
 }
 
 #pragma mark - 查
@@ -109,7 +112,8 @@
 - (void)getOnePerson
 {
     XWPerson *person = [XWPerson new];
-    person.cardID = @"1";
+    person.cardID = @"2";
+    person.age = 20;
     [XWDatabase getModel:person completion:^(XWPerson * obj) {
         NSLog(@" <XWDatabase> getOnePerson (%@) name: %@",obj,obj.name);
     }];
@@ -120,6 +124,7 @@
 {
     [XWDatabase getModels:XWPerson.class completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        
     }];
 }
 
@@ -137,7 +142,7 @@
 /// 获取数据库中所有该模型存储的数据 - 自定义查找条件 (例如模糊查询 name 含 学伟 的数据)
 - (void)getModelsCondition
 {
-    [XWDatabase getModels:XWPerson.class condition:@"age like '%学伟'" completion:^(NSArray * _Nullable objs) {
+    [XWDatabase getModels:XWPerson.class condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);

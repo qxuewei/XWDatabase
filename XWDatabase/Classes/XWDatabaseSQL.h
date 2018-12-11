@@ -12,6 +12,28 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface XWDatabaseSQL : NSObject
+
+#pragma mark - 增
+/**
+ 保存单个对象SQL
+ 
+ @param obj 模型
+ @return 保存单个对象SQL
+ */
++ (NSString *)saveOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj;
+
+/**
+ 批量更新主键SQLS
+ 
+ @param cls 模型
+ @return 批量更新主键SQLS
+ */
++ (NSArray *)insertPrimarys:(Class<XWDatabaseModelProtocol>)cls;
+
+#pragma mark - 删
+#pragma mark - 改
+#pragma mark - 查
+
 /**
  建表SQL
  
@@ -56,13 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj;
 
-/**
- 保存单个对象SQL
- 
- @param obj 模型
- @return 保存单个对象SQL
- */
-+ (NSString *)saveOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj;
 
 /**
  更新单个对象SQL
@@ -80,14 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
  @return 保存单个对象SQL
  */
 + (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys;
-
-/**
- 更新主键SQL
- 
- @param cls 类
- @return 更新主键SQL
- */
-+ (NSString *)insertPrimary:(Class<XWDatabaseModelProtocol>)cls;
 
 /**
  更新字段值 SQL
