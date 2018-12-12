@@ -43,6 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
 //@property (nonatomic, assign) CGRect pRect;
 //@property (nonatomic, assign) CGSize pSize;
 //
+
+@property (nonatomic, strong) UIImage *image;
+@property (nonatomic, strong) NSURL *URL;
+@property (nonatomic, assign) NSRange pRange;
+
 //@property (nonatomic, strong) XWBook *favoriteBook;
 
 + (XWPerson *)testPerson:(int)index;

@@ -653,6 +653,21 @@ fprintf(stderr, "-------\n");                                               \
         NSIndexPath *indexPath = [XWDatabaseModel indexPathWithString:string];
         [model setValue:indexPath forKey:key];
         
+    } else if ([ivarType isEqualToString:@"UIImage"]) {
+        NSString *string = [resultSet stringForColumn:columnIvarName];
+        UIImage *image = [XWDatabaseModel imageWithString:string];
+        [model setValue:image forKey:key];
+        
+    } else if ([ivarType isEqualToString:@"NSURL"]) {
+        NSString *string = [resultSet stringForColumn:columnIvarName];
+        NSURL *URL = [XWDatabaseModel URLWithString:string];
+        [model setValue:URL forKey:key];
+        
+    } else if ([ivarType isEqualToString:@"{_NSRange=\"location\"Q\"length\"Q}"]) {
+        NSString *string = [resultSet stringForColumn:columnIvarName];
+        NSRange range = NSRangeFromString(string);
+        [model setValue:[NSValue valueWithRange:range] forKey:key];
+        
     } else if ([ivarType isEqualToString:@"{CGPoint=\"x\"d\"y\"d}"]) {
         NSString *string = [resultSet stringForColumn:columnIvarName];
         CGPoint point = CGPointFromString(string);

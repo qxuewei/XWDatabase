@@ -25,15 +25,6 @@
 @implementation XWDatabaseSQL
 
 #pragma mark - 增
-//+ (NSArray <NSString *> *)createTableSqls:(Class<XWDatabaseModelProtocol>)cls {
-//    NSMutableArray *creatTableSqls = [[NSMutableArray alloc] init];
-//    NSString *sql = [self createTableSql:cls isTtemporary:NO];
-//    if (cls.xw_customModelMapping) {
-//        NSDictionary *xw_customModelMapping = cls.xw_customModelMapping;
-//        NSLog(@"xw_customModelMapping %@",xw_customModelMapping);
-//    }
-//}
-
 
 /**
  建表SQL
@@ -58,7 +49,6 @@
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
     NSArray *columnNames = [XWDatabaseModel classColumnIvarNameTypeDict:obj.class].allKeys;
     NSMutableDictionary *insertSqlDict = [NSMutableDictionary dictionary];
-    
     for (NSString *column in columnNames) {
         NSString *ivarName = [XWDatabaseModel ivarNameWithColumn:column cls:obj.class];
         if (!ivarName) {
@@ -71,6 +61,9 @@
         } else {
             [insertSqlDict setObject:@"''" forKey:column];
         }
+    }
+    if (insertSqlDict.count == 0) {
+        return nil;
     }
     NSString *saveOneObjSql = [NSString stringWithFormat:@"INSERT INTO  %@(%@) VALUES(%@)",tableName,[insertSqlDict.allKeys componentsJoinedByString:@","],[insertSqlDict.allValues componentsJoinedByString:@","]];
     return saveOneObjSql;
@@ -252,16 +245,11 @@
     return [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type = 'table' AND name = '%@'",tableName];
 }
 
-
-
-
 #pragma mark - private
 + (NSString *)p_updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj customIvarNames:(NSArray <NSString *> *)customIvarNames {
-    
     if (!obj.xwdb_primaryKey && !obj.xwdb_unionPrimaryKey) {
         return nil;
     }
-    
     NSString *queryCondition = [self queryCondition:obj];
     if (!queryCondition) {
         return nil;
@@ -269,7 +257,6 @@
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
     NSArray *columnNames = ( customIvarNames && customIvarNames.count > 0) ? customIvarNames : [XWDatabaseModel classColumnIvarNameTypeDict:obj.class].allKeys;
     NSMutableArray *updateArrM = [[NSMutableArray alloc] init];
-    
     for (NSString *column in columnNames) {
         NSString *ivar = [XWDatabaseModel ivarNameWithColumn:column cls:obj.class];
         if (!ivar) {
@@ -284,6 +271,9 @@
             save = [NSString stringWithFormat:@"%@ = %@",column, @"''"];
         }
         [updateArrM addObject:save];
+    }
+    if (updateArrM.count == 0) {
+        return nil;
     }
     NSString *updateSql = [NSString stringWithFormat:@"UPDATE %@ SET %@ WHERE %@ ",tableName,[updateArrM componentsJoinedByString:@","],queryCondition];
     return updateSql;
@@ -338,28 +328,47 @@
     NSString *string;
     if ([value isKindOfClass:[NSNumber class]]) {
         string = [XWDatabaseModel stringWithNumber:value];
+        
     } else if ([value isKindOfClass:[NSArray class]]) {
         string = [XWDatabaseModel stringWithArray:value];
+        
     } else if ([value isKindOfClass:[NSDictionary class]]) {
         string = [XWDatabaseModel stringWithDict:value];
+        
     } else if ([value isKindOfClass:[NSData class]]) {
         string = [XWDatabaseModel stringWithData:value];
+        
     } else if ([value isKindOfClass:[NSDate class]]) {
         string = [XWDatabaseModel stringWithDate:value];
+        
     } else if ([value isKindOfClass:[NSSet class]]) {
         string = [XWDatabaseModel stringWithSet:value];
+        
     } else if ([value isKindOfClass:[NSAttributedString class]]) {
         string = [XWDatabaseModel stringWithAttributedString:value];
+        
     } else if ([value isKindOfClass:[NSIndexPath class]]) {
         string = [XWDatabaseModel stringWithIndexPath:value];
+        
+    } else if ([value isKindOfClass:[UIImage class]]) {
+        string = [XWDatabaseModel stringWithImage:value];
+        
+    } else if ([value isKindOfClass:[NSURL class]]) {
+        string = [XWDatabaseModel stringWithURL:value];
+        
     } else {
         string = [NSString stringWithFormat:@"%@",value];
+        
     }
+    
     valueStr = [NSString stringWithFormat:@"'%@'",string];
+    
     if ([valueStr isEqualToString:@"'(null)'"] || [valueStr isEqualToString:@"'null'"]) {
         return nil;
+        
     } else {
         return valueStr;
+        
     }
 }
 

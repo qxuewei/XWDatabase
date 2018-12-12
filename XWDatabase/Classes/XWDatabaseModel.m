@@ -88,8 +88,11 @@ static NSNumberFormatter *_numberFormatter;
     NSMutableDictionary *ivarOriginDict = [XWDatabaseModel classColumnIvarNameTypeDict:cls].mutableCopy;
     NSDictionary *dictionaryOcTypeToSqliteType = [self dictionaryOcTypeToSqliteType];
     [ivarOriginDict enumerateKeysAndObjectsUsingBlock:^(NSString * name, NSString * originType, BOOL * _Nonnull stop) {
-//        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
-//        NSLog(@"%@  isKeyExist: (%d)",originType,isKeyExist);
+        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
+        if (!isKeyExist) {
+            NSLog(@"%@  isKeyExist: (%d)",originType,isKeyExist);
+            
+        }
         ivarOriginDict[name] = dictionaryOcTypeToSqliteType[originType];
     }];
     return ivarOriginDict.copy;
@@ -260,6 +263,29 @@ static NSNumberFormatter *_numberFormatter;
     }
 }
 
+/// UIImage -> NSString
++ (NSString *)stringWithImage:(UIImage *)image {
+    NSData *data = UIImageJPEGRepresentation(image, 1.0);
+    if (!data) {
+        data = UIImagePNGRepresentation(image);
+    }
+    return [self stringWithData:data];
+}
+/// NSString -> UIImage
++ (UIImage *)imageWithString:(NSString *)string {
+    return [UIImage imageWithData:[self dataWithString:string]];
+}
+
+/// NSURL -> NSString
++ (NSString *)stringWithURL:(NSURL *)URL {
+    return [URL absoluteString];
+}
+/// NSString -> NSURL
++ (NSURL *)URLWithString:(NSString *)string {
+    return [NSURL URLWithString:string];
+}
+
+
 #pragma mark - private
 + (NSDateFormatter *)dateFormatter {
     if (!_dateFormatter) {
@@ -304,6 +330,11 @@ static NSNumberFormatter *_numberFormatter;
              @"NSNumber": @"text",
              @"NSSet": @"text",
              @"NSMutableSet": @"text",
+             
+             @"UIImage": @"blob",
+             @"NSURL": @"text",
+             @"{_NSRange=\"location\"Q\"length\"Q}": @"text",
+             
              @"{CGPoint=\"x\"d\"y\"d}": @"text",
              @"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}": @"text",
              @"{CGSize=\"width\"d\"height\"d}" : @"text"

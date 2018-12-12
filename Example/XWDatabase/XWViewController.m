@@ -11,6 +11,7 @@
 #import "XWDatabase.h"
 
 @interface XWViewController ()
+@property (weak, nonatomic) IBOutlet UIImageView *iconView;
 
 @end
 
@@ -22,21 +23,21 @@
     
     /// 增
     [self saveOnePerson];
-    [self saveModels];
-
-    /// 删
-    [self deleteModel];
-    [self clearModel];
-
-    /// 改
-    [self updateModel];
+//    [self saveModels];
+//
+//    /// 删
+//    [self deleteModel];
+//    [self clearModel];
+//
+//    /// 改
+//    [self updateModel];
 
     /// 查
     [self getOnePerson];
-    [self getModels];
-    [self getModelsSortAge];
-    [self getModelsCondition];
-    [self getModelsConditionSort];
+//    [self getModels];
+//    [self getModelsSortAge];
+//    [self getModelsCondition];
+//    [self getModelsConditionSort];
     
 }
 
@@ -44,7 +45,7 @@
 /// 保存模型
 - (void)saveOnePerson
 {
-    XWPerson *person = [XWPerson testPerson:1];
+    XWPerson *person = [XWPerson testPerson:2];
     [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> saveOnePerson (%@)",isSuccess?@"成功":@"失败");
     }];
@@ -116,6 +117,9 @@
     person.age = 20;
     [XWDatabase getModel:person completion:^(XWPerson * obj) {
         NSLog(@" <XWDatabase> getOnePerson (%@) name: %@",obj,obj.name);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.iconView.image = obj.image;
+        });
     }];
 }
 

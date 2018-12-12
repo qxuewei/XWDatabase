@@ -116,6 +116,17 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)stringWithIndexPath:(NSIndexPath *)indexPath;
 /// NSString -> NSAttributedString
 + (NSIndexPath *)indexPathWithString:(NSString *)string;
+
+/// UIImage -> NSString
++ (NSString *)stringWithImage:(UIImage *)image;
+/// NSString -> UIImage
++ (UIImage *)imageWithString:(NSString *)string;
+
+/// NSURL -> NSString
++ (NSString *)stringWithURL:(NSURL *)URL;
+/// NSString -> NSURL
++ (NSURL *)URLWithString:(NSString *)string;
+
 @end
 
 NS_ASSUME_NONNULL_END

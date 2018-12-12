@@ -25,8 +25,9 @@
     person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
 //    person.number = [NSNumber numberWithBool:YES];
 //    person.floatNumber = [NSNumber numberWithFloat:3.1415926];
-//    //    UIImage *image = [UIImage imageNamed:@"icon"];
-//    //    person.icon = UIImageJPEGRepresentation(image, 0.5);
+    UIImage *image = [UIImage imageNamed:@"icon"];
+//    person.icon = UIImageJPEGRepresentation(image, 0.5).mutableCopy;
+    person.image = image;
 //    person.pFloat = 1.1111;
 //    person.pInt = 3;
 //    person.pDouble = 2.2222;
@@ -44,7 +45,10 @@
 //    person.pSetM = [NSMutableSet setWithObjects:@"MutableSet",@(456), nil];
 //    person.pAttributedString = [[NSAttributedString alloc] initWithString:@"NSAttributedString"];
 //    person.pMutableAttributedString = [[NSMutableAttributedString alloc] initWithString:@"NSMutableAttributedString"];
-//
+
+    person.URL = [NSURL URLWithString:@"www.qiuxuewei.com"];
+    person.pRange = NSMakeRange(0, 99);
+    
 //    person.indexPath = [NSIndexPath indexPathForItem:1 inSection:2];
     
     return person;
@@ -71,9 +75,9 @@
 }
 
 /// 联合主键成员变量数组
-+ (NSArray<NSString *> *)xw_unionPrimaryKey {
-    return @[@"cardID",@"age"];
-}
+//+ (NSArray<NSString *> *)xw_unionPrimaryKey {
+//    return @[@"cardID",@"age"];
+//}
 
 /// 自定义对象映射`
 + (NSDictionary *)xw_customModelMapping {
