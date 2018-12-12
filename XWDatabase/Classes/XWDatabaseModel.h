@@ -31,11 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  模型中所有成员变量 (key: 成员变量名称  value: 成员变量类型)
-
- @param cls 模型类
- @return 模型中所有成员变量
+ 
+ @param cls 类
+ @return 模型中所有成员变量 (key: 成员变量名称  value: 成员变量类型)
  */
-+ (NSDictionary *)classIvarNameTypeDict:(Class<XWDatabaseModelProtocol>)cls;
++ (NSDictionary *)classColumnIvarNameTypeDict:(Class)cls;
 
 /**
  模型中所有成员变量在Sqlite 数据库中对应的类型 (成员变量:Sqlite Type)
@@ -60,6 +60,22 @@ NS_ASSUME_NONNULL_BEGIN
  @return 模型根据字母排序的成员变量数组
  */
 + (NSArray <NSString *>*)sortedIvarNames:(Class<XWDatabaseModelProtocol>)cls;
+
+/**
+ 根据字段名获取模型真实成员变量名
+ 
+ @param column 字段名
+ @param cls 类
+ @return 模型真实成员变量名
+ */
++ (NSString *)ivarNameWithColumn:(NSString *)column cls:(Class)cls;
+
+/**
+ 模型中成员变量集合
+ 
+ @return 模型中成员变量集合
+ */
++ (NSSet *)classIvarNamesSet:(Class)cls;
 
 /// NSAarray -> NSString
 + (NSString *)stringWithArray:(NSArray *)array;

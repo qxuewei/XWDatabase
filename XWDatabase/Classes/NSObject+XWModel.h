@@ -23,6 +23,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong) NSNumber *xw_lastPrimaryKeyId;
 
+/**
+  模型中所有成员变量 (key: 成员变量名称  value: 成员变量类型)
+ */
+@property (nonatomic, strong) NSDictionary *xw_classIvarNameTypeDict;
+
+/**
+ 模型中成员变量集合
+ */
+@property (nonatomic, strong) NSSet *xw_IvarSet;
+
 #pragma mark - 以下方法根据 XWDatabaseModelProtocol 协议中实现获取相应值
 
 /**
@@ -30,42 +40,42 @@ NS_ASSUME_NONNULL_BEGIN
  
  @return 主键的属性名
  */
-- (NSString *)xw_primaryKey;
+- (NSString *)xwdb_primaryKey;
 
 /**
- 联合主键成员变量数组 (多个属性共同定义主键) - 优先级大于 'xw_primaryKey'
+ 联合主键成员变量数组 (多个属性共同定义主键) - 优先级大于 'xwdb_primaryKey'
  
  @return 联合主键成员变量数组
  */
-- (NSArray < NSString * > *)xw_unionPrimaryKey;
+- (NSArray < NSString * > *)xwdb_unionPrimaryKey;
 
 /**
  自定义对象映射  (key: 成员变量名称 value: 对象类)
  
  @return 自定义对象映射
  */
-- (NSDictionary *)xw_customModelMapping;
+- (NSDictionary *)xwdb_customModelMapping;
 
 /**
  忽略不保存数据库的属性
  
  @return 忽略的属性名数组
  */
-- (NSSet <NSString *>*)xw_ignoreColumnNames;
+- (NSSet <NSString *>*)xwdb_ignoreColumnNames;
 
 /**
  自定义字段名映射表 (默认成员变量即变量名, 可自定义字段名 key: 成员变量(属性)名称  value: 自定义数据库表字段名)
  
  @return 自定义字段名映射表
  */
-- (NSDictionary *)xw_customColumnMapping;
+- (NSDictionary *)xwdb_customColumnMapping;
 
 /**
  自定义表名 (默认属性类名)
  
  @return 自定义表名
  */
-- (NSString *)xw_customTableName;
+- (NSString *)xwdb_customTableName;
 
 @end
 

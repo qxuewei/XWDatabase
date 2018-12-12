@@ -242,22 +242,7 @@ fprintf(stderr, "-------\n");                                               \
 
 
 #pragma mark - private
-
 #pragma mark  增
-+ (void)creatTableFromClass:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
-    if (!cls) {
-        return;
-    }
-    if (![self isPrimaryKey:cls]) {
-        completion ? completion(NO) : nil;
-        return;
-    }
-    [XWLivingThread executeTaskInMain:^{
-        NSString *creatTableSql = [XWDatabaseSQL createTableSql:cls isTtemporary:NO];
-        [self p_executeUpdate:creatTableSql completion:completion];
-    }];
-}
-
 + (void)p_saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion {
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
@@ -370,15 +355,16 @@ fprintf(stderr, "-------\n");                                               \
 #pragma mark  改
 
 /*
- <__NSArrayM 0x600000081a40>(
- CREATE TABLE IF NOT EXISTS XWPerson_temp(xw_id INTEGER PRIMARY KEY AUTOINCREMENT,cardID text,gender text,number text,age integer,birthday text,name text,pDouble real),
+ <__NSArrayM 0x600000a43450>(
+ CREATE TABLE IF NOT EXISTS XWPerson_temp(xw_id INTEGER PRIMARY KEY AUTOINCREMENT,cardID text,gender text,books text,number text,age integer,pDouble real,birthday text,name text,sweethearts text),
  INSERT INTO XWPerson_temp(xw_id) SELECT xw_id FROM Person,
- UPDATE XWPerson_temp SET age = (SELECT age FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
- UPDATE XWPerson_temp SET cardID = (SELECT cardID FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
- UPDATE XWPerson_temp SET gender = (SELECT gender FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
- UPDATE XWPerson_temp SET name = (SELECT name FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
- UPDATE XWPerson_temp SET number = (SELECT number FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
- UPDATE XWPerson_temp SET pDouble = (SELECT pDouble FORM Person WHERE XWPerson_temp.xw_id = Person.xw.id ),
+ UPDATE XWPerson_temp SET age = (SELECT age FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
+ UPDATE XWPerson_temp SET birthday = (SELECT birthday FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
+ UPDATE XWPerson_temp SET cardID = (SELECT cardID FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
+ UPDATE XWPerson_temp SET gender = (SELECT gender FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
+ UPDATE XWPerson_temp SET name = (SELECT name FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
+ UPDATE XWPerson_temp SET number = (SELECT number FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
+ UPDATE XWPerson_temp SET pDouble = (SELECT pDouble FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
  drop table if exists Person,
  alter table XWPerson_temp rename to Person
  )
@@ -495,14 +481,10 @@ fprintf(stderr, "-------\n");                                               \
                 FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
                 Class modelClass = obj.class;
                 id model = [[modelClass alloc] init];
-                NSDictionary *customColumnMapping;  /// 自定义字段名
-                if ([modelClass respondsToSelector:@selector(xw_customColumnMapping)]) {
-                    customColumnMapping = [modelClass xw_customColumnMapping];
-                }
-                NSDictionary *ivarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:modelClass];
+                NSDictionary *customColumnMapping = obj.xwdb_customColumnMapping;  /// 自定义字段名
                 while (resultSet.next) {
-                    [ivarNameTypeDict enumerateKeysAndObjectsUsingBlock:^(NSString * ivarName, NSString * ivarType, BOOL * _Nonnull stop) {
-                        [self p_setModel:model customColumnMapping:customColumnMapping resultSet:resultSet ivarName:ivarName ivarType:ivarType];
+                    [[XWDatabaseModel classColumnIvarNameTypeDict:modelClass] enumerateKeysAndObjectsUsingBlock:^(NSString * columnIvarName, NSString * ivarType, BOOL * _Nonnull stop) {
+                        [self p_setModel:model customColumnMapping:customColumnMapping resultSet:resultSet columnIvarName:columnIvarName ivarType:ivarType];
                     }];
                 }
                 completion ? completion(model) : nil;
@@ -525,16 +507,12 @@ fprintf(stderr, "-------\n");                                               \
             }
             FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
             Class modelClass = cls;
-            NSDictionary *customColumnMapping;  /// 自定义字段名
-            if ([modelClass respondsToSelector:@selector(xw_customColumnMapping)]) {
-                customColumnMapping = [modelClass xw_customColumnMapping];
-            }
+            NSDictionary *customColumnMapping = cls.xw_customColumnMapping ;  /// 自定义字段名
             NSMutableArray *models = [[NSMutableArray alloc] init];
-            NSDictionary *ivarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:modelClass];
             while (resultSet.next) {
                 id model = [[modelClass alloc] init];
-                [ivarNameTypeDict enumerateKeysAndObjectsUsingBlock:^(NSString * ivarName, NSString * ivarType, BOOL * _Nonnull stop) {
-                    [self p_setModel:model customColumnMapping:customColumnMapping resultSet:resultSet ivarName:ivarName ivarType:ivarType];
+                [[XWDatabaseModel classColumnIvarNameTypeDict:cls] enumerateKeysAndObjectsUsingBlock:^(NSString * columnIvarName, NSString * ivarType, BOOL * _Nonnull stop) {
+                    [self p_setModel:model customColumnMapping:customColumnMapping resultSet:resultSet columnIvarName:columnIvarName ivarType:ivarType];
                 }];
                 if (model) {
                     [models addObject:model];
@@ -560,146 +538,138 @@ fprintf(stderr, "-------\n");                                               \
     }];
 }
 
-+ (BOOL)isPrimaryKey:(Class<XWDatabaseModelProtocol>)cls {
-//    if (![cls respondsToSelector:@selector(xw_primaryKey)]) {
-//        NSLog(@"倘若希望使用 %@ 模型直接创建数据库,需要实现 +(NSString *)xw_primaryKey; 类方法(准守XWDatabaseModelProtocol 协议)",NSStringFromClass(cls));
-//        return NO;
-//    }
-    return YES;
-}
-
-+ (void)p_setModel:(id)model customColumnMapping:(NSDictionary *)customColumnMapping resultSet:(FMResultSet *)resultSet ivarName:(NSString *)ivarName ivarType:(NSString *)ivarType {
++ (void)p_setModel:(id)model customColumnMapping:(NSDictionary *)customColumnMapping resultSet:(FMResultSet *)resultSet columnIvarName:(NSString *)columnIvarName ivarType:(NSString *)ivarType {
     
-    if ([resultSet columnIsNull:ivarName]) {
+    if ([resultSet columnIsNull:columnIvarName]) {
         return;
     }
     
-    NSString *key = ivarName;
-    if (customColumnMapping && [customColumnMapping.allValues containsObject:ivarName]) {
-        key = [customColumnMapping allKeysForObject:ivarName].firstObject;
+    NSString *key = columnIvarName;
+    if (customColumnMapping && [customColumnMapping.allValues containsObject:columnIvarName]) {
+        key = [customColumnMapping allKeysForObject:columnIvarName].firstObject;
     }
     
     if ([ivarType isEqualToString:@"NSString"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         [model setValue:string forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSMutableString"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSMutableString *stringM = [NSMutableString stringWithString:string];
         [model setValue:stringM forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSNumber"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSNumber *number = [XWDatabaseModel numberWithString:string];
         [model setValue:number forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSArray"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSArray *array = [XWDatabaseModel arrayWithString:string];
         [model setValue:array forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSMutableArray"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSArray *array = [XWDatabaseModel arrayWithString:string];
         [model setValue:array.mutableCopy forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSDictionary"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSDictionary *dict = [XWDatabaseModel dictWithString:string];
         [model setValue:dict forKey:key];
         
     } else if ( [ivarType isEqualToString:@"NSMutableDictionary"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSDictionary *dict = [XWDatabaseModel dictWithString:string];
         [model setValue:dict.mutableCopy forKey:key];
         
     } else if ([ivarType isEqualToString:@"q"] || [ivarType isEqualToString:@"l"]) {
-        [model setValue:[resultSet objectForColumn:ivarName] forKey:key];
+        [model setValue:[resultSet objectForColumn:columnIvarName] forKey:key];
         
     } else if ([ivarType isEqualToString:@"i"]) {
-        NSNumber *intNumber = [resultSet objectForColumn:ivarName];
+        NSNumber *intNumber = [resultSet objectForColumn:columnIvarName];
         [model setValue:@(intNumber.intValue) forKey:key];
         
     } else if ([ivarType isEqualToString:@"I"]) {
-        NSNumber *integerNumber = [resultSet objectForColumn:ivarName];
+        NSNumber *integerNumber = [resultSet objectForColumn:columnIvarName];
         [model setValue:@(integerNumber.integerValue) forKey:key];
         
     } else if([ivarType isEqualToString:@"d"]){
-        [model setValue:[resultSet objectForColumn:ivarName] forKey:key];
+        [model setValue:[resultSet objectForColumn:columnIvarName] forKey:key];
         
     } else if ([ivarType isEqualToString:@"f"]) {
-        NSNumber *floatNumber = [resultSet objectForColumn:ivarName];
+        NSNumber *floatNumber = [resultSet objectForColumn:columnIvarName];
         [model setValue:@(floatNumber.floatValue) forKey:key];
         
     }  else if([ivarType isEqualToString:@"c"] || [ivarType isEqualToString:@"B"]){
-        NSNumber *boolNumber = [resultSet objectForColumn:ivarName];
+        NSNumber *boolNumber = [resultSet objectForColumn:columnIvarName];
         [model setValue:@(boolNumber.boolValue) forKey:key];
         
     } else if([ivarType isEqualToString:@"s"]){
-        NSNumber *shortNumber = [resultSet objectForColumn:ivarName];
+        NSNumber *shortNumber = [resultSet objectForColumn:columnIvarName];
         [model setValue:@(shortNumber.shortValue) forKey:key];
         
     } else if ([ivarType isEqualToString:@"Q"]) {
-        NSNumber *unsiginIntergerNumber = [resultSet objectForColumn:ivarName];
+        NSNumber *unsiginIntergerNumber = [resultSet objectForColumn:columnIvarName];
         [model setValue:@(unsiginIntergerNumber.unsignedIntegerValue) forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSData"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSData *data = [XWDatabaseModel dataWithString:string];
         [model setValue:data forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSMutableData"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSData *data = [XWDatabaseModel dataWithString:string];
         [model setValue:data.mutableCopy forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSSet"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSSet *set = [XWDatabaseModel setWithString:string];
         [model setValue:set forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSMutableSet"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSSet *set = [XWDatabaseModel setWithString:string];
         [model setValue:set.mutableCopy forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSDate"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSDate *date = [XWDatabaseModel dateWithString:string];
         [model setValue:date forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSAttributedString"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSAttributedString *attributedString = [XWDatabaseModel attributedStringWithString:string];
         [model setValue:attributedString forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSMutableAttributedString"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSAttributedString *attributedString = [XWDatabaseModel attributedStringWithString:string];
         [model setValue:attributedString.mutableCopy forKey:key];
         
     } else if ([ivarType isEqualToString:@"NSIndexPath"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSIndexPath *indexPath = [XWDatabaseModel indexPathWithString:string];
         [model setValue:indexPath forKey:key];
         
     } else if ([ivarType isEqualToString:@"{CGPoint=\"x\"d\"y\"d}"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         CGPoint point = CGPointFromString(string);
         [model setValue:@(point) forKey:key];
         
     } else if ([ivarType isEqualToString:@"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         CGRect rect = CGRectFromString(string);
         [model setValue:@(rect) forKey:key];
         
     } else if ([ivarType isEqualToString:@"{CGSize=\"width\"d\"height\"d}"]) {
-        NSString *string = [resultSet stringForColumn:ivarName];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         CGSize size = CGSizeFromString(string);
         [model setValue:@(size) forKey:key];
         
     } else {
-        [model setValue:[resultSet objectForColumn:ivarName] forKey:key];
+        [model setValue:[resultSet objectForColumn:columnIvarName] forKey:key];
         
     }
     

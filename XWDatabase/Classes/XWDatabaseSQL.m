@@ -56,23 +56,20 @@
  */
 + (NSString *)saveOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj {
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSDictionary *classIvarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:obj.class];
-    NSArray *ivarNames = classIvarNameTypeDict.allKeys;
+    NSArray *columnNames = [XWDatabaseModel classColumnIvarNameTypeDict:obj.class].allKeys;
     NSMutableDictionary *insertSqlDict = [NSMutableDictionary dictionary];
     
-    for (NSString *ivar in ivarNames) {
-        NSString *ivarName = ivar;
-        
-        if (obj.xw_customColumnMapping && [obj.xw_customColumnMapping.allValues containsObject:ivarName]) {
-            ivarName = [obj.xw_customColumnMapping allKeysForObject:ivarName].firstObject;
+    for (NSString *column in columnNames) {
+        NSString *ivarName = [XWDatabaseModel ivarNameWithColumn:column cls:obj.class];
+        if (!ivarName) {
+            continue;
         }
-        
         id value = [obj valueForKey:ivarName];
         NSString *valueString = [self stringWithValue:value];
         if (valueString) {
-            [insertSqlDict setObject:valueString forKey:ivar];
+            [insertSqlDict setObject:valueString forKey:column];
         } else {
-            [insertSqlDict setObject:@"''" forKey:ivar];
+            [insertSqlDict setObject:@"''" forKey:column];
         }
     }
     NSString *saveOneObjSql = [NSString stringWithFormat:@"INSERT INTO  %@(%@) VALUES(%@)",tableName,[insertSqlDict.allKeys componentsJoinedByString:@","],[insertSqlDict.allValues componentsJoinedByString:@","]];
@@ -261,7 +258,7 @@
 #pragma mark - private
 + (NSString *)p_updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj customIvarNames:(NSArray <NSString *> *)customIvarNames {
     
-    if (!obj.xw_primaryKey && !obj.xw_unionPrimaryKey) {
+    if (!obj.xwdb_primaryKey && !obj.xwdb_unionPrimaryKey) {
         return nil;
     }
     
@@ -269,24 +266,22 @@
     if (!queryCondition) {
         return nil;
     }
-    
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSDictionary *classIvarNameTypeDict = [XWDatabaseModel classIvarNameTypeDict:obj.class];
-    NSArray *ivarNames = ( customIvarNames && customIvarNames.count > 0) ? customIvarNames : classIvarNameTypeDict.allKeys;
+    NSArray *columnNames = ( customIvarNames && customIvarNames.count > 0) ? customIvarNames : [XWDatabaseModel classColumnIvarNameTypeDict:obj.class].allKeys;
     NSMutableArray *updateArrM = [[NSMutableArray alloc] init];
     
-    for (NSString *ivarName in ivarNames) {
-        NSString *columnName = ivarName;
-        if (obj.xw_customColumnMapping && [obj.xw_customColumnMapping.allValues containsObject:ivarName]) {
-            columnName = [obj.xw_customColumnMapping allKeysForObject:ivarName].firstObject;
+    for (NSString *column in columnNames) {
+        NSString *ivar = [XWDatabaseModel ivarNameWithColumn:column cls:obj.class];
+        if (!ivar) {
+            continue;
         }
-        id value = [obj valueForKey:columnName];
+        id value = [obj valueForKey:ivar];
         NSString *valueString = [self stringWithValue:value];
         NSString *save;
         if (valueString) {
-            save = [NSString stringWithFormat:@"%@ = %@",ivarName, valueString];
+            save = [NSString stringWithFormat:@"%@ = %@",column, valueString];
         } else {
-            save = [NSString stringWithFormat:@"%@ = %@",ivarName, @"''"];
+            save = [NSString stringWithFormat:@"%@ = %@",column, @"''"];
         }
         [updateArrM addObject:save];
     }
@@ -296,10 +291,14 @@
 
 /// 根据主键查询条件
 + (NSString *)queryCondition:(NSObject <XWDatabaseModelProtocol> *)obj {
-    if (obj.xw_unionPrimaryKey) {
+    if (obj.xwdb_unionPrimaryKey) {
         NSMutableArray *unionArrayM = [[NSMutableArray alloc] init];
-        for (NSString *subPrimaryKey in obj.xw_unionPrimaryKey) {
-            id value = [obj valueForKey:subPrimaryKey];
+        for (NSString *subPrimaryKey in obj.xwdb_unionPrimaryKey) {
+            NSString * ivar = [XWDatabaseModel ivarNameWithColumn:subPrimaryKey cls:obj.class];
+            if (!ivar) {
+                return nil;
+            }
+            id value = [obj valueForKey:ivar];
             NSString *valueString = [self stringWithValue:value];
             if (!valueString) {
                 /// 联合主键任意对象为空均不做操作!
@@ -312,12 +311,16 @@
             return searchSql;
         }
         
-    } else if (obj.xw_primaryKey) {
-        NSString *primaryKey = [obj.class xw_primaryKey];
-        id value = [obj valueForKey:primaryKey];
+    } else if (obj.xwdb_primaryKey) {
+        NSString *primaryKey = [obj.class xwdb_primaryKey];
+        NSString *ivar = [XWDatabaseModel ivarNameWithColumn:primaryKey cls:obj.class];
+        if (!ivar) {
+            return nil;
+        }
+        id value = [obj valueForKey:ivar];
         NSString *valueString = [self stringWithValue:value];
         if (valueString) {
-            return [NSString stringWithFormat:@"%@ = '%@'",primaryKey,valueString];
+            return [NSString stringWithFormat:@"%@ = %@",primaryKey,valueString];
         }
         
     }

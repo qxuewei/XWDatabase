@@ -20,9 +20,9 @@
     person.age = 18 + arc4random_uniform(100);
     person.name = person.age % 2 == 0 ? @"极客学伟" : @"www.qiuxuewei.com";
     person.sex = @"male";
-//    person.birthday = [NSDate date];
-//    person.girls = @[@"小妹",@"校花",@"小baby"].mutableCopy;
-//    person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
+    person.birthday = [NSDate date];
+    person.girls = @[@"小妹",@"校花",@"小baby"].mutableCopy;
+    person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
 //    person.number = [NSNumber numberWithBool:YES];
 //    person.floatNumber = [NSNumber numberWithFloat:3.1415926];
 //    //    UIImage *image = [UIImage imageNamed:@"icon"];
@@ -72,10 +72,10 @@
 
 /// 联合主键成员变量数组
 + (NSArray<NSString *> *)xw_unionPrimaryKey {
-    return @[@"cardID"];
+    return @[@"cardID",@"age"];
 }
 
-/// 自定义对象映射
+/// 自定义对象映射`
 + (NSDictionary *)xw_customModelMapping {
     return @{
              @"favoriteBook" : [XWBook class]

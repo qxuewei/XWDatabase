@@ -8,6 +8,7 @@
 
 #import "NSObject+XWModel.h"
 #import <objc/runtime.h>
+#import "XWDatabaseModel.h"
 
 @implementation NSObject (XWModel)
 /// 默认自增主键
@@ -26,6 +27,22 @@
     return objc_getAssociatedObject(self, _cmd);
 }
 
+/// 模型中所有成员变量 (key: 成员变量名称  value: 成员变量类型)
+- (void)setXw_classIvarNameTypeDict:(NSDictionary *)xw_classIvarNameTypeDict {
+    objc_setAssociatedObject(self, @selector(xw_classIvarNameTypeDict), xw_classIvarNameTypeDict, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSDictionary *)xw_classIvarNameTypeDict {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+/// 模型中真实成员变量类型
+- (void)setXw_IvarSet:(NSSet *)xw_IvarSet {
+    objc_setAssociatedObject(self, @selector(xw_IvarSet), xw_IvarSet, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSSet *)xw_IvarSet {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
 #pragma mark - 以下方法根据 XWDatabaseModelProtocol 协议中实现获取相应值
 
 /**
@@ -33,10 +50,15 @@
  
  @return 主键的属性名
  */
-- (NSString *)xw_primaryKey {
+- (NSString *)xwdb_primaryKey {
     if ([self.class respondsToSelector:@selector(xw_primaryKey)]) {
         NSString *primaryKey = [self.class xw_primaryKey];
         if (primaryKey && primaryKey.length > 0) {
+            NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:self.class];
+            if (![columns.allKeys containsObject:primaryKey]) {
+                /// 表字段中无该主键
+                return nil;
+            }
             return primaryKey;
         }
     }
@@ -44,14 +66,23 @@
 }
 
 /**
- 联合主键成员变量数组 (多个属性共同定义主键) - 优先级大于 'xw_primaryKey'
+ 联合主键成员变量数组 (多个属性共同定义主键) - 优先级大于 'xwdb_primaryKey'
  
  @return 联合主键成员变量数组
  */
-- (NSArray < NSString * > *)xw_unionPrimaryKey {
+- (NSArray < NSString * > *)xwdb_unionPrimaryKey {
     if ([self.class respondsToSelector:@selector(xw_unionPrimaryKey)]) {
         NSArray *unionPrimaryKey = [self.class xw_unionPrimaryKey];
         if (unionPrimaryKey && unionPrimaryKey.count > 0) {
+            __block BOOL isError = NO;
+            [unionPrimaryKey enumerateObjectsUsingBlock:^(NSString * obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:self.class];
+                /// 表字段中无该主键
+                isError = ![columns.allKeys containsObject:obj];
+            }];
+            if (isError) {
+                return nil;
+            }
             return unionPrimaryKey;
         }
     }
@@ -63,7 +94,7 @@
  
  @return 自定义对象映射
  */
-- (NSDictionary *)xw_customModelMapping {
+- (NSDictionary *)xwdb_customModelMapping {
     if ([self.class respondsToSelector:@selector(xw_customModelMapping)]) {
         NSDictionary *customModelMapping = [self.class xw_customModelMapping];
         if (customModelMapping && customModelMapping.count > 0) {
@@ -78,7 +109,7 @@
  
  @return 忽略的属性名数组
  */
-- (NSSet <NSString *>*)xw_ignoreColumnNames {
+- (NSSet <NSString *>*)xwdb_ignoreColumnNames {
     if ([self.class respondsToSelector:@selector(xw_ignoreColumnNames)]) {
         NSSet *ignoreColumnNames = [self.class xw_ignoreColumnNames];
         if (ignoreColumnNames && ignoreColumnNames.count > 0) {
@@ -93,10 +124,13 @@
  
  @return 自定义字段名映射表
  */
-- (NSDictionary *)xw_customColumnMapping {
+- (NSDictionary *)xwdb_customColumnMapping {
     if ([self.class respondsToSelector:@selector(xw_customColumnMapping)]) {
         NSDictionary *customColumnMapping = [self.class xw_customColumnMapping];
         if (customColumnMapping && customColumnMapping.count > 0) {
+            [customColumnMapping enumerateKeysAndObjectsUsingBlock:^(NSString * key, NSString * obj, BOOL * _Nonnull stop) {
+                obj = [key stringByReplacingOccurrencesOfString:@" " withString:@""];
+            }];
             return customColumnMapping;
         }
     }
@@ -108,7 +142,7 @@
  
  @return 自定义表名
  */
-- (NSString *)xw_customTableName {
+- (NSString *)xwdb_customTableName {
     if ([self.class respondsToSelector:@selector(xw_customTableName)]) {
         NSString *customTableName = [self.class xw_customTableName];
         if (customTableName && customTableName.length > 0) {

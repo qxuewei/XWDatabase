@@ -8,6 +8,7 @@
 
 #import "XWDatabaseModel.h"
 #import <objc/runtime.h>
+#import "NSObject+XWModel.h"
 
 @implementation XWDatabaseModel
 static NSString * const kDatabaseModelToolDateFormatter = @"yyyy-MM-dd HH:mm:ss zzz";
@@ -44,43 +45,37 @@ static NSNumberFormatter *_numberFormatter;
 
 /**
  模型中所有成员变量 (key: 成员变量名称  value: 成员变量类型)
- 
- @param cls 模型类
- @return 模型中所有成员变量
+
+ @param cls 类
+ @return 模型中所有成员变量 (key: 成员变量名称  value: 成员变量类型)
  */
-+ (NSDictionary *)classIvarNameTypeDict:(Class<XWDatabaseModelProtocol>)cls {
-    NSMutableDictionary *dictM = [[NSMutableDictionary alloc] init];
-    unsigned int count = 0;
-    Ivar *ivarList = class_copyIvarList(cls, &count);
-    NSSet *ignoreColumn;    /// 忽略的字段
-    if ([cls respondsToSelector:@selector(xw_ignoreColumnNames)]) {
-        ignoreColumn = [cls xw_ignoreColumnNames];
-    }
-    NSDictionary *customColumnMapping;  /// 自定义字段名
-    if ([cls respondsToSelector:@selector(xw_customColumnMapping)]) {
-        customColumnMapping = [cls xw_customColumnMapping];
-    }
-    for (int i = 0; i < count; i++) {
-        Ivar ivar = ivarList[i];
-        /// 成员变量名称
-        NSString *ivarName = [NSString stringWithUTF8String:ivar_getName(ivar)];
-        if ([ivarName hasPrefix:@"_"]) {
-            ivarName = [ivarName substringFromIndex:1];
++ (NSDictionary *)classColumnIvarNameTypeDict:(Class)cls {
+    if (!cls.xw_classIvarNameTypeDict) {
+        NSMutableDictionary *dictM = [[NSMutableDictionary alloc] init];
+        unsigned int count = 0;
+        Ivar *ivarList = class_copyIvarList(cls, &count);
+        for (int i = 0; i < count; i++) {
+            Ivar ivar = ivarList[i];
+            /// 成员变量名称
+            NSString *ivarName = [NSString stringWithUTF8String:ivar_getName(ivar)];
+            if ([ivarName hasPrefix:@"_"]) {
+                ivarName = [ivarName substringFromIndex:1];
+            }
+            if (cls.xwdb_ignoreColumnNames && [cls.xwdb_ignoreColumnNames containsObject:ivarName]) {
+                continue;
+            }
+            /// 成员变量类型
+            NSString *ivarType = [NSString stringWithUTF8String:ivar_getTypeEncoding(ivar)];
+            ivarType = [ivarType stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"@\""]];
+            if (cls.xwdb_customColumnMapping && [cls.xwdb_customColumnMapping.allKeys containsObject:ivarName]) {
+                ivarName = cls.xwdb_customColumnMapping[ivarName];
+            }
+            [dictM setObject:ivarType forKey:ivarName];
         }
-        if (ignoreColumn && [ignoreColumn containsObject:ivarName]) {
-            continue;
-        }
-        /// 成员变量类型
-        NSString *ivarType = [NSString stringWithUTF8String:ivar_getTypeEncoding(ivar)];
-        ivarType = [ivarType stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"@\""]];
-        
-        if (customColumnMapping && [customColumnMapping.allKeys containsObject:ivarName]) {
-            ivarName = customColumnMapping[ivarName];
-        }
-        [dictM setObject:ivarType forKey:ivarName];
+        free(ivarList);
+        cls.xw_classIvarNameTypeDict = dictM.copy;
     }
-    free(ivarList);
-    return dictM;
+    return cls.xw_classIvarNameTypeDict;
 }
 
 /**
@@ -90,7 +85,7 @@ static NSNumberFormatter *_numberFormatter;
  @return 模型中所有成员变量在Sqlite 数据库中对应的类型
  */
 + (NSDictionary *)classIvarNameSqliteTypeDict:(Class<XWDatabaseModelProtocol>)cls {
-    NSMutableDictionary *ivarOriginDict = [[self classIvarNameTypeDict:cls] mutableCopy];
+    NSMutableDictionary *ivarOriginDict = [XWDatabaseModel classColumnIvarNameTypeDict:cls].mutableCopy;
     NSDictionary *dictionaryOcTypeToSqliteType = [self dictionaryOcTypeToSqliteType];
     [ivarOriginDict enumerateKeysAndObjectsUsingBlock:^(NSString * name, NSString * originType, BOOL * _Nonnull stop) {
 //        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
@@ -124,12 +119,52 @@ static NSNumberFormatter *_numberFormatter;
  @return 模型根据字母排序的属性数组
  */
 + (NSArray <NSString *>*)sortedIvarNames:(Class<XWDatabaseModelProtocol>)cls {
-    NSDictionary *classIvarNameTypeDict = [self classIvarNameTypeDict:cls];
-    NSMutableArray *names = classIvarNameTypeDict.allKeys.mutableCopy;
+    NSMutableArray *names = [XWDatabaseModel classColumnIvarNameTypeDict:cls].allKeys.mutableCopy;
     [names sortUsingComparator:^NSComparisonResult(NSString * obj1, NSString * obj2) {
         return [obj1 compare:obj2];
     }];
     return names.copy;
+}
+
+/**
+ 模型中成员变量集合
+ 
+ @return 模型中成员变量集合
+ */
++ (NSSet *)classIvarNamesSet:(Class)cls {
+    if (!cls.xw_IvarSet) {
+        NSMutableSet *sets = [[NSMutableSet alloc] init];
+        unsigned int count = 0;
+        Ivar *ivarList = class_copyIvarList(cls.class, &count);
+        for (int i = 0; i < count; i++) {
+            Ivar ivar = ivarList[i];
+            NSString *ivarName = [NSString stringWithUTF8String:ivar_getName(ivar)];
+            if ([ivarName hasPrefix:@"_"]) {
+                ivarName = [ivarName substringFromIndex:1];
+            }
+            [sets addObject:ivarName];
+        }
+        cls.xw_IvarSet = sets.copy;
+    }
+    return cls.xw_IvarSet;
+}
+
+/**
+ 根据字段名获取模型真实成员变量名
+
+ @param column 字段名
+ @param cls 类
+ @return 模型真实成员变量名
+ */
++ (NSString *)ivarNameWithColumn:(NSString *)column cls:(Class)cls {
+    NSString *ivarName = column;
+    if (cls.xwdb_customColumnMapping && [cls.xwdb_customColumnMapping.allValues containsObject:column]) {
+        ivarName = [cls.xwdb_customColumnMapping allKeysForObject:column].firstObject;
+    }
+    if ([[self classIvarNamesSet:cls] containsObject:ivarName]) {
+        return ivarName;
+    }
+    return nil;
 }
 
 /// NSAarray -> NSString
