@@ -25,6 +25,7 @@
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		A00136135CC71F5F01EA6645 /* Pods_XWDatabase_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EBCA384703DBEDF2B54239A /* Pods_XWDatabase_Tests.framework */; };
 		B60AD8BE21B94B69008EAAD8 /* XWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8BD21B94B69008EAAD8 /* XWPerson.m */; };
+		B62EC3A221C10BC4003DD62A /* XWDatabaseDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B62EC3A121C10BC4003DD62A /* XWDatabaseDataModel.m */; };
 		B67AA12F21BF59BE003E52A3 /* NSObject+XWModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B67AA12E21BF59BE003E52A3 /* NSObject+XWModel.m */; };
 		B67AA13221BF5E18003E52A3 /* XWBook.m in Sources */ = {isa = PBXBuildFile; fileRef = B67AA13121BF5E18003E52A3 /* XWBook.m */; };
 		B696CF9121BE68AE000C7A03 /* XWDatabaseSQL.m in Sources */ = {isa = PBXBuildFile; fileRef = B696CF8521BE68AE000C7A03 /* XWDatabaseSQL.m */; };
@@ -74,6 +75,8 @@
 		B5FA3CE9020B7FFC9481E924 /* Pods-XWDatabase_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Tests.debug.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Tests/Pods-XWDatabase_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		B60AD8BC21B94B69008EAAD8 /* XWPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWPerson.h; sourceTree = "<group>"; };
 		B60AD8BD21B94B69008EAAD8 /* XWPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWPerson.m; sourceTree = "<group>"; };
+		B62EC3A021C10BC4003DD62A /* XWDatabaseDataModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XWDatabaseDataModel.h; sourceTree = "<group>"; };
+		B62EC3A121C10BC4003DD62A /* XWDatabaseDataModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XWDatabaseDataModel.m; sourceTree = "<group>"; };
 		B67AA12D21BF59BE003E52A3 /* NSObject+XWModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+XWModel.h"; sourceTree = "<group>"; };
 		B67AA12E21BF59BE003E52A3 /* NSObject+XWModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+XWModel.m"; sourceTree = "<group>"; };
 		B67AA13021BF5E18003E52A3 /* XWBook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XWBook.h; sourceTree = "<group>"; };
@@ -239,6 +242,8 @@
 				B696CF8821BE68AE000C7A03 /* XWLivingThread.m */,
 				B67AA12D21BF59BE003E52A3 /* NSObject+XWModel.h */,
 				B67AA12E21BF59BE003E52A3 /* NSObject+XWModel.m */,
+				B62EC3A021C10BC4003DD62A /* XWDatabaseDataModel.h */,
+				B62EC3A121C10BC4003DD62A /* XWDatabaseDataModel.m */,
 			);
 			name = Classes;
 			path = ../../XWDatabase/Classes;
@@ -440,6 +445,7 @@
 				B696CF9221BE68AE000C7A03 /* XWDatabase.m in Sources */,
 				B67AA12F21BF59BE003E52A3 /* NSObject+XWModel.m in Sources */,
 				B696CF9321BE68AE000C7A03 /* XWDatabaseModel.m in Sources */,
+				B62EC3A221C10BC4003DD62A /* XWDatabaseDataModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
