@@ -14,10 +14,14 @@
 
 @interface XWDatabaseQueue () {
     FMDatabase *_db;
+    FMDatabase *_dataDB;
     FMDatabaseQueue *_queue;
+    FMDatabaseQueue *_dataDBQueue;
 }
 @property (nonatomic, copy) NSString *databasePath;
+@property (nonatomic, copy) NSString *dataDatabasePath;
 @property (nonatomic, strong) FMDatabase *dataBase;
+@property (nonatomic, strong) FMDatabase *dataDataBase;
 @end
 
 @implementation XWDatabaseQueue
@@ -56,6 +60,28 @@ static XWDatabaseQueue *_defaultManager;
         strongSelf.dataBase = db;
         block(db);
         strongSelf.dataBase = nil;
+    }];
+}
+
+/**
+ 数据存储数据库操作队列
+ 
+ @param block 队列内操作
+ */
+- (void)inDataDatabase:(XWDatabaseQueueDatabaseHandle)block {
+    if (!block) {
+        return;
+    }
+    if (self.dataDataBase) {
+        block(self.dataDataBase);
+        return;
+    }
+    WS(weakSelf);
+    [_dataDBQueue inDatabase:^(FMDatabase *db){
+        TS(strongSelf);
+        strongSelf.dataDataBase = db;
+        block(db);
+        strongSelf.dataDataBase = nil;
     }];
 }
 
@@ -143,7 +169,9 @@ static XWDatabaseQueue *_defaultManager;
 - (instancetype)init {
     if (self = [super init]) {
         _db                 = [FMDatabase databaseWithPath:self.databasePath];
+        _dataDB             = [FMDatabase databaseWithPath:self.dataDatabasePath];
         _queue              = [FMDatabaseQueue databaseQueueWithPath:self.databasePath];
+        _dataDBQueue        = [FMDatabaseQueue databaseQueueWithPath:self.dataDatabasePath];
     }
     return self;
 }
@@ -156,5 +184,12 @@ static XWDatabaseQueue *_defaultManager;
         _databasePath = [document stringByAppendingPathComponent:@"XWCommonDatabase.sqlite"];
     }
     return _databasePath;
+}
+- (NSString *)dataDatabasePath {
+    if(!_dataDatabasePath){
+        NSString *document = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+        _dataDatabasePath = [document stringByAppendingPathComponent:@"XWDataDatabase.sqlite"];
+    }
+    return _dataDatabasePath;
 }
 @end

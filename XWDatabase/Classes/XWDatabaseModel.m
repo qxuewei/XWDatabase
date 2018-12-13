@@ -9,6 +9,7 @@
 #import "XWDatabaseModel.h"
 #import <objc/runtime.h>
 #import "NSObject+XWModel.h"
+#import "XWDatabaseDataModel.h"
 
 @implementation XWDatabaseModel
 static NSString * const kDatabaseModelToolDateFormatter = @"yyyy-MM-dd HH:mm:ss zzz";
@@ -170,43 +171,76 @@ static NSNumberFormatter *_numberFormatter;
     return nil;
 }
 
+
 /// NSAarray -> NSString
 + (NSString *)stringWithArray:(NSArray *)array {
+    if (!array) {
+        return nil;
+    }
     NSData *data = [NSJSONSerialization dataWithJSONObject:array options:NSJSONWritingPrettyPrinted error:nil];
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 /// NSString -> NSArray
 + (NSArray *)arrayWithString:(NSString *)string {
+    if (!string || string.length == 0) {
+        return nil;
+    }
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
     return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
 }
 
 /// NSDictionary -> NSString
 + (NSString *)stringWithDict:(NSDictionary *)dict {
+    if (!dict) {
+        return nil;
+    }
     NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 /// NSDictionary -> NSArray
 + (NSDictionary *)dictWithString:(NSString *)string {
+    if (!string || string.length == 0) {
+        return nil;
+    }
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
     return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
 }
 
 /// NSData -> NSString
 + (NSString *)stringWithData:(NSData *)data {
-    return [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    if (!data || data.length == 0) {
+        return nil;
+    }
+    __block NSString *hashStr;
+    [XWDatabaseDataModel saveData:data completion:^(BOOL isSuccess, NSUInteger hashID) {
+        hashStr = [NSString stringWithFormat:@"%lu",(unsigned long)hashID];
+    }];
+    return hashStr;
 }
 /// NSString -> NSData
 + (NSData *)dataWithString:(NSString *)string {
-    return [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    if (!string || string.length == 0) {
+        return nil;
+    }
+    __block NSData *dataByHash;
+    [XWDatabaseDataModel dataWithHash:string completion:^(NSData * data) {
+        dataByHash = data;
+    }];
+    return dataByHash;
 }
 
 /// NSDate -> NSString
 + (NSString *)stringWithDate:(NSDate *)date {
+    if (!date) {
+        return nil;
+    }
     return [[self dateFormatter] stringFromDate:date];
 }
 /// NSString -> NSDate
 + (NSDate *)dateWithString:(NSString *)string {
+    if (!string || string.length == 0) {
+        return nil;
+    }
     return [[self dateFormatter] dateFromString:string];
 }
 
@@ -221,28 +255,43 @@ static NSNumberFormatter *_numberFormatter;
 
 /// NSSet -> NSString
 + (NSString *)stringWithSet:(NSSet *)set {
+    if (!set) {
+        return nil;
+    }
     NSArray *array = [set allObjects];
     return [self stringWithArray:array];
 }
 /// NSString -> NSSet
 + (NSSet *)setWithString:(NSString *)string {
+    if (!string || string.length == 0) {
+        return nil;
+    }
     NSArray *array = [self arrayWithString:string];
     return [NSSet setWithArray:array];
 }
 
 /// NSAttributedString -> NSString
 + (NSString *)stringWithAttributedString:(NSAttributedString *)attributedString {
+    if (!attributedString) {
+        return nil;
+    }
     NSData *data = [attributedString dataFromRange:NSMakeRange(0, attributedString.length) documentAttributes:@{NSDocumentTypeDocumentAttribute : NSRTFDTextDocumentType} error:nil];
     return [self stringWithData:data];
 }
 /// NSString -> NSAttributedString
 + (NSAttributedString *)attributedStringWithString:(NSString *)string {
+    if (!string || string.length == 0) {
+        return nil;
+    }
     NSData *data = [self dataWithString:string];
     return [[NSAttributedString alloc] initWithData:data options:@{NSDocumentTypeDocumentAttribute : NSRTFDTextDocumentType} documentAttributes:nil error:nil];
 }
 
-/// NSAttributedString -> NSString
+/// NSIndexPath -> NSString
 + (NSString *)stringWithIndexPath:(NSIndexPath *)indexPath {
+    if (!indexPath) {
+        return nil;
+    }
     if (@available(iOS 11.0, *)) {
         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:indexPath requiringSecureCoding:YES error:nil];
         return [self stringWithData:data];
@@ -251,8 +300,11 @@ static NSNumberFormatter *_numberFormatter;
         return [self stringWithData:data];
     }
 }
-/// NSString -> NSAttributedString
+/// NSString -> NSIndexPath
 + (NSIndexPath *)indexPathWithString:(NSString *)string {
+    if (!string || string.length == 0) {
+        return nil;
+    }
     NSData *data = [self dataWithString:string];
     if (@available(iOS 11.0, *)) {
         NSIndexPath *indexPath = [NSKeyedUnarchiver unarchivedObjectOfClass:NSIndexPath.class fromData:data error:nil];
@@ -265,6 +317,9 @@ static NSNumberFormatter *_numberFormatter;
 
 /// UIImage -> NSString
 + (NSString *)stringWithImage:(UIImage *)image {
+    if (!image) {
+        return nil;
+    }
     NSData *data = UIImageJPEGRepresentation(image, 1.0);
     if (!data) {
         data = UIImagePNGRepresentation(image);
@@ -273,15 +328,24 @@ static NSNumberFormatter *_numberFormatter;
 }
 /// NSString -> UIImage
 + (UIImage *)imageWithString:(NSString *)string {
+    if (!string || string.length == 0) {
+        return nil;
+    }
     return [UIImage imageWithData:[self dataWithString:string]];
 }
 
 /// NSURL -> NSString
 + (NSString *)stringWithURL:(NSURL *)URL {
+    if (!URL) {
+        return nil;
+    }
     return [URL absoluteString];
 }
 /// NSString -> NSURL
 + (NSURL *)URLWithString:(NSString *)string {
+    if (!string || string.length == 0) {
+        return nil;
+    }
     return [NSURL URLWithString:string];
 }
 
@@ -315,11 +379,14 @@ static NSNumberFormatter *_numberFormatter;
              @"Q": @"integer",  // long long
              @"B": @"integer",  // bool
              @"c": @"integer",  // bool
-             @"NSData": @"blob",
-             @"NSMutableData": @"blob",
-             @"NSAttributedString": @"blob",
-             @"NSMutableAttributedString": @"blob",
-             @"NSIndexPath": @"blob",
+             
+             @"NSData": @"text",
+             @"NSMutableData": @"text",
+             @"NSAttributedString": @"text",
+             @"NSMutableAttributedString": @"text",
+             @"NSIndexPath": @"text",
+             @"UIImage": @"text",
+             
              @"NSDate": @"text",
              @"NSDictionary": @"text",
              @"NSMutableDictionary": @"text",
@@ -330,14 +397,19 @@ static NSNumberFormatter *_numberFormatter;
              @"NSNumber": @"text",
              @"NSSet": @"text",
              @"NSMutableSet": @"text",
-             
-             @"UIImage": @"blob",
              @"NSURL": @"text",
+             
              @"{_NSRange=\"location\"Q\"length\"Q}": @"text",
+             @"{_NSRange=\"location\"I\"length\"I}"  : @"text",
              
              @"{CGPoint=\"x\"d\"y\"d}": @"text",
+             @"{CGPoint=\"x\"f\"y\"f}" : @"text",
+             
              @"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}": @"text",
-             @"{CGSize=\"width\"d\"height\"d}" : @"text"
+             @"{CGRect=\"origin\"{CGPoint=\"x\"f\"y\"f}\"size\"{CGSize=\"width\"f\"height\"f}}" : @"text",
+             
+             @"{CGSize=\"width\"d\"height\"d}" : @"text",
+             @"{CGSize=\"width\"f\"height\"f}" : @"text"
              };
 }
 @end

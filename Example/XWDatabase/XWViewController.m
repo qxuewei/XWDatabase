@@ -23,21 +23,21 @@
     
     /// 增
     [self saveOnePerson];
-//    [self saveModels];
-//
-//    /// 删
-//    [self deleteModel];
-//    [self clearModel];
-//
-//    /// 改
-//    [self updateModel];
+    [self saveModels];
+
+    /// 删
+    [self deleteModel];
+    [self clearModel];
+
+    /// 改
+    [self updateModel];
 
     /// 查
     [self getOnePerson];
-//    [self getModels];
-//    [self getModelsSortAge];
-//    [self getModelsCondition];
-//    [self getModelsConditionSort];
+    [self getModels];
+    [self getModelsSortAge];
+    [self getModelsCondition];
+    [self getModelsConditionSort];
     
 }
 
@@ -127,7 +127,7 @@
 - (void)getModels
 {
     [XWDatabase getModels:XWPerson.class completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        NSLog(@" <XWDatabase> getModels (objs.count: %u)",objs.count);
         
     }];
 }
@@ -136,7 +136,7 @@
 - (void)getModelsSortAge
 {
     [XWDatabase getModels:XWPerson.class sortColumn:@"age" isOrderDesc:YES completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        NSLog(@" <XWDatabase> getModels (objs.count: %u)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ -- age: %zd",person.cardID,person.age);
         }
@@ -147,7 +147,7 @@
 - (void)getModelsCondition
 {
     [XWDatabase getModels:XWPerson.class condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        NSLog(@" <XWDatabase> getModels (objs.count: %u)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
         }
@@ -158,7 +158,7 @@
 - (void)getModelsConditionSort
 {
     [XWDatabase getModels:XWPerson.class sortColumn:@"age" isOrderDesc:NO condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        NSLog(@" <XWDatabase> getModels (objs.count: %u)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
         }

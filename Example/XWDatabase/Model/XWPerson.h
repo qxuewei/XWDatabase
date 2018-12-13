@@ -33,16 +33,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) float pFloat;
 @property (nonatomic, assign) int pInt;
 @property (nonatomic, assign) double pDouble;
-//@property (nonatomic, assign) long pLong;
-//@property (nonatomic, assign) BOOL pBOOL;
-//@property (nonatomic, assign) bool pBooll;
-//@property (nonatomic, assign) long long pLongLong;
-//@property (nonatomic, assign) NSInteger pInteger;
-//@property (nonatomic, assign) NSUInteger pUInteger;
-//@property (nonatomic, assign) CGPoint pPoint;
-//@property (nonatomic, assign) CGRect pRect;
-//@property (nonatomic, assign) CGSize pSize;
-//
+@property (nonatomic, assign) long pLong;
+@property (nonatomic, assign) BOOL pBOOL;
+@property (nonatomic, assign) bool pBooll;
+@property (nonatomic, assign) long long pLongLong;
+@property (nonatomic, assign) NSInteger pInteger;
+@property (nonatomic, assign) NSUInteger pUInteger;
+@property (nonatomic, assign) CGPoint pPoint;
+@property (nonatomic, assign) CGRect pRect;
+@property (nonatomic, assign) CGSize pSize;
+
 
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) NSURL *URL;

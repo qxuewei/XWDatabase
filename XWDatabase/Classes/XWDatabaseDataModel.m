@@ -8,14 +8,71 @@
 
 #import "XWDatabaseDataModel.h"
 #import "XWDatabaseQueue.h"
+#import "FMDB.h"
 
+@interface XWDatabaseDataModel ()
+@end
 
 @implementation XWDatabaseDataModel
-+ (void)initialize {
+static NSString * const cTableName = @"XWDatabaseDataModelTable";
+
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [[XWDatabaseQueue shareInstance] inDataDatabase:^(FMDatabase * _Nonnull database) {
+            NSString *creatTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@(hashID INTEGER PRIMARY KEY ,data BLOB)",cTableName];
+            [database executeUpdate:creatTableSql];
+        }];
+    });
+}
+
++ (void)saveData:(NSData *)data completion:(void(^)(BOOL, NSUInteger))completion {
     
-    NSString *creatTableSql = @"CREAT";
-    [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
-        
+    [[XWDatabaseQueue shareInstance] inDataDatabase:^(FMDatabase * _Nonnull database) {
+        NSUInteger hash = data.hash;
+        NSString *searchDataSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@ WHERE hashID = '%lu'",cTableName,(unsigned long)hash];
+        BOOL searchSucess = [database executeStatements:searchDataSql withResultBlock:^int(NSDictionary * _Nonnull resultsDictionary) {
+            int count = [[resultsDictionary.allValues lastObject] intValue];
+            if (count == 0) {
+                NSString *base64 = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+                NSString *save = [NSString stringWithFormat:@"INSERT INTO %@(hashID, data) VALUES('%d', '%@')",cTableName,hash,base64];
+                BOOL isSuccess = [database executeUpdate:save];
+                completion ? completion(isSuccess, hash) : nil;
+            } else {
+                completion ? completion(YES, hash) : nil;
+            }
+            return 0;
+        }];
+        if (!searchSucess) {
+            completion ? completion(NO, 0) : nil;
+        }
     }];
 }
+
++ (void)dataWithHash:(NSString *)hashString completion:(void(^)(NSData *))completion  {
+    [[XWDatabaseQueue shareInstance] inDataDatabase:^(FMDatabase * _Nonnull database) {
+        NSUInteger hash = hashString.integerValue;
+        NSString *searchDataSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@ WHERE hashID = '%lu'",cTableName,(unsigned long)hash];
+        BOOL searchSucess = [database executeStatements:searchDataSql withResultBlock:^int(NSDictionary * _Nonnull resultsDictionary) {
+            int count = [[resultsDictionary.allValues lastObject] intValue];
+            if (count == 0) {
+                completion ? completion(nil) : nil;
+            } else {
+                // select name from XWStuModel where
+                NSString *querySql = [NSString stringWithFormat:@"SELECT data FROM %@ WHERE hashID = '%lu'",cTableName,(unsigned long)hash];
+                FMResultSet *set = [database executeQuery:querySql];
+                while (set.next) {
+                    NSString *base64 = [set objectForColumn:@"data"];
+                    NSData *data = [[NSData alloc] initWithBase64EncodedString:base64 options:NSDataBase64DecodingIgnoreUnknownCharacters];
+                    completion ? completion(data) : nil;
+                }
+            }
+            return 0;
+        }];
+        if (!searchSucess) {
+            completion ? completion(nil) : nil;
+        }
+    }];
+}
+
 @end

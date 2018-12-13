@@ -414,7 +414,7 @@ fprintf(stderr, "-------\n");                                               \
         }
         
         NSArray *ivarNamesSorted = [XWDatabaseModel sortedIvarNames:cls];
-        NSLog(@"sortedIvarNames : %@ \n\n columnNames:%@",ivarNamesSorted,columnNamesSorted);
+//        NSLog(@"sortedIvarNames : %@ \n\n columnNames:%@",ivarNamesSorted,columnNamesSorted);
         BOOL isEqual = [ivarNamesSorted isEqualToArray:columnNamesSorted];
         if (isEqual) {  /// 模型字段和数据库表字段相同,无需更新
             NSLog(@"++ 表更新 %@ 模型字段和数据库表字段相同,无需更新",cls);
@@ -663,22 +663,22 @@ fprintf(stderr, "-------\n");                                               \
         NSURL *URL = [XWDatabaseModel URLWithString:string];
         [model setValue:URL forKey:key];
         
-    } else if ([ivarType isEqualToString:@"{_NSRange=\"location\"Q\"length\"Q}"]) {
+    } else if ([ivarType isEqualToString:@"{_NSRange=\"location\"Q\"length\"Q}"] || [ivarType isEqualToString:@"{_NSRange=\"location\"I\"length\"I}"]) {
         NSString *string = [resultSet stringForColumn:columnIvarName];
         NSRange range = NSRangeFromString(string);
         [model setValue:[NSValue valueWithRange:range] forKey:key];
         
-    } else if ([ivarType isEqualToString:@"{CGPoint=\"x\"d\"y\"d}"]) {
+    } else if ([ivarType isEqualToString:@"{CGPoint=\"x\"d\"y\"d}"] || [ivarType isEqualToString:@"{CGPoint=\"x\"f\"y\"f}"]) {
         NSString *string = [resultSet stringForColumn:columnIvarName];
         CGPoint point = CGPointFromString(string);
         [model setValue:@(point) forKey:key];
         
-    } else if ([ivarType isEqualToString:@"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}"]) {
+    } else if ([ivarType isEqualToString:@"{CGRect=\"origin\"{CGPoint=\"x\"d\"y\"d}\"size\"{CGSize=\"width\"d\"height\"d}}"] || [ivarType isEqualToString:@"{CGRect=\"origin\"{CGPoint=\"x\"f\"y\"f}\"size\"{CGSize=\"width\"f\"height\"f}}"]) {
         NSString *string = [resultSet stringForColumn:columnIvarName];
         CGRect rect = CGRectFromString(string);
         [model setValue:@(rect) forKey:key];
         
-    } else if ([ivarType isEqualToString:@"{CGSize=\"width\"d\"height\"d}"]) {
+    } else if ([ivarType isEqualToString:@"{CGSize=\"width\"d\"height\"d}"] || [ivarType isEqualToString:@"{CGSize=\"width\"f\"height\"f}"]) {
         NSString *string = [resultSet stringForColumn:columnIvarName];
         CGSize size = CGSizeFromString(string);
         [model setValue:@(size) forKey:key];

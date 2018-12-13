@@ -35,6 +35,13 @@ typedef void(^XWDatabaseQueueQueryResults)(NSArray < FMResultSet *>  * _Nullable
 - (void)inDatabase:(XWDatabaseQueueDatabaseHandle)block;
 
 /**
+ 数据存储数据库操作队列
+ 
+ @param block 队列内操作
+ */
+- (void)inDataDatabase:(XWDatabaseQueueDatabaseHandle)block;
+
+/**
  数据库事务操作队列
  
  @param block 队列内操作

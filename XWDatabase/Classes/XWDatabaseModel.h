@@ -112,9 +112,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// NSString -> NSAttributedString
 + (NSAttributedString *)attributedStringWithString:(NSString *)string;
 
-/// NSAttributedString -> NSString
+/// NSIndexPath -> NSString
 + (NSString *)stringWithIndexPath:(NSIndexPath *)indexPath;
-/// NSString -> NSAttributedString
+/// NSString -> NSIndexPath
 + (NSIndexPath *)indexPathWithString:(NSString *)string;
 
 /// UIImage -> NSString

@@ -13,14 +13,20 @@ NS_ASSUME_NONNULL_BEGIN
 @interface XWDatabaseDataModel : NSObject
 
 /**
- Data Hash
+ 存储二进制到二进制数据库中
+
+ @param data 二进制文件
+ @param completion 回调
  */
-@property (nonatomic, assign) NSUInteger hashID;
++ (void)saveData:(NSData *)data completion:(void(^)(BOOL, NSUInteger))completion;
 
 /**
- Data
+ 获取二进制文件
+
+ @param hashString hash 值
+ @param completion 回调
  */
-@property (nonatomic, strong) NSData *data;
++ (void)dataWithHash:(NSString *)hashString completion:(void(^)(NSData *))completion;
 
 @end
 
