@@ -296,14 +296,15 @@ static NSNumberFormatter *_numberFormatter;
         return nil;
     }
     NSData *data = [attributedString dataFromRange:NSMakeRange(0, attributedString.length) documentAttributes:@{NSDocumentTypeDocumentAttribute : NSRTFDTextDocumentType} error:nil];
-    return [self stringWithData:data];
+    NSString *stringBase64 = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    return stringBase64;
 }
 /// NSString -> NSAttributedString
 + (NSAttributedString *)attributedStringWithString:(NSString *)string {
     if (!string || string.length == 0) {
         return nil;
     }
-    NSData *data = [self dataWithString:string];
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
     return [[NSAttributedString alloc] initWithData:data options:@{NSDocumentTypeDocumentAttribute : NSRTFDTextDocumentType} documentAttributes:nil error:nil];
 }
 
@@ -312,27 +313,27 @@ static NSNumberFormatter *_numberFormatter;
     if (!indexPath) {
         return nil;
     }
+    NSData *data;
     if (@available(iOS 11.0, *)) {
-        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:indexPath requiringSecureCoding:YES error:nil];
-        return [self stringWithData:data];
+        data = [NSKeyedArchiver archivedDataWithRootObject:indexPath requiringSecureCoding:YES error:nil];
     } else {
-        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:indexPath];
-        return [self stringWithData:data];
+        data = [NSKeyedArchiver archivedDataWithRootObject:indexPath];
     }
+    return [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 /// NSString -> NSIndexPath
 + (NSIndexPath *)indexPathWithString:(NSString *)string {
     if (!string || string.length == 0) {
         return nil;
     }
-    NSData *data = [self dataWithString:string];
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    NSIndexPath *indexPath;
     if (@available(iOS 11.0, *)) {
-        NSIndexPath *indexPath = [NSKeyedUnarchiver unarchivedObjectOfClass:NSIndexPath.class fromData:data error:nil];
-        return indexPath;
+        indexPath = [NSKeyedUnarchiver unarchivedObjectOfClass:NSIndexPath.class fromData:data error:nil];
     } else {
-        NSIndexPath *indexPath = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-        return indexPath;
+        indexPath = [NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
+    return indexPath;
 }
 
 /// UIImage -> NSString
