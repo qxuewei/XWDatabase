@@ -55,7 +55,7 @@
 - (void)saveModels
 {
     NSMutableArray *persons = [[NSMutableArray alloc] init];
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 100000; i++) {
         [persons addObject:[XWPerson testPerson:i]];
     }
     [XWDatabase saveModels:persons completion:^(BOOL isSuccess) {
@@ -127,7 +127,7 @@
 - (void)getModels
 {
     [XWDatabase getModels:XWPerson.class completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %u)",objs.count);
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         
     }];
 }
@@ -136,7 +136,7 @@
 - (void)getModelsSortAge
 {
     [XWDatabase getModels:XWPerson.class sortColumn:@"age" isOrderDesc:YES completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %u)",objs.count);
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ -- age: %zd",person.cardID,person.age);
         }
@@ -147,7 +147,7 @@
 - (void)getModelsCondition
 {
     [XWDatabase getModels:XWPerson.class condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %u)",objs.count);
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
         }
@@ -158,7 +158,7 @@
 - (void)getModelsConditionSort
 {
     [XWDatabase getModels:XWPerson.class sortColumn:@"age" isOrderDesc:NO condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %u)",objs.count);
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
         }

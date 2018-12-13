@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 #import "XWDatabaseModel.h"
 
+
 @implementation NSObject (XWModel)
 /// 默认自增主键
 - (void)setXw_id:(NSNumber *)xw_id {
@@ -41,6 +42,51 @@
 }
 - (NSSet *)xw_IvarSet {
     return objc_getAssociatedObject(self, _cmd);
+}
+
+/// 自定义对象
+- (void)setXw_CustomModelSet:(NSSet *)xw_CustomModelSet {
+    objc_setAssociatedObject(self, @selector(xw_CustomModelSet), xw_CustomModelSet, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (NSSet *)xw_CustomModelSet {
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+#pragma mark - 智能归解档
+- (void)xw_decode:(NSCoder*)aDecoder {
+    Class cls = [self class];
+    while (cls && cls != [NSObject class]) {
+        unsigned int count = 0;
+        Ivar *ivars = class_copyIvarList(cls, &count);
+        for (int i = 0; i < count; i++) {
+            Ivar ivar = ivars[i];
+            NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
+            id value = [aDecoder decodeObjectForKey:key];
+            if (value) {
+                [self setValue:value forKey:key];
+            }
+        }
+        free(ivars);
+        cls = [cls superclass];
+    }
+}
+
+- (void)xw_encode:(NSCoder*)aCoder {
+    Class cls = [self class];
+    while (cls && cls != [NSObject class]) {
+        unsigned int count = 0;
+        Ivar *ivars = class_copyIvarList(cls, &count);
+        for (int i = 0; i < count; i++) {
+            Ivar ivar = ivars[i];
+            NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
+            id value = [self valueForKey:key];
+            if (value) {
+                [aCoder encodeObject:value forKey:key];
+            }
+        }
+        free(ivars);
+        cls = [cls superclass];
+    }
 }
 
 #pragma mark - 以下方法根据 XWDatabaseModelProtocol 协议中实现获取相应值

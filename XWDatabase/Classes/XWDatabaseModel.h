@@ -77,6 +77,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSSet *)classIvarNamesSet:(Class)cls;
 
+/**
+ 模型中自定义对象
+ 
+ @param cls 模型类
+ @return 模型中自定义对象
+ */
++ (NSSet *)customModelSet:(Class)cls;
+
 /// NSAarray -> NSString
 + (NSString *)stringWithArray:(NSArray *)array;
 /// NSString -> NSArray
@@ -126,6 +134,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)stringWithURL:(NSURL *)URL;
 /// NSString -> NSURL
 + (NSURL *)URLWithString:(NSString *)string;
+
+/// CustomModel -> NSString
++ (NSString *)stringWithCustomModel:(id)customModel;
+/// NSString -> CustomModel
++ (id)customModelWithString:(NSString *)string;
 
 @end
 

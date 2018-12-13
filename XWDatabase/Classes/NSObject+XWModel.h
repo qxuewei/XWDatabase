@@ -33,6 +33,29 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong) NSSet *xw_IvarSet;
 
+/**
+ 模型中自定义对象
+ */
+@property (nonatomic, strong) NSSet *xw_CustomModelSet;
+
+#pragma mark - 智能归解档
+#define XWCodingImplementation \
+- (instancetype)initWithCoder:(NSCoder *)aDecoder{\
+if(self == [super init]){\
+[self xw_decode:aDecoder];\
+}\
+return self;\
+}\
+\
+- (void)encodeWithCoder:(NSCoder *)aCoder{\
+[self xw_encode:aCoder];\
+}\
++ (BOOL)supportsSecureCoding {\
+    return YES;\
+}
+- (void)xw_decode:(NSCoder*)aDecoder;
+- (void)xw_encode:(NSCoder*)aCoder;
+
 #pragma mark - 以下方法根据 XWDatabaseModelProtocol 协议中实现获取相应值
 
 /**

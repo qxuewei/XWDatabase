@@ -25,8 +25,8 @@
     person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
     person.number = [NSNumber numberWithBool:YES];
     person.floatNumber = [NSNumber numberWithFloat:3.1415926];
-    UIImage *image = [UIImage imageNamed:@"icon"];
-    person.icon = UIImageJPEGRepresentation(image, 0.5).mutableCopy;
+//    UIImage *image = [UIImage imageNamed:@"icon"];
+//    person.icon = UIImageJPEGRepresentation(image, 0.5).mutableCopy;
 //    person.image = image;
     person.pFloat = 1.1111;
     person.pInt = 3;
@@ -45,11 +45,14 @@
     person.pSetM = [NSMutableSet setWithObjects:@"MutableSet",@(456), nil];
     person.pAttributedString = [[NSAttributedString alloc] initWithString:@"NSAttributedString"];
     person.pMutableAttributedString = [[NSMutableAttributedString alloc] initWithString:@"NSMutableAttributedString"];
-
     person.URL = [NSURL URLWithString:@"www.qiuxuewei.com"];
     person.pRange = NSMakeRange(0, 99);
-    
     person.indexPath = [NSIndexPath indexPathForItem:1 inSection:2];
+    
+    XWBook *book = [XWBook new];
+    book.name = @"name";
+    book.author = @"JK";
+    person.favoriteBook = book;
     
     return person;
 }

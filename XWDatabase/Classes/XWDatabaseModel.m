@@ -89,12 +89,17 @@ static NSNumberFormatter *_numberFormatter;
     NSMutableDictionary *ivarOriginDict = [XWDatabaseModel classColumnIvarNameTypeDict:cls].mutableCopy;
     NSDictionary *dictionaryOcTypeToSqliteType = [self dictionaryOcTypeToSqliteType];
     [ivarOriginDict enumerateKeysAndObjectsUsingBlock:^(NSString * name, NSString * originType, BOOL * _Nonnull stop) {
-        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
-        if (!isKeyExist) {
-            NSLog(@"%@  isKeyExist: (%d)",originType,isKeyExist);
-            
+//        BOOL isKeyExist = [dictionaryOcTypeToSqliteType.allKeys containsObject:originType];
+//        if (!isKeyExist) {
+//            NSLog(@"%@  isKeyExist: (%d)",originType,isKeyExist);
+//        }
+        if ([self customModelSet:cls] && [[self customModelSet:cls] containsObject:name]) {
+            /// 自定义对象存储为 text 字段
+            ivarOriginDict[name] = @"text";
+        } else {
+            ivarOriginDict[name] = dictionaryOcTypeToSqliteType[originType];
         }
-        ivarOriginDict[name] = dictionaryOcTypeToSqliteType[originType];
+        
     }];
     return ivarOriginDict.copy;
 }
@@ -171,6 +176,21 @@ static NSNumberFormatter *_numberFormatter;
     return nil;
 }
 
+/**
+ 模型中自定义对象
+
+ @param cls 模型类
+ @return 模型中自定义对象
+ */
++ (NSSet *)customModelSet:(Class)cls {
+    if (!cls.xwdb_customModelMapping) {
+        return nil;
+    }
+    if (!cls.xw_CustomModelSet) {
+        cls.xw_CustomModelSet = [NSSet setWithArray:cls.xwdb_customModelMapping.allKeys];
+    }
+    return cls.xw_CustomModelSet;
+}
 
 /// NSAarray -> NSString
 + (NSString *)stringWithArray:(NSArray *)array {
@@ -349,6 +369,39 @@ static NSNumberFormatter *_numberFormatter;
     return [NSURL URLWithString:string];
 }
 
+/// CustomModel -> NSString
++ (NSString *)stringWithCustomModel:(id)customModel {
+    if (!customModel) {
+        return nil;
+    }
+    NSData *data;
+    if (@available(iOS 11.0, *)) {
+        data = [NSKeyedArchiver archivedDataWithRootObject:customModel requiringSecureCoding:YES error:nil];
+    } else {
+        data = [NSKeyedArchiver archivedDataWithRootObject:customModel];
+    }
+    NSString *dataString = [self stringWithData:data];
+    NSString *cls = NSStringFromClass([customModel class]);
+    NSString *saveString = [NSString stringWithFormat:@"%@<xwdatabase>%@",cls,dataString];
+    return saveString; //XWBook<xwdatabase>29026982
+}
+/// NSString -> CustomModel
++ (id)customModelWithString:(NSString *)string {
+    if (!string || string.length == 0) {
+        return nil;
+    }
+    NSRange range = [string rangeOfString:@"<xwdatabase>"];
+    NSString *cls = [string substringToIndex:range.location];
+    NSString *dataString = [string substringFromIndex:range.location + range.length];
+    NSData *data = [self dataWithString:dataString];
+    id customModel;
+    if (@available(iOS 11.0, *)) {
+        customModel = [NSKeyedUnarchiver unarchivedObjectOfClass:NSClassFromString(cls) fromData:data error:nil];
+    } else {
+        customModel = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    }
+    return customModel;
+}
 
 #pragma mark - private
 + (NSDateFormatter *)dateFormatter {

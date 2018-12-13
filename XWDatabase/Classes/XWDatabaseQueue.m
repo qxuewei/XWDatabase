@@ -187,7 +187,7 @@ static XWDatabaseQueue *_defaultManager;
 }
 - (NSString *)dataDatabasePath {
     if(!_dataDatabasePath){
-        NSString *document = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+        NSString *document = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
         _dataDatabasePath = [document stringByAppendingPathComponent:@"XWDataDatabase.sqlite"];
     }
     return _dataDatabasePath;

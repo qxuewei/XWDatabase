@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface XWBook : NSObject
+@interface XWBook : NSObject <NSCoding, NSSecureCoding>
 
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *author;

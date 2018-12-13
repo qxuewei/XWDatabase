@@ -20,14 +20,14 @@ static NSString * const cTableName = @"XWDatabaseDataModelTable";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [[XWDatabaseQueue shareInstance] inDataDatabase:^(FMDatabase * _Nonnull database) {
-            NSString *creatTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@(hashID INTEGER PRIMARY KEY ,data BLOB)",cTableName];
+            /// hashID : 二进制唯一标识   data : 二进制文件(bas64字符串形式存储)   referenceCount : 引用计数 (每次insert + 1  delete - 1)
+            NSString *creatTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@(hashID INTEGER PRIMARY KEY ,data BLOB, referenceCount INTEGER)",cTableName];
             [database executeUpdate:creatTableSql];
         }];
     });
 }
 
 + (void)saveData:(NSData *)data completion:(void(^)(BOOL, NSUInteger))completion {
-    
     [[XWDatabaseQueue shareInstance] inDataDatabase:^(FMDatabase * _Nonnull database) {
         NSUInteger hash = data.hash;
         NSString *searchDataSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@ WHERE hashID = '%lu'",cTableName,(unsigned long)hash];
@@ -35,7 +35,7 @@ static NSString * const cTableName = @"XWDatabaseDataModelTable";
             int count = [[resultsDictionary.allValues lastObject] intValue];
             if (count == 0) {
                 NSString *base64 = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-                NSString *save = [NSString stringWithFormat:@"INSERT INTO %@(hashID, data) VALUES('%d', '%@')",cTableName,hash,base64];
+                NSString *save = [NSString stringWithFormat:@"INSERT INTO %@(hashID, data) VALUES('%lu', '%@')",cTableName,(unsigned long)hash,base64];
                 BOOL isSuccess = [database executeUpdate:save];
                 completion ? completion(isSuccess, hash) : nil;
             } else {

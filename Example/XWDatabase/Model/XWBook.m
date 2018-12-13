@@ -7,7 +7,10 @@
 //
 
 #import "XWBook.h"
+#import "NSObject+XWModel.h"
 
 @implementation XWBook
+
+XWCodingImplementation
 
 @end

@@ -54,8 +54,7 @@
         if (!ivarName) {
             continue;
         }
-        id value = [obj valueForKey:ivarName];
-        NSString *valueString = [self stringWithValue:value];
+        NSString *valueString = [self stringWithObject:obj ivarName:ivarName];
         if (valueString) {
             [insertSqlDict setObject:valueString forKey:column];
         } else {
@@ -262,8 +261,7 @@
         if (!ivar) {
             continue;
         }
-        id value = [obj valueForKey:ivar];
-        NSString *valueString = [self stringWithValue:value];
+        NSString *valueString = [self stringWithObject:obj ivarName:ivar];
         NSString *save;
         if (valueString) {
             save = [NSString stringWithFormat:@"%@ = %@",column, valueString];
@@ -288,8 +286,7 @@
             if (!ivar) {
                 return nil;
             }
-            id value = [obj valueForKey:ivar];
-            NSString *valueString = [self stringWithValue:value];
+            NSString *valueString = [self stringWithObject:obj ivarName:ivar];
             if (!valueString) {
                 /// 联合主键任意对象为空均不做操作!
                 return nil;
@@ -307,8 +304,7 @@
         if (!ivar) {
             return nil;
         }
-        id value = [obj valueForKey:ivar];
-        NSString *valueString = [self stringWithValue:value];
+        NSString *valueString = [self stringWithObject:obj ivarName:ivar];
         if (valueString) {
             return [NSString stringWithFormat:@"%@ = %@",primaryKey,valueString];
         }
@@ -320,12 +316,25 @@
 /**
  对象转字符串(数据库存储)
  
- @param value 对象
+ @param obj 对象
+ @param ivarName 成员变量名称
  @return 字符串(数据库存储)
  */
-+ (NSString *)stringWithValue:(id)value {
++ (NSString *)stringWithObject:(NSObject <XWDatabaseModelProtocol> *)obj ivarName:(NSString *)ivarName {
     NSString *valueStr;
     NSString *string;
+    id value = [obj valueForKey:ivarName];
+    
+    if (obj.xwdb_customModelMapping && [obj.xwdb_customModelMapping.allKeys containsObject:ivarName]) {
+        /// 自定义模型
+        string = [XWDatabaseModel stringWithCustomModel:value];
+        if (string) {
+            return [NSString stringWithFormat:@"'%@'",string];
+        } else {
+            return nil;
+        }
+    }
+    
     if ([value isKindOfClass:[NSNumber class]]) {
         string = [XWDatabaseModel stringWithNumber:value];
         

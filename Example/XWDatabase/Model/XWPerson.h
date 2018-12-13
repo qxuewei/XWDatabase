@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURL *URL;
 @property (nonatomic, assign) NSRange pRange;
 
-//@property (nonatomic, strong) XWBook *favoriteBook;
+@property (nonatomic, strong) XWBook *favoriteBook;
 
 + (XWPerson *)testPerson:(int)index;
 
