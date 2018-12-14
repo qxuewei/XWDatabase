@@ -4,7 +4,7 @@
 //
 //  Created by 邱学伟 on 2018/11/29.
 //  Copyright © 2018 邱学伟. All rights reserved.
-//  V 1.0 版本一定会有各种不足,会持续优化完善
+//  V 1.0
 
 #import <Foundation/Foundation.h>
 #import "XWDatabaseModelProtocol.h"

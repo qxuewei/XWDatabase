@@ -22,22 +22,22 @@
     [super viewDidLoad];
     
     /// 增
-    [self saveOnePerson];
-    [self saveModels];
+//    [self saveOnePerson];
+//    [self saveModels];
 
     /// 删
-    [self deleteModel];
-    [self clearModel];
+//    [self deleteModel];
+//    [self clearModel];
 
     /// 改
-    [self updateModel];
+//    [self updateModel];
 
     /// 查
     [self getOnePerson];
-    [self getModels];
-    [self getModelsSortAge];
-    [self getModelsCondition];
-    [self getModelsConditionSort];
+//    [self getModels];
+//    [self getModelsSortAge];
+//    [self getModelsCondition];
+//    [self getModelsConditionSort];
     
 }
 
@@ -55,7 +55,7 @@
 - (void)saveModels
 {
     NSMutableArray *persons = [[NSMutableArray alloc] init];
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < 1000; i++) {
         [persons addObject:[XWPerson testPerson:i]];
     }
     [XWDatabase saveModels:persons completion:^(BOOL isSuccess) {
@@ -69,7 +69,6 @@
 {
     XWPerson *person = [XWPerson new];
     person.cardID = @"9998";
-    person.age = 73;
     [XWDatabase deleteModel:person completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> deleteModel (%@)",isSuccess?@"成功":@"失败");
     }];
@@ -113,8 +112,7 @@
 - (void)getOnePerson
 {
     XWPerson *person = [XWPerson new];
-    person.cardID = @"2";
-    person.age = 20;
+    person.cardID = @"81";
     [XWDatabase getModel:person completion:^(XWPerson * obj) {
         NSLog(@" <XWDatabase> getOnePerson (%@) name: %@",obj,obj.name);
         dispatch_async(dispatch_get_main_queue(), ^{

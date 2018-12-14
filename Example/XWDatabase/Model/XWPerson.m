@@ -25,9 +25,9 @@
     person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
     person.number = [NSNumber numberWithBool:YES];
     person.floatNumber = [NSNumber numberWithFloat:3.1415926];
-//    UIImage *image = [UIImage imageNamed:@"icon"];
-//    person.icon = UIImageJPEGRepresentation(image, 0.5).mutableCopy;
-//    person.image = image;
+    UIImage *image = [UIImage imageNamed:@"icon"];
+    person.icon = UIImageJPEGRepresentation(image, 0.5).mutableCopy;
+    person.image = image;
     person.pFloat = 1.1111;
     person.pInt = 3;
     person.pDouble = 2.2222;

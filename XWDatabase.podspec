@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XWDatabase'
-  s.version          = '0.1.2'
+  s.version          = '1.0.0'
   s.summary          = '数据库工具类，直接操作模型读写数据库，FMDB封装'
 
 # This description is used to generate tags and improve search results.
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-  数据库工具类，直接操作模型读写数据库，FMDB封装
+  数据库工具类，直接操作模型读写数据库，FMDB封装, 二进制文件重用, 支持自定义主键/联合主键, 支持SQL拓展操作, 支持自定义对象存储...
                        DESC
                        
   s.homepage         = 'https://github.com/qxuewei/XWDatabase'

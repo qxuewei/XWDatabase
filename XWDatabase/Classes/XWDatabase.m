@@ -14,25 +14,6 @@
 #import "XWDatabaseQueue.h"
 #import "NSObject+XWModel.h"
 
-/// NSLog 宏定义
-//重写NSLog,Debug模式下打印日志和当前行数
-#if DEBUG
-
-#define NSLog(format, ...) do {                                             \
-fprintf(stderr, "<%s : %d> %s\n",                                           \
-[[[NSString stringWithUTF8String:__FILE__] lastPathComponent] UTF8String],  \
-__LINE__, __func__);                                                        \
-(NSLog)((format), ##__VA_ARGS__);                                           \
-fprintf(stderr, "-------\n");                                               \
-} while (0)
-
-#else
-
-#define NSLog(FORMAT, ...) nil
-
-#endif
-
-
 @implementation XWDatabase
 
 #pragma mark - public
@@ -131,12 +112,10 @@ fprintf(stderr, "-------\n");                                               \
  @param completion 是否更新成功
  */
 + (void)updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
-    
     if (!cls) {
         completion ? completion(NO) : nil;
         return;
     }
-    
     [XWLivingThread executeTaskInMain:^{
         [self p_updateTable:cls completion:completion];
     }];
@@ -238,8 +217,6 @@ fprintf(stderr, "-------\n");                                               \
         [self p_getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition completion:completion];
     }];
 }
-
-
 
 #pragma mark - private
 #pragma mark  增
@@ -353,23 +330,6 @@ fprintf(stderr, "-------\n");                                               \
 }
 #pragma mark  删
 #pragma mark  改
-
-/*
- <__NSArrayM 0x600000a43450>(
- CREATE TABLE IF NOT EXISTS XWPerson_temp(xw_id INTEGER PRIMARY KEY AUTOINCREMENT,cardID text,gender text,books text,number text,age integer,pDouble real,birthday text,name text,sweethearts text),
- INSERT INTO XWPerson_temp(xw_id) SELECT xw_id FROM Person,
- UPDATE XWPerson_temp SET age = (SELECT age FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
- UPDATE XWPerson_temp SET birthday = (SELECT birthday FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
- UPDATE XWPerson_temp SET cardID = (SELECT cardID FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
- UPDATE XWPerson_temp SET gender = (SELECT gender FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
- UPDATE XWPerson_temp SET name = (SELECT name FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
- UPDATE XWPerson_temp SET number = (SELECT number FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
- UPDATE XWPerson_temp SET pDouble = (SELECT pDouble FROM Person WHERE XWPerson_temp.xw_id = Person.xw_id),
- drop table if exists Person,
- alter table XWPerson_temp rename to Person
- )
- */
-
 + (void)p_updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
     
     [[XWDatabaseQueue shareInstance] inTransaction:^(FMDatabase * _Nonnull database, BOOL * _Nonnull rollback) {
@@ -383,7 +343,6 @@ fprintf(stderr, "-------\n");                                               \
         if (!createTableSql || createTableSql.length == 0) {
             /// 本地数据库无当前表结构 -> 建表!
             BOOL isCreatTableSuccess = [self p_createTable:cls database:database];
-            NSLog(@"++ 本地数据库无当前表结构 建表 (%@) -> (%@)",cls,isCreatTableSuccess?@"成功":@"失败");
             completion ? completion(isCreatTableSuccess) : nil;
             if (!isCreatTableSuccess) {
                 *rollback = YES;
@@ -417,7 +376,6 @@ fprintf(stderr, "-------\n");                                               \
 //        NSLog(@"sortedIvarNames : %@ \n\n columnNames:%@",ivarNamesSorted,columnNamesSorted);
         BOOL isEqual = [ivarNamesSorted isEqualToArray:columnNamesSorted];
         if (isEqual) {  /// 模型字段和数据库表字段相同,无需更新
-            NSLog(@"++ 表更新 %@ 模型字段和数据库表字段相同,无需更新",cls);
             completion ? completion(YES) : nil;
         } else {
             
@@ -450,7 +408,7 @@ fprintf(stderr, "-------\n");                                               \
             
             [sqls enumerateObjectsUsingBlock:^(NSString * sql, NSUInteger idx, BOOL * _Nonnull stop) {
                 if (![database executeUpdate:sql]) {
-                    NSLog(@"+++ 事务 %@ 执行失败!!",sql);
+//                    NSLog(@"+++ 事务 %@ 执行失败!!",sql);
                     completion ? completion(NO) : nil;
                     *rollback = YES;
                 }

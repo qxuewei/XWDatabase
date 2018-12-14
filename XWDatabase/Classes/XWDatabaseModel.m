@@ -381,10 +381,10 @@ static NSNumberFormatter *_numberFormatter;
     } else {
         data = [NSKeyedArchiver archivedDataWithRootObject:customModel];
     }
-    NSString *dataString = [self stringWithData:data];
+    NSString *dataString = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
     NSString *cls = NSStringFromClass([customModel class]);
     NSString *saveString = [NSString stringWithFormat:@"%@<xwdatabase>%@",cls,dataString];
-    return saveString; //XWBook<xwdatabase>29026982
+    return saveString; 
 }
 /// NSString -> CustomModel
 + (id)customModelWithString:(NSString *)string {
@@ -394,7 +394,7 @@ static NSNumberFormatter *_numberFormatter;
     NSRange range = [string rangeOfString:@"<xwdatabase>"];
     NSString *cls = [string substringToIndex:range.location];
     NSString *dataString = [string substringFromIndex:range.location + range.length];
-    NSData *data = [self dataWithString:dataString];
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:dataString options:NSDataBase64DecodingIgnoreUnknownCharacters];
     id customModel;
     if (@available(iOS 11.0, *)) {
         customModel = [NSKeyedUnarchiver unarchivedObjectOfClass:NSClassFromString(cls) fromData:data error:nil];
