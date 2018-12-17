@@ -218,6 +218,71 @@
     }];
 }
 
+#pragma mark - 执行自定义SQL语句
+
+/**
+ 执行单条自定义 SQL 更新语句
+
+ @param sql 自定义 SQL 更新语句
+ @param completion 完成回调
+ */
++ (void)executeUpdateSql:(NSString *)sql completion:(XWDatabaseCompletion)completion {
+    if (!sql || sql.length == 0) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        [self p_executeUpdate:sql completion:completion];
+    }];
+}
+
+/**
+ 执行多条自定义 SQL 更新语句
+ 
+ @param sqls 多条自定义 SQL 更新语句
+ @param completion 完成回调
+ */
++ (void)executeUpdateSqls:(NSArray <NSString *> *)sqls completion:(XWDatabaseCompletion)completion {
+    if (!sqls || sqls.count == 0) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        [[XWDatabaseQueue shareInstance] inTransaction:^(FMDatabase * _Nonnull database, BOOL * _Nonnull rollback) {
+            [sqls enumerateObjectsUsingBlock:^(NSString * sql, NSUInteger idx, BOOL * _Nonnull stop) {
+                if (![database executeUpdate:sql]) {
+                    completion ? completion(NO) : nil;
+                    *rollback = YES;
+                    return ;
+                }
+                if (idx == sqls.count - 1) {
+                    completion ? completion(YES) : nil;
+                }
+            }];
+        }];
+    }];
+}
+
+/**
+ 执行单条自定义 SQL 查询语句
+ 
+ @param sql 自定义 SQL 查询语句
+ @param completion 完成回调
+ */
++ (void)executeQuerySql:(NSString *)sql completion:(XWDatabaseReturnResultSet)completion {
+    if (!sql || sql.length == 0) {
+        completion ? completion(nil) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
+            FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:sql database:database];
+            completion ? completion(resultSet) : nil;
+        }];
+    }];
+}
+
+
 #pragma mark - private
 #pragma mark  增
 + (void)p_saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion {

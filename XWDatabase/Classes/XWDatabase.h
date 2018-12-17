@@ -8,12 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import "XWDatabaseModelProtocol.h"
+@class FMResultSet;
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^XWDatabaseCompletion)(BOOL isSuccess);                    /// 操作回调
-typedef void(^XWDatabaseReturnObject)(id _Nullable obj);                /// 返回对象
-typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返回对象数组
+typedef void(^XWDatabaseCompletion)(BOOL isSuccess);                        /// 操作回调
+typedef void(^XWDatabaseReturnObject)(id _Nullable obj);                    /// 返回对象
+typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);           /// 返回对象数组
+typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 返回 FMResultSet 原生查询结果-需自己解析
 
 @interface XWDatabase : NSObject
 
@@ -125,6 +127,33 @@ typedef void(^XWDatabaseReturnObjects)(NSArray * _Nullable objs);       /// 返�
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects)completion;
+
+#pragma mark - 执行自定义SQL语句
+
+/**
+ 执行单条自定义 SQL 更新语句
+ 
+ @param sql 自定义 SQL 更新语句
+ @param completion 完成回调
+ */
++ (void)executeUpdateSql:(NSString *)sql completion:(XWDatabaseCompletion)completion;
+
+/**
+ 执行多条自定义 SQL 更新语句
+ 
+ @param sqls 多条自定义 SQL 更新语句
+ @param completion 完成回调
+ */
++ (void)executeUpdateSqls:(NSArray <NSString *> *)sqls completion:(XWDatabaseCompletion)completion;
+
+/**
+ 执行单条自定义 SQL 查询语句
+ 
+ @param sql 自定义 SQL 查询语句
+ @param completion 完成回调
+ */
++ (void)executeQuerySql:(NSString *)sql completion:(XWDatabaseReturnResultSet)completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

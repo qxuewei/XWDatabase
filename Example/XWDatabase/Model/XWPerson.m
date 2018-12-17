@@ -25,9 +25,12 @@
     person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
     person.number = [NSNumber numberWithBool:YES];
     person.floatNumber = [NSNumber numberWithFloat:3.1415926];
+    
+    /// 存储二进制文件
     UIImage *image = [UIImage imageNamed:@"icon"];
-    person.icon = UIImageJPEGRepresentation(image, 0.5).mutableCopy;
     person.image = image;
+//    person.icon = UIImageJPEGRepresentation(image, 0.5).mutableCopy;
+    
     person.pFloat = 1.1111;
     person.pInt = 3;
     person.pDouble = 2.2222;
@@ -49,10 +52,11 @@
     person.pRange = NSMakeRange(0, 99);
     person.indexPath = [NSIndexPath indexPathForItem:1 inSection:2];
     
-    XWBook *book = [XWBook new];
-    book.name = @"name";
-    book.author = @"JK";
-    person.favoriteBook = book;
+    /// 存储自定义对象
+//    XWBook *book = [XWBook new];
+//    book.name = @"name";
+//    book.author = @"JK";
+//    person.favoriteBook = book;
     
     return person;
 }

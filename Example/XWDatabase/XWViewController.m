@@ -22,7 +22,7 @@
     [super viewDidLoad];
     
     /// 增
-//    [self saveOnePerson];
+    [self saveOnePerson];
 //    [self saveModels];
 
     /// 删
@@ -55,7 +55,7 @@
 - (void)saveModels
 {
     NSMutableArray *persons = [[NSMutableArray alloc] init];
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 100; i++) {
         [persons addObject:[XWPerson testPerson:i]];
     }
     [XWDatabase saveModels:persons completion:^(BOOL isSuccess) {
@@ -112,7 +112,7 @@
 - (void)getOnePerson
 {
     XWPerson *person = [XWPerson new];
-    person.cardID = @"81";
+    person.cardID = @"2";
     [XWDatabase getModel:person completion:^(XWPerson * obj) {
         NSLog(@" <XWDatabase> getOnePerson (%@) name: %@",obj,obj.name);
         dispatch_async(dispatch_get_main_queue(), ^{
