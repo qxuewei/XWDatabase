@@ -27,10 +27,18 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 
 ## Introduce
 
-##### [XWDatabase](https://github.com/qxuewei/XWDatabase) 将数据库操作简化到难以想象的程度，你甚至不需要知道数据库的存在，当然更不需要写 SQL 语句，你只需要直接操作模型即可对模型进行增删改查的操作，她会根据模型动态在数据库中创建以当前模型类名为名称的数据库表，当然你也可以自定义表名；她会根据模型的成员变量和成员变量的类型动态进行字段的设计，有多少成员变量，表中自然就会有多少字段与其对应，当然，你也可以忽略其中的某些你不想存储的成员变量，也可以自定义字段的名称；如果哪天模型的字段变化了，她会自动进行表中原有字段的更新，而且无论原表中有多少数据，都会一条不落的迁移到新表中；她的API简单到只有一行代码，你无需关注数据库的开启和关闭，一行代码实现增删改查和数据迁移； 你甚至可以在任何线程中调用她的API，她一定是线程安全的，不会出现多线程访问同一个数据库和死锁的问题；数据操作是耗时操作，所以你无需手动开启异步线程操作数据库操作，她会统一在一个保活的异步线程中执行；她支持存储常见的数据类型（int,long,signed,float,double,NSInteger,CGFloat,BOOL,NSString,NSMutableString,NSNumber,NSArray,NSMutableArray,NSDictionary,NSMutableDictionary,NSData,NSMutableData,UIImage,NSDate,NSURL,NSRange,CGRect,CGSize,CGPoint,自定义对象 等的存储.）； 她还对二进制文件的存储做了优化，比如同一张图片表中所有数据都持有这张图片对象，她在数据库中只会有一份拷贝，竭尽她所能优化存储空间。 笔锋一转，V1.0 版本会存在很多不足，希望各位前辈和大牛多多指正，多提 `issues`
+#### XWDatabase 的亮点
 
+- 将数据库操作简化到难以想象的程度，你甚至不需要知道数据库的存在，当然更不需要写 SQL 语句，你只需要直接操作模型即可对模型进行增删改查的操作，她会根据模型动态在数据库中创建以当前模型类名为名称的数据库表，当然你也可以自定义表名；
+- 她会根据模型的成员变量和成员变量的类型动态进行字段的设计，有多少成员变量，表中自然就会有多少字段与其对应，当然，你也可以忽略其中的某些你不想存储的成员变量，也可以自定义字段的名称；
+- 如果哪天模型的字段变化了，她会自动进行表中原有字段的更新，而且无论原表中有多少数据，都会一条不落的迁移到新表中；
+- 她的API简单到只有一行代码，你无需关注数据库的开启和关闭，一行代码实现增删改查和数据迁移； 
+- 你甚至可以在任何线程中调用她的API，她一定是线程安全的，不会出现多线程访问同一个数据库和死锁的问题；
+- 数据操作是耗时操作，所以你无需手动开启异步线程操作数据库操作，她会统一在一个保活的异步线程中执行；
+- 她支持存储常见的数据类型(int、long、signed、float、double、NSInteger、CGFloat、BOOL、NSString、NSMutableString、NSNumber、NSArray、NSMutableArray、NSDictionary、NSMutableDictionary、NSData、NSMutableData、UIImage、NSDate、NSURL、NSRange、CGRect、CGSize、CGPoint、自定义对象等的存储）； 
+- 她还对二进制文件的存储做了优化，比如同一张图片表中所有数据都持有这张图片对象，她在数据库中只会有一份拷贝，竭尽她所能优化存储空间。
 
-<!-- more -->
+ 笔锋一转，V1.0 版本会存在很多不足，希望各位前辈和大牛多多指正，多提 `issues`
 
 下面简述一下此库的一些设计思路和使用方法
 
@@ -38,7 +46,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 
 #### 一、增
 
-##### 1.保存一个模型
+##### 1.保存一个模型 (Save One Model)
 
 ```
 - (void)saveOnePerson
@@ -51,7 +59,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 ```
 实例化一个对象， 调用 `saveModel` 方法。
 
-##### 2.保存多个模型
+##### 2.保存多个模型 (Save Many Models)
 
 ```
 - (void)saveModels
@@ -69,7 +77,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 
 #### 二、删
 
-##### 1.删除一个模型
+##### 1.删除一个模型 (Delete One Model)
 
 ```
 - (void)deleteModel
@@ -83,7 +91,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 ```
 实例化一个对象，为主键赋值（得知道删的是哪个，让她猜，臣妾做不到）， 调用 `deleteModel` 方法。
 
-##### 2.删除此模型存储的所有数据
+##### 2.删除此模型存储的所有数据 (Delete All Models)
 
 ```
 - (void)clearModel
@@ -95,7 +103,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 ```
 调用 `clearModel` 方法，传入想删除的模型类
 
-##### 3.选择性删除此模型存储的数据
+##### 3.选择性删除此模型存储的数据 (Delete Models With Condition)
 
 ```
 /// 删除 age > 50 的数据
@@ -111,7 +119,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 
 #### 三、改
 
-##### 1.更新某模型某个成员变量 （选择性更新）
+##### 1.更新某模型某个成员变量 （选择性更新） (Update some properties in Model)
 
 ```
 /// 改名
@@ -130,7 +138,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 ```
 实例化一个对象，为主键和有变化的成员变量赋值， 调用 `updateModel` 方法，传入想更新的成员变量名称。
 
-##### 2.更新某模型所有数据 （全量更新）
+##### 2.更新某模型所有数据 （全量更新）  (Update all properties in Model)
 
 ```
 /// 根据传入的模型整体更新
@@ -152,7 +160,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 
 #### 四、查
 
-##### 1.根据主键查询模型 
+##### 1.根据主键查询模型  (Search One Model with primary Key)
 
 ```
 - (void)getOnePerson
@@ -166,7 +174,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 ```
 实例化一个对象，为主键赋值， 调用 `getModel` 方法。
 
-##### 2.查询数据库中所有该模型存储的数据
+##### 2.查询数据库中所有该模型存储的数据  (Search all Models in the database)
 
 ```
 - (void)getModels
@@ -179,7 +187,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 ```
 调用 `getModels` 方法，传入模型类
 
-##### 3.查询数据库中所有该模型存储的数据 - 按某成员变量排序
+##### 3.查询数据库中所有该模型存储的数据 - 按某成员变量排序  (Search all the Models in the database to sort the model)
 
 ```
 /// 获取数据库中所有该模型存储的数据 - 按 age 字段降序排列
@@ -192,7 +200,8 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 ```
 调用 `getModels` 方法，传入模型类和要排序的字段
 
-##### 4.查询数据库中所有该模型存储的数据 - 自定义查询条件
+##### 4.查询数据库中所有该模型存储的数据 - 自定义查询条件 (Search all the Models with condition)
+
 
 ```
 /// 获取数据库中所有该模型存储的数据 - 自定义查找条件 (例如模糊查询 name 含 学伟 的数据)
@@ -205,7 +214,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 ```
 调用 `getModels` 方法，传入模型类和查询的条件
 
-##### 5.查询数据库中所有该模型存储的数据 - 自定义查询条件并且可按照某字段排序
+##### 5.查询数据库中所有该模型存储的数据 - 自定义查询条件并且可按照某字段排序 (Search all the Models in the database to sort the model)
 
 ```
 /// 获取数据库中所有该模型存储的数据 - 自定义查找条件可排序 (例如模糊查询 name 含 学伟 的数据, 并且按 age 升序排序)
@@ -218,7 +227,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 ```
 调用 `getModels` 方法，传入模型类和查询的条件和排序的成员变量名称
 
-#### 五、数据迁移
+#### 五、数据迁移   （Data Migration）
 
 ##### 模型中成员变量发生变化，动态进行数据迁移
 
