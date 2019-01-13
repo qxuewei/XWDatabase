@@ -26,7 +26,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param obj 模型
  @param completion 保存 成功/失败
  */
-+ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion;
++ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  保存模型数组
@@ -34,7 +34,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param objs 模型数组
  @param completion 保存 成功/失败
  */
-+ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion)completion;
++ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion _Nullable)completion;
 
 #pragma mark - 删
 /**
@@ -43,7 +43,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param obj 模型 (主键不能为空)
  @param completion 成功/失败
  */
-+ (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion;
++ (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  删除指定模型所有数据
@@ -51,7 +51,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param cls 模型类
  @param completion 成功/失败
  */
-+ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion;
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  删除指定模型所有数据 - 自定义条件
@@ -60,7 +60,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param condition 自定义条件 (为空删除所有数据,有值根据自定义的条件删除 eg: 条件 (age > 60) )
  @param completion 成功/失败
  */
-+ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion)completion;
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion;
 
 #pragma mark - 改
 /**
@@ -69,16 +69,25 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param cls 模型类
  @param completion 是否更新成功
  */
-+ (void)updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion;
++ (void)updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  更新模型
  
  @param obj 模型
- @param updatePropertys 所更新的字段数组
+ @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
  @param completion 保存 成功/失败
  */
-+ (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys completion:(XWDatabaseCompletion)completion;
++ (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion;
+
+/**
+ 更新模型数组
+ 
+ @param objs 模型数组
+ @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
+ @param completion 保存 成功/失败
+ */
++ (void)updateModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion;
 
 
 #pragma mark - 查
@@ -88,7 +97,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param obj 查询对象(必须保证主键 不为空)
  @param completion 结果
  */
-+ (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject)completion;
++ (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject _Nullable)completion;
 
 /**
  查询模型数组
@@ -96,7 +105,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param cls 模型类
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects)completion;
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
  查询模型数组 - 按某字段排序
@@ -106,7 +115,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects)completion;
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
  查询模型数组 - 自定义条件
@@ -115,7 +124,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param condition 条件 (name like '%学伟')
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion;
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
  查询模型数组 - 自定义条件 + 按某字段排序
@@ -126,7 +135,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param condition 条件
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects)completion;
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 #pragma mark - 执行自定义SQL语句
 
@@ -136,7 +145,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param sql 自定义 SQL 更新语句
  @param completion 完成回调
  */
-+ (void)executeUpdateSql:(NSString *)sql completion:(XWDatabaseCompletion)completion;
++ (void)executeUpdateSql:(NSString *)sql completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  执行多条自定义 SQL 更新语句
@@ -144,7 +153,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param sqls 多条自定义 SQL 更新语句
  @param completion 完成回调
  */
-+ (void)executeUpdateSqls:(NSArray <NSString *> *)sqls completion:(XWDatabaseCompletion)completion;
++ (void)executeUpdateSqls:(NSArray <NSString *> *)sqls completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  执行单条自定义 SQL 查询语句
@@ -152,7 +161,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param sql 自定义 SQL 查询语句
  @param completion 完成回调
  */
-+ (void)executeQuerySql:(NSString *)sql completion:(XWDatabaseReturnResultSet)completion;
++ (void)executeQuerySql:(NSString *)sql completion:(XWDatabaseReturnResultSet _Nullable)completion;
 
 @end
 

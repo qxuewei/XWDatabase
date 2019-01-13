@@ -25,6 +25,7 @@
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		A00136135CC71F5F01EA6645 /* Pods_XWDatabase_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EBCA384703DBEDF2B54239A /* Pods_XWDatabase_Tests.framework */; };
 		B60AD8BE21B94B69008EAAD8 /* XWPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = B60AD8BD21B94B69008EAAD8 /* XWPerson.m */; };
+		B632CEDC21EB18220008D39A /* XWImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B632CEDB21EB18220008D39A /* XWImage.m */; };
 		B67AA13221BF5E18003E52A3 /* XWBook.m in Sources */ = {isa = PBXBuildFile; fileRef = B67AA13121BF5E18003E52A3 /* XWBook.m */; };
 /* End PBXBuildFile section */
 
@@ -68,6 +69,8 @@
 		B5FA3CE9020B7FFC9481E924 /* Pods-XWDatabase_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Tests.debug.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Tests/Pods-XWDatabase_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		B60AD8BC21B94B69008EAAD8 /* XWPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWPerson.h; sourceTree = "<group>"; };
 		B60AD8BD21B94B69008EAAD8 /* XWPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWPerson.m; sourceTree = "<group>"; };
+		B632CEDA21EB18220008D39A /* XWImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XWImage.h; sourceTree = "<group>"; };
+		B632CEDB21EB18220008D39A /* XWImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XWImage.m; sourceTree = "<group>"; };
 		B67AA13021BF5E18003E52A3 /* XWBook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XWBook.h; sourceTree = "<group>"; };
 		B67AA13121BF5E18003E52A3 /* XWBook.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XWBook.m; sourceTree = "<group>"; };
 		E1783A826DDC7C8231DD92B7 /* Pods-XWDatabase_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XWDatabase_Example.debug.xcconfig"; path = "Target Support Files/Pods-XWDatabase_Example/Pods-XWDatabase_Example.debug.xcconfig"; sourceTree = "<group>"; };
@@ -199,6 +202,8 @@
 				B60AD8BD21B94B69008EAAD8 /* XWPerson.m */,
 				B67AA13021BF5E18003E52A3 /* XWBook.h */,
 				B67AA13121BF5E18003E52A3 /* XWBook.m */,
+				B632CEDA21EB18220008D39A /* XWImage.h */,
+				B632CEDB21EB18220008D39A /* XWImage.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -394,6 +399,7 @@
 				6003F5A7195388D20070C39A /* XWViewController.m in Sources */,
 				B67AA13221BF5E18003E52A3 /* XWBook.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
+				B632CEDC21EB18220008D39A /* XWImage.m in Sources */,
 				B60AD8BE21B94B69008EAAD8 /* XWPerson.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

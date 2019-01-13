@@ -9,6 +9,7 @@
 #import "XWViewController.h"
 #import "XWPerson.h"
 #import "XWDatabase.h"
+#import "XWImage.h"
 
 @interface XWViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
@@ -21,9 +22,11 @@
 {
     [super viewDidLoad];
     
+    
     /// 增
     [self saveOnePerson];
 //    [self saveModels];
+//    [self addImages];
 
     /// 删
 //    [self deleteModel];
@@ -33,12 +36,12 @@
 //    [self updateModel];
 
     /// 查
-    [self getOnePerson];
+//    [self getOnePerson];
 //    [self getModels];
 //    [self getModelsSortAge];
 //    [self getModelsCondition];
 //    [self getModelsConditionSort];
-    
+//    [self getImage];
 }
 
 #pragma mark - 增
@@ -60,6 +63,20 @@
     }
     [XWDatabase saveModels:persons completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> saveModels (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 保存无主键模型
+- (void)addImages {
+    NSMutableArray *images = [NSMutableArray array];
+    for (int i = 0; i < 100; i++) {
+        XWImage *image = [XWImage new];
+        image.name = [NSString stringWithFormat:@"name - %d",i];
+        image.filePath = [NSString stringWithFormat:@"filePath - %d",i];
+        [images addObject:image];
+    }
+    [XWDatabase saveModels:images completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> addImages (%@)",isSuccess?@"成功":@"失败");
     }];
 }
 
@@ -160,6 +177,14 @@
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
         }
+    }];
+}
+
+/// 获取无主键模型
+- (void)getImage {
+    NSString *condition = @"name = 'name - 66'";
+    [XWDatabase getModels:XWImage.class condition:condition completion:^(NSArray * _Nullable objs) {
+         NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
     }];
 }
 

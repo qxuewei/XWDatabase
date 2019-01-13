@@ -10,6 +10,13 @@
 #import "XWDatabase.h"
 #import "XWBook.h"
 
+@interface XWPerson ()
+
+@property (nonatomic, assign) NSUInteger girlFirendsCount;
+@property (nonatomic, copy) NSString *favoriteGirl;
+
+@end
+
 @implementation XWPerson
 
 #pragma mark - public
@@ -51,6 +58,8 @@
     person.URL = [NSURL URLWithString:@"www.qiuxuewei.com"];
     person.pRange = NSMakeRange(0, 99);
     person.indexPath = [NSIndexPath indexPathForItem:1 inSection:2];
+    person.girlFirendsCount = 108;
+    person.favoriteGirl = @"小王";
     
     /// 存储自定义对象
 //    XWBook *book = [XWBook new];

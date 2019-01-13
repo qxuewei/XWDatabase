@@ -24,7 +24,7 @@
  @param obj 模型
  @param completion 保存 成功/失败
  */
-+ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion {
++ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion {
     if (!obj) {
         completion ? completion(NO) : nil;
         return;
@@ -42,7 +42,7 @@
  @param objs 模型数组
  @param completion 保存 成功/失败
  */
-+ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion)completion {
++ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion _Nullable)completion {
     if (!objs || objs.count == 0) {
         completion ? completion(NO) : nil;
         return;
@@ -61,7 +61,7 @@
  @param obj 模型 (主键不能为空)
  @param completion 成功/失败
  */
-+ (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion {
++ (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion {
     if (!obj) {
         completion ? completion(NO) : nil;
         return;
@@ -82,7 +82,7 @@
  @param cls 模型类
  @param completion 成功/失败
  */
-+ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion {
     [self clearModel:cls condition:nil completion:completion];
 }
 
@@ -93,7 +93,7 @@
  @param condition 自定义条件 (为空删除所有数据,有值根据自定义的条件删除)
  @param completion 成功/失败
  */
-+ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition completion:(XWDatabaseCompletion)completion {
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion {
     if (!cls) {
         completion ? completion(NO) : nil;
         return;
@@ -111,7 +111,7 @@
  @param cls 模型类
  @param completion 是否更新成功
  */
-+ (void)updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
++ (void)updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion {
     if (!cls) {
         completion ? completion(NO) : nil;
         return;
@@ -125,11 +125,11 @@
  更新模型
  
  @param obj 模型
- @param updatePropertys 所更新的字段数组
+ @param updatePropertys 所更新的字段数组 (无自定义全量更新)
  @param completion 保存 成功/失败
  */
-+ (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys completion:(XWDatabaseCompletion)completion {
-    if (!obj || !updatePropertys) {
++ (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion {
+    if (!obj) {
         completion ? completion(NO) : nil;
         return;
     }
@@ -143,6 +143,30 @@
     }];
 }
 
+/**
+ 更新模型数组
+ 
+ @param objs 模型数组
+ @param updatePropertys 所更新的字段数组
+ @param completion 保存 成功/失败
+ */
++ (void)updateModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion {
+    if (!objs || !objs.count) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        NSMutableArray *sqls = [NSMutableArray array];
+        for (NSObject *obj in objs) {
+            NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj updatePropertys:updatePropertys];
+            if (updateModelSQL) {
+                [sqls addObject:updateModelSQL];
+            }
+        }
+        [self executeUpdateSqls:sqls completion:completion];
+    }];
+}
+
 #pragma mark  查
 /**
  查询模型
@@ -150,7 +174,7 @@
  @param obj 查询对象(必须保证主键 不为空)
  @param completion 结果
  */
-+ (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject)completion {
++ (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject _Nullable)completion {
     if (!completion) {
         return;
     }
@@ -169,7 +193,7 @@
  @param cls 模型类
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects)completion {
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects _Nullable)completion {
     [self getModels:cls sortColumn:nil isOrderDesc:NO condition:nil completion:completion];
 }
 
@@ -181,7 +205,7 @@
  @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects)completion {
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion {
     [self getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
 }
 
@@ -192,7 +216,7 @@
  @param condition 条件
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion {
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
     [self getModels:cls sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
 }
 
@@ -205,7 +229,7 @@
  @param condition 条件
  @param completion 结果
  */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion {
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
     if (!completion) {
         return;
     }
@@ -226,7 +250,7 @@
  @param sql 自定义 SQL 更新语句
  @param completion 完成回调
  */
-+ (void)executeUpdateSql:(NSString *)sql completion:(XWDatabaseCompletion)completion {
++ (void)executeUpdateSql:(NSString *)sql completion:(XWDatabaseCompletion _Nullable)completion {
     if (!sql || sql.length == 0) {
         completion ? completion(NO) : nil;
         return;
@@ -242,7 +266,7 @@
  @param sqls 多条自定义 SQL 更新语句
  @param completion 完成回调
  */
-+ (void)executeUpdateSqls:(NSArray <NSString *> *)sqls completion:(XWDatabaseCompletion)completion {
++ (void)executeUpdateSqls:(NSArray <NSString *> *)sqls completion:(XWDatabaseCompletion _Nullable)completion {
     if (!sqls || sqls.count == 0) {
         completion ? completion(NO) : nil;
         return;
@@ -269,7 +293,7 @@
  @param sql 自定义 SQL 查询语句
  @param completion 完成回调
  */
-+ (void)executeQuerySql:(NSString *)sql completion:(XWDatabaseReturnResultSet)completion {
++ (void)executeQuerySql:(NSString *)sql completion:(XWDatabaseReturnResultSet _Nullable)completion {
     if (!sql || sql.length == 0) {
         completion ? completion(nil) : nil;
         return;
@@ -285,7 +309,7 @@
 
 #pragma mark - private
 #pragma mark  增
-+ (void)p_saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion)completion {
++ (void)p_saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion {
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         
@@ -331,7 +355,7 @@
     }];
 }
 
-+ (void)p_saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion)completion {
++ (void)p_saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion _Nullable)completion {
     
     [[XWDatabaseQueue shareInstance] inTransaction:^(FMDatabase * _Nonnull database, BOOL * _Nonnull rollback) {
         @autoreleasepool {
@@ -363,7 +387,7 @@
                 NSString *searchSql = [XWDatabaseSQL isExistSql:obj];
                 if (!searchSql) {
                     appendInsertSql(obj);
-                    return;
+                    continue;
                 }
                 [XWDatabaseQueue executeStatementQuerySql:searchSql database:database completion:^(int count) {
                     if (count < 0) {
@@ -395,7 +419,7 @@
 }
 #pragma mark  删
 #pragma mark  改
-+ (void)p_updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion)completion {
++ (void)p_updateTable:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion {
     
     [[XWDatabaseQueue shareInstance] inTransaction:^(FMDatabase * _Nonnull database, BOOL * _Nonnull rollback) {
         
@@ -487,7 +511,7 @@
 }
 
 #pragma mark  查
-+ (void)p_getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject)completion {
++ (void)p_getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject _Nullable)completion {
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         NSString *isExistSql = [XWDatabaseSQL isExistSql:obj];
         if (!isExistSql) {
@@ -517,7 +541,7 @@
     }];
 }
 
-+ (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition completion:(XWDatabaseReturnObjects)completion {
++ (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         @autoreleasepool {
@@ -547,12 +571,12 @@
 
 #pragma mark  通用
 /// 建表
-+ (BOOL)p_createTable:(Class<XWDatabaseModelProtocol>)cls database:(FMDatabase *)database {
++ (BOOL)p_createTable:(Class<XWDatabaseModelProtocol>)cls database:(FMDatabase * _Nullable)database {
     NSString *creatTableSql = [XWDatabaseSQL createTableSql:cls isTtemporary:NO];
     return [XWDatabaseQueue executeUpdateSql:creatTableSql database:database];
 }
 
-+ (void)p_executeUpdate:(NSString *)sql completion:(XWDatabaseCompletion)completion {
++ (void)p_executeUpdate:(NSString *)sql completion:(XWDatabaseCompletion _Nullable)completion {
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:sql database:database];
         completion ? completion(isSuccess) : nil;

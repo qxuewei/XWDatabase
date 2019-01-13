@@ -247,6 +247,7 @@
 #pragma mark - private
 + (NSString *)p_updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj customIvarNames:(NSArray <NSString *> *)customIvarNames {
     if (!obj.xwdb_primaryKey && !obj.xwdb_unionPrimaryKey) {
+        NSLog(@"所处理的模型无主键!");
         return nil;
     }
     NSString *queryCondition = [self queryCondition:obj];
