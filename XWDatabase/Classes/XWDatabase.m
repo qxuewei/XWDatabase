@@ -198,6 +198,17 @@
 }
 
 /**
+ 查询模型数组 - 自定义条件
+ 
+ @param cls 模型类
+ @param condition 条件
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
+    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
+}
+
+/**
  查询模型数组 - 按某字段排序
  
  @param cls 模型类
@@ -207,17 +218,6 @@
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion {
     [self getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
-}
-
-/**
- 查询模型数组 - 自定义条件
- 
- @param cls 模型类
- @param condition 条件
- @param completion 结果
- */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
 }
 
 /**

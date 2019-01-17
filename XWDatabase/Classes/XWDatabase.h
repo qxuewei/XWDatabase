@@ -108,6 +108,16 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
+ 查询模型数组 - 自定义条件
+ 
+ @param cls 模型类
+ @param condition 条件 (name like '%学伟')
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
+
+
+/**
  查询模型数组 - 按某字段排序
  
  @param cls 模型类
@@ -116,15 +126,6 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion;
-
-/**
- 查询模型数组 - 自定义条件
- 
- @param cls 模型类
- @param condition 条件 (name like '%学伟')
- @param completion 结果
- */
-+ (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
  查询模型数组 - 自定义条件 + 按某字段排序
