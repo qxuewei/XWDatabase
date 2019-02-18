@@ -24,8 +24,8 @@
     
     
     /// 增
-    [self saveOnePerson];
-//    [self saveModels];
+//    [self saveOnePerson];
+    [self saveModels];
 //    [self addImages];
 
     /// 删
@@ -39,7 +39,7 @@
 //    [self getOnePerson];
 //    [self getModels];
 //    [self getModelsSortAge];
-//    [self getModelsCondition];
+    [self getModelsCondition];
 //    [self getModelsConditionSort];
 //    [self getImage];
 }
@@ -161,10 +161,18 @@
 /// 获取数据库中所有该模型存储的数据 - 自定义查找条件 (例如模糊查询 name 含 学伟 的数据)
 - (void)getModelsCondition
 {
-    [XWDatabase getModels:XWPerson.class condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
+//    [XWDatabase getModels:XWPerson.class condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
+//        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+//        for (XWPerson *person in objs) {
+//            NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
+//        }
+//    }];
+    
+    /// SQLite 模糊查询默认大小写不敏感
+    [XWDatabase getModels:XWPerson.class condition:@"gender like '%m%' AND name like '%xue%'" completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         for (XWPerson *person in objs) {
-            NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
+            NSLog(@"cardID : %@ name : %@ -- age: %zd -- sex: %@",person.cardID,person.name,person.age,person.sex);
         }
     }];
 }

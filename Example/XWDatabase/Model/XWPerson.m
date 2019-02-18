@@ -26,7 +26,7 @@
     person.cardID = [NSString stringWithFormat:@"%d",index];
     person.age = 18 + arc4random_uniform(100);
     person.name = person.age % 2 == 0 ? @"极客学伟" : @"www.qiuxuewei.com";
-    person.sex = @"male";
+    person.sex = arc4random_uniform(2) == 1 ? @"Male" : @"male";
     person.birthday = [NSDate date];
     person.girls = @[@"小妹",@"校花",@"小baby"].mutableCopy;
     person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
