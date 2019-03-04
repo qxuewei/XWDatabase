@@ -6,7 +6,7 @@
 //  Copyright © 2018 邱学伟. All rights reserved.
 //
 
-#import "FMDB.h"
+#import <FMDB/FMDB.h>
 #import "XWDatabase.h"
 #import "XWDatabaseSQL.h"
 #import "XWLivingThread.h"
@@ -310,6 +310,11 @@
 #pragma mark - private
 #pragma mark  增
 + (void)p_saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion {
+    
+    if (obj.xw_isDatabaseIdentifier) {
+//        NSString *databaseIdentifier = obj.xw_DatabaseIdentifier;
+        
+    }
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         

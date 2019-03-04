@@ -30,10 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)tempTableName:(Class<XWDatabaseModelProtocol>)cls;
 
 /**
- 模型中所有成员变量 (key: 成员变量名称  value: 成员变量类型)
+ 模型中所有成员变量 (key: 成员变量名称(映射后字段名)  value: 成员变量类型)
  
  @param cls 类
- @return 模型中所有成员变量 (key: 成员变量名称  value: 成员变量类型)
+ @return 模型中所有成员变量 (key: 成员变量名称(映射后字段名)  value: 成员变量类型)
  */
 + (NSDictionary *)classColumnIvarNameTypeDict:(Class)cls;
 

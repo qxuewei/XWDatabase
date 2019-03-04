@@ -11,7 +11,6 @@
 /// 模型操作数据库所遵循的协议
 @protocol XWDatabaseModelProtocol <NSObject>
 
-@required
 @optional
 
 /**
@@ -55,5 +54,26 @@
  @return 自定义表名
  */
 + (NSString *)xw_customTableName;
+
+/**
+ 自定义存储的属性数组, 实现此协议在存储时将自动忽略其他属性
+ 
+ @return 自定义存储的属性数组
+ */
++ (NSSet < NSString * > *)xw_specificSaveColumnNames;
+
+/**
+ 是否通过唯一标识将数据存储于不同数据库, 若为YES必须实现 "xw_databaseIdentifierColumnName" 协议, YES: 模型根据指定标识字段区分存储的数据库  NO(或不实现): 模型存储在通用数据库内
+
+ @return 是否通过唯一标识将数据存储于不同数据库
+ */
++ (BOOL)xw_isDatabaseIdentifier;
+
+/**
+ 数据库唯一标识属性名, 区分数据存储于不同数据库  ('xw_isDatabaseIdentifier' 返回 YES 时生效)
+
+ @return 数据库唯一标识
+ */
++ (NSString *)xw_databaseIdentifierColumnName;
 
 @end

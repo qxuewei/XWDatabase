@@ -96,7 +96,7 @@
  
  @return 主键的属性名
  */
-- (NSString *)xwdb_primaryKey {
+- (NSString * _Nullable)xwdb_primaryKey {
     if ([self.class respondsToSelector:@selector(xw_primaryKey)]) {
         NSString *primaryKey = [self.class xw_primaryKey];
         if (primaryKey && primaryKey.length > 0) {
@@ -116,7 +116,7 @@
  
  @return 联合主键成员变量数组
  */
-- (NSArray < NSString * > *)xwdb_unionPrimaryKey {
+- (NSArray < NSString * > * _Nullable)xwdb_unionPrimaryKey {
     if ([self.class respondsToSelector:@selector(xw_unionPrimaryKey)]) {
         NSArray *unionPrimaryKey = [self.class xw_unionPrimaryKey];
         if (unionPrimaryKey && unionPrimaryKey.count > 0) {
@@ -140,7 +140,7 @@
  
  @return 自定义对象映射
  */
-- (NSDictionary *)xwdb_customModelMapping {
+- (NSDictionary * _Nullable)xwdb_customModelMapping {
     if ([self.class respondsToSelector:@selector(xw_customModelMapping)]) {
         NSDictionary *customModelMapping = [self.class xw_customModelMapping];
         if (customModelMapping && customModelMapping.count > 0) {
@@ -155,10 +155,10 @@
  
  @return 忽略的属性名数组
  */
-- (NSSet <NSString *>*)xwdb_ignoreColumnNames {
+- (NSSet <NSString *>* _Nullable)xwdb_ignoreColumnNames {
     if ([self.class respondsToSelector:@selector(xw_ignoreColumnNames)]) {
         NSSet *ignoreColumnNames = [self.class xw_ignoreColumnNames];
-        if (ignoreColumnNames && ignoreColumnNames.count > 0) {
+        if (ignoreColumnNames && ignoreColumnNames.count) {
             return ignoreColumnNames;
         }
     }
@@ -170,7 +170,7 @@
  
  @return 自定义字段名映射表
  */
-- (NSDictionary *)xwdb_customColumnMapping {
+- (NSDictionary * _Nullable)xwdb_customColumnMapping {
     if ([self.class respondsToSelector:@selector(xw_customColumnMapping)]) {
         NSDictionary *customColumnMapping = [self.class xw_customColumnMapping];
         if (customColumnMapping && customColumnMapping.count > 0) {
@@ -188,7 +188,7 @@
  
  @return 自定义表名
  */
-- (NSString *)xwdb_customTableName {
+- (NSString * _Nullable)xwdb_customTableName {
     if ([self.class respondsToSelector:@selector(xw_customTableName)]) {
         NSString *customTableName = [self.class xw_customTableName];
         if (customTableName && customTableName.length > 0) {
@@ -197,5 +197,54 @@
     }
     return nil;
 }
+
+/**
+ 自定义存储的属性数组, 实现此协议在存储时将自动忽略其他属性( 'xw_ignoreColumnNames' 将无效),
+ 
+ @return 自定义存储的属性数组
+ */
+- (NSSet < NSString * > * _Nullable)xw_specificSaveColumnNames {
+    if ([self.class respondsToSelector:@selector(xw_specificSaveColumnNames)]) {
+        NSSet *specificSaveColumnNames = [self.class xw_specificSaveColumnNames];
+        if (specificSaveColumnNames && specificSaveColumnNames.count) {
+            return specificSaveColumnNames;
+        }
+    }
+    return nil;
+}
+
+
+/**
+ 是否通过唯一标识将数据存储于不同数据库, 若为YES必须实现 "xw_databaseIdentifierColumnName" 协议, YES: 模型根据指定标识字段区分存储的数据库  NO(或不实现): 模型存储在通用数据库内
+ 
+ @return 是否通过唯一标识将数据存储于不同数据库
+ */
+- (BOOL)xw_isDatabaseIdentifier {
+    if ([self.class respondsToSelector:@selector(xw_isDatabaseIdentifier)]) {
+        BOOL isDatabaseIdentifier = [self.class xw_isDatabaseIdentifier];
+        return isDatabaseIdentifier;
+    } else {
+        return NO;
+    }
+}
+
+/**
+ 数据库唯一标识属性名, 区分数据存储于不同数据库  ('xw_isDatabaseIdentifier' 返回 YES 时生效)
+ 
+ @return 数据库唯一标识
+ */
+- (NSString * _Nullable)xw_databaseIdentifierColumnName {
+    if ([self.class respondsToSelector:@selector(xw_databaseIdentifierColumnName)]) {
+        id databaseIdentifier = [self.class xw_databaseIdentifierColumnName];
+        if ([databaseIdentifier isKindOfClass:[NSString class]]) {
+            return (NSString *)databaseIdentifier;
+        } else {
+            return [NSString stringWithFormat:@"%@",databaseIdentifier];
+        }
+    } else {
+        return nil;
+    }
+}
+
 
 @end
