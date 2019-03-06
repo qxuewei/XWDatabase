@@ -112,7 +112,10 @@ static NSNumberFormatter *_numberFormatter;
  */
 + (NSString *)sqlWithCreatTable:(Class<XWDatabaseModelProtocol>)cls {
     NSMutableArray *arrayM = [[NSMutableArray alloc] init];
-    [arrayM addObject:@"xw_id INTEGER PRIMARY KEY AUTOINCREMENT"];  /// 自定义主键
+    NSString *creatPrimaryKeySql = [NSString stringWithFormat:@"%@ INTEGER PRIMARY KEY AUTOINCREMENT",kXWDB_PRIMARYKEY_COLUMNNAME];
+    [arrayM addObject:creatPrimaryKeySql];  /// 默认自增主键
+    NSString *addIdentifierSql = [NSString stringWithFormat:@"%@ text",kXWDB_IDENTIFIER_COLUMNNAME];
+    [arrayM addObject:addIdentifierSql];    /// 数据标识符
     NSDictionary *classIvarNameSqliteTypeDict = [self classIvarNameSqliteTypeDict:cls];
     [classIvarNameSqliteTypeDict enumerateKeysAndObjectsUsingBlock:^(NSString * name, NSString * sqliteType, BOOL * _Nonnull stop) {
         NSMutableString *subSql = [NSMutableString stringWithFormat:@"%@ %@",name,sqliteType];

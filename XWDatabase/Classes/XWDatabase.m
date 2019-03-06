@@ -30,7 +30,26 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        [self p_saveModel:obj completion:^(BOOL isSuccess) {
+        [self p_saveModel:obj identifier:nil completion:^(BOOL isSuccess) {
+            completion ? completion(isSuccess) : nil;
+        }];
+    }];
+}
+
+/**
+ 保存模型 (表中不存在插入, 已存在更新)
+ 
+ @param obj 模型
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 保存 成功/失败
+ */
++ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
+    if (!obj) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        [self p_saveModel:obj identifier:identifier completion:^(BOOL isSuccess) {
             completion ? completion(isSuccess) : nil;
         }];
     }];
@@ -48,7 +67,26 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        [self p_saveModels:objs completion:^(BOOL isSuccess) {
+        [self p_saveModels:objs identifier:nil completion:^(BOOL isSuccess) {
+            completion ? completion(isSuccess) : nil;
+        }];
+    }];
+}
+
+/**
+ 保存模型数组
+ 
+ @param objs 模型数组
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 保存 成功/失败
+ */
++ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
+    if (!objs || objs.count == 0) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        [self p_saveModels:objs identifier:nil completion:^(BOOL isSuccess) {
             completion ? completion(isSuccess) : nil;
         }];
     }];
@@ -67,7 +105,29 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        NSString *deleteColumnSql = [XWDatabaseSQL deleteColumn:obj];
+        NSString *deleteColumnSql = [XWDatabaseSQL deleteColumn:obj identifier:nil];
+        if (!deleteColumnSql) {
+            completion ? completion(NO) : nil;
+            return;
+        }
+        [self p_executeUpdate:deleteColumnSql completion:completion];
+    }];
+}
+
+/**
+ 删除指定模型
+ 
+ @param obj 模型
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 成功/失败
+ */
++ (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
+    if (!obj) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        NSString *deleteColumnSql = [XWDatabaseSQL deleteColumn:obj identifier:identifier];
         if (!deleteColumnSql) {
             completion ? completion(NO) : nil;
             return;
@@ -90,10 +150,40 @@
  删除指定模型所有数据
  
  @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 成功/失败
+ */
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
+    [self clearModel:cls condition:nil completion:completion];
+}
+
+/**
+ 删除指定模型所有数据
+ 
+ @param cls 模型类
  @param condition 自定义条件 (为空删除所有数据,有值根据自定义的条件删除)
  @param completion 成功/失败
  */
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion {
+    if (!cls) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        NSString *clearColumnSql = [XWDatabaseSQL clearColumn:cls condition:condition];
+        [self p_executeUpdate:clearColumnSql completion:completion];
+    }];
+}
+
+/**
+ 删除指定模型所有数据
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param condition 自定义条件 (为空删除所有数据,有值根据自定义的条件删除)
+ @param completion 成功/失败
+ */
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion {
     if (!cls) {
         completion ? completion(NO) : nil;
         return;
@@ -134,7 +224,30 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj updatePropertys:updatePropertys];
+        NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:nil updatePropertys:updatePropertys];
+        if (!updateModelSQL) {
+            completion ? completion(NO) : nil;
+            return ;
+        }
+        [self p_executeUpdate:updateModelSQL completion:completion];
+    }];
+}
+
+/**
+ 更新模型
+ 
+ @param obj 模型
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param updatePropertys 所更新的字段数组 (无自定义全量更新)
+ @param completion 保存 成功/失败
+ */
++ (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion {
+    if (!obj) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier updatePropertys:updatePropertys];
         if (!updateModelSQL) {
             completion ? completion(NO) : nil;
             return ;
@@ -158,7 +271,7 @@
     [XWLivingThread executeTaskInMain:^{
         NSMutableArray *sqls = [NSMutableArray array];
         for (NSObject *obj in objs) {
-            NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj updatePropertys:updatePropertys];
+            NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:nil updatePropertys:updatePropertys];
             if (updateModelSQL) {
                 [sqls addObject:updateModelSQL];
             }
@@ -170,7 +283,7 @@
 #pragma mark  查
 /**
  查询模型
-
+ 
  @param obj 查询对象(必须保证主键 不为空)
  @param completion 结果
  */
@@ -183,7 +296,27 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        [self p_getModel:obj completion:completion];
+        [self p_getModel:obj identifier:nil completion:completion];
+    }];
+}
+
+/**
+ 查询模型
+
+ @param obj 查询对象(必须保证主键 不为空)
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 结果
+ */
++ (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObject _Nullable)completion {
+    if (!completion) {
+        return;
+    }
+    if (!obj) {
+        completion ? completion(nil) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        [self p_getModel:obj identifier:identifier completion:completion];
     }];
 }
 
@@ -198,6 +331,17 @@
 }
 
 /**
+ 查询模型数组
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObjects _Nullable)completion {
+    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:nil completion:completion];
+}
+
+/**
  查询模型数组 - 自定义条件
  
  @param cls 模型类
@@ -205,6 +349,18 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
+    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
+}
+
+/**
+ 查询模型数组 - 自定义条件
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param condition 条件
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
     [self getModels:cls sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
 }
 
@@ -221,6 +377,19 @@
 }
 
 /**
+ 查询模型数组 - 按某字段排序
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param sortColumn 排序字段
+ @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion {
+    [self getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
+}
+
+/**
  查询模型数组 - 自定义条件 + 按某字段排序
  
  @param cls 模型类
@@ -230,6 +399,29 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
+    if (!completion) {
+        return;
+    }
+    if (!cls) {
+        completion ? completion(nil) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        [self p_getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition completion:completion];
+    }];
+}
+
+/**
+ 查询模型数组 - 自定义条件 + 按某字段排序
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param sortColumn 排序字段
+ @param isOrderDesc 是否降序
+ @param condition 条件
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
     if (!completion) {
         return;
     }
@@ -309,12 +501,7 @@
 
 #pragma mark - private
 #pragma mark  增
-+ (void)p_saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion {
-    
-    if (obj.xw_isDatabaseIdentifier) {
-//        NSString *databaseIdentifier = obj.xw_DatabaseIdentifier;
-        
-    }
++ (void)p_saveModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         
@@ -325,23 +512,19 @@
         
         /// 不存在直接插入
         void(^insertOperate)(void) = ^ {
-            NSString *saveSql = [XWDatabaseSQL saveOneObjSql:obj];
+            NSString *saveSql = [XWDatabaseSQL insertOneObjSql:obj identifier:identifier];
             BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:saveSql database:database];
             completion ? completion(isSuccess) : nil;
         };
         
-        NSString *searchSql = [XWDatabaseSQL isExistSql:obj];
+        NSString *searchSql = [XWDatabaseSQL isExistSql:obj identifier:identifier];
         if (!searchSql) {
             insertOperate();
             return;
         }
         /// 已存在根据传入的模型全量更新
         void(^updateOperate)(void) = ^ {
-            NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj];
-            if (!updateSql) {
-                completion ? completion(NO) : nil;
-                return ;
-            }
+            NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier];
             BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:updateSql database:database];
             completion ? completion(isSuccess) : nil;
         };
@@ -360,7 +543,7 @@
     }];
 }
 
-+ (void)p_saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion _Nullable)completion {
++ (void)p_saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
     
     [[XWDatabaseQueue shareInstance] inTransaction:^(FMDatabase * _Nonnull database, BOOL * _Nonnull rollback) {
         @autoreleasepool {
@@ -376,20 +559,20 @@
             
             /// 添加插入语句
             void(^appendInsertSql)(NSObject <XWDatabaseModelProtocol>*) = ^ (NSObject <XWDatabaseModelProtocol> *obj) {
-                NSString *insertSql = [XWDatabaseSQL saveOneObjSql:obj];
+                NSString *insertSql = [XWDatabaseSQL insertOneObjSql:obj identifier:identifier];
                 [updateSqls addObject:insertSql];
             };
             
             /// 添加更新语句
             void(^appendUpdateSql)(NSObject <XWDatabaseModelProtocol>*) = ^ (NSObject <XWDatabaseModelProtocol> *obj) {
-                NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj];
+                NSString *updateSql = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier];
                 if (updateSql) {                
                     [updateSqls addObject:updateSql];
                 }
             };
             
             for (NSObject <XWDatabaseModelProtocol> *obj in objs) {
-                NSString *searchSql = [XWDatabaseSQL isExistSql:obj];
+                NSString *searchSql = [XWDatabaseSQL isExistSql:obj identifier:identifier];
                 if (!searchSql) {
                     appendInsertSql(obj);
                     continue;
@@ -516,16 +699,16 @@
 }
 
 #pragma mark  查
-+ (void)p_getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject _Nullable)completion {
++ (void)p_getModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObject _Nullable)completion {
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
-        NSString *isExistSql = [XWDatabaseSQL isExistSql:obj];
+        NSString *isExistSql = [XWDatabaseSQL isExistSql:obj identifier:identifier];
         if (!isExistSql) {
             completion ? completion(nil) : nil;
             return ;
         }
         [XWDatabaseQueue executeStatementQuerySql:isExistSql database:database completion:^(int count) {
             if (count > 0) {
-                NSString *searchSql = [XWDatabaseSQL searchSql:obj];
+                NSString *searchSql = [XWDatabaseSQL searchSql:obj identifier:identifier];
                 if (!searchSql) {
                     completion ? completion(nil) : nil;
                     return ;

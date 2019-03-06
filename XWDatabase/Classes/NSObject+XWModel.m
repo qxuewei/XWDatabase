@@ -10,8 +10,31 @@
 #import <objc/runtime.h>
 #import "XWDatabaseModel.h"
 
+#pragma mark 常量
+NSString * const kXWDB_IDENTIFIER_COLUMNNAME    =   @"xw_identifier";   //唯一标识字段名称
+NSString * const kXWDB_PRIMARYKEY_COLUMNNAME    =   @"xw_id";           //默认自增主键字段名称
+
+@interface NSObject ()
+@property (nonatomic, copy) NSString *abc;
+@end
 
 @implementation NSObject (XWModel)
+
+#pragma mark - Public
+/**
+ 是否具备数据可 更新/查询 条件
+ 
+ @return 是否具备数据可 更新/查询 条件
+ */
+- (BOOL)xwdb_isUpdateQueryingCondition {
+    if (!self.xwdb_primaryKey && !self.xwdb_unionPrimaryKey) {
+        NSLog(@"所处理的模型无主键! 也无唯一标识字段");
+        return NO;
+    }
+    return YES;
+}
+
+#pragma mark - 分类新增属性
 /// 默认自增主键
 - (void)setXw_id:(NSNumber *)xw_id {
     objc_setAssociatedObject(self, @selector(xw_id), xw_id, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -125,6 +148,9 @@
                 NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:self.class];
                 /// 表字段中无该主键
                 isError = ![columns.allKeys containsObject:obj];
+                if (isError) {
+                    *stop = YES;
+                }
             }];
             if (isError) {
                 return nil;
@@ -142,9 +168,15 @@
  */
 - (NSDictionary * _Nullable)xwdb_customModelMapping {
     if ([self.class respondsToSelector:@selector(xw_customModelMapping)]) {
-        NSDictionary *customModelMapping = [self.class xw_customModelMapping];
+        NSMutableDictionary *customModelMapping = [self.class xw_customModelMapping].mutableCopy;
+        [customModelMapping enumerateKeysAndObjectsUsingBlock:^(NSString * key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+           NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:self.class];
+            if (![columns.allKeys containsObject:key]) {
+                [customModelMapping removeObjectForKey:key];
+            }
+        }];
         if (customModelMapping && customModelMapping.count > 0) {
-            return customModelMapping;
+            return customModelMapping.copy;
         }
     }
     return nil;
@@ -172,12 +204,17 @@
  */
 - (NSDictionary * _Nullable)xwdb_customColumnMapping {
     if ([self.class respondsToSelector:@selector(xw_customColumnMapping)]) {
-        NSDictionary *customColumnMapping = [self.class xw_customColumnMapping];
+        NSMutableDictionary *customColumnMapping = [self.class xw_customColumnMapping].mutableCopy;
         if (customColumnMapping && customColumnMapping.count > 0) {
             [customColumnMapping enumerateKeysAndObjectsUsingBlock:^(NSString * key, NSString * obj, BOOL * _Nonnull stop) {
-                obj = [key stringByReplacingOccurrencesOfString:@" " withString:@""];
+                NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:self.class];
+                if (![columns.allKeys containsObject:key]) {
+                    [customColumnMapping removeObjectForKey:key];
+                } else {
+                    obj = [key stringByReplacingOccurrencesOfString:@" " withString:@""];
+                }
             }];
-            return customColumnMapping;
+            return customColumnMapping.copy;
         }
     }
     return nil;
@@ -203,48 +240,21 @@
  
  @return 自定义存储的属性数组
  */
-- (NSSet < NSString * > * _Nullable)xw_specificSaveColumnNames {
+- (NSSet < NSString * > * _Nullable)xwdb_specificSaveColumnNames {
     if ([self.class respondsToSelector:@selector(xw_specificSaveColumnNames)]) {
-        NSSet *specificSaveColumnNames = [self.class xw_specificSaveColumnNames];
+        NSMutableSet *specificSaveColumnNames = [self.class xw_specificSaveColumnNames].mutableCopy;
+        [specificSaveColumnNames enumerateObjectsUsingBlock:^(NSString * obj, BOOL * _Nonnull stop) {
+            NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:self.class];
+            if (![columns.allKeys containsObject:obj]) {
+                /// 不存在自定义存储的属性
+                [specificSaveColumnNames removeObject:obj];
+            }
+        }];
         if (specificSaveColumnNames && specificSaveColumnNames.count) {
-            return specificSaveColumnNames;
+            return specificSaveColumnNames.copy;
         }
     }
     return nil;
 }
-
-
-/**
- 是否通过唯一标识将数据存储于不同数据库, 若为YES必须实现 "xw_databaseIdentifierColumnName" 协议, YES: 模型根据指定标识字段区分存储的数据库  NO(或不实现): 模型存储在通用数据库内
- 
- @return 是否通过唯一标识将数据存储于不同数据库
- */
-- (BOOL)xw_isDatabaseIdentifier {
-    if ([self.class respondsToSelector:@selector(xw_isDatabaseIdentifier)]) {
-        BOOL isDatabaseIdentifier = [self.class xw_isDatabaseIdentifier];
-        return isDatabaseIdentifier;
-    } else {
-        return NO;
-    }
-}
-
-/**
- 数据库唯一标识属性名, 区分数据存储于不同数据库  ('xw_isDatabaseIdentifier' 返回 YES 时生效)
- 
- @return 数据库唯一标识
- */
-- (NSString * _Nullable)xw_databaseIdentifierColumnName {
-    if ([self.class respondsToSelector:@selector(xw_databaseIdentifierColumnName)]) {
-        id databaseIdentifier = [self.class xw_databaseIdentifierColumnName];
-        if ([databaseIdentifier isKindOfClass:[NSString class]]) {
-            return (NSString *)databaseIdentifier;
-        } else {
-            return [NSString stringWithFormat:@"%@",databaseIdentifier];
-        }
-    } else {
-        return nil;
-    }
-}
-
 
 @end

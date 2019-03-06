@@ -7,14 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "XWDatabaseModelProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface XWBook : NSObject <NSCoding, NSSecureCoding>
+@interface XWBook : NSObject <NSCoding, NSSecureCoding, XWDatabaseModelProtocol>
 
+@property (nonatomic, assign) int userId;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *author;
 @property (nonatomic, copy) NSString *bookConcern;
+
+
 
 @end
 

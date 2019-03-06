@@ -4,7 +4,7 @@
 //
 //  Created by 邱学伟 on 2018/11/29.
 //  Copyright © 2018 邱学伟. All rights reserved.
-//  V 1.0
+//  V 1.1
 
 #import <Foundation/Foundation.h>
 #import "XWDatabaseModelProtocol.h"
@@ -29,12 +29,31 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
+ 保存模型 (表中不存在插入, 已存在更新)
+ 
+ @param obj 模型
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 保存 成功/失败
+ */
++ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
+
+/**
  保存模型数组
  
  @param objs 模型数组
  @param completion 保存 成功/失败
  */
 + (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion _Nullable)completion;
+
+/**
+ 保存模型数组
+ 
+ @param objs 模型数组
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 保存 成功/失败
+ */
++ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
+
 
 #pragma mark - 删
 /**
@@ -46,12 +65,30 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
+ 删除指定模型
+ 
+ @param obj 模型
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 成功/失败
+ */
++ (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
+
+/**
  删除指定模型所有数据
  
  @param cls 模型类
  @param completion 成功/失败
  */
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion;
+
+/**
+ 删除指定模型所有数据
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 成功/失败
+ */
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  删除指定模型所有数据 - 自定义条件
@@ -61,6 +98,16 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param completion 成功/失败
  */
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion;
+
+/**
+ 删除指定模型所有数据
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param condition 自定义条件 (为空删除所有数据,有值根据自定义的条件删除)
+ @param completion 成功/失败
+ */
++ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion;
 
 #pragma mark - 改
 /**
@@ -81,6 +128,16 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
+ 更新模型
+ 
+ @param obj 模型
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param updatePropertys 所更新的字段数组 (无自定义全量更新)
+ @param completion 保存 成功/失败
+ */
++ (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion;
+
+/**
  更新模型数组
  
  @param objs 模型数组
@@ -94,10 +151,19 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 /**
  查询模型
  
- @param obj 查询对象(必须保证主键 不为空)
+ @param obj 查询对象(必须保证主键 不为空/或唯一标识属性 不为空)
  @param completion 结果
  */
 + (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject _Nullable)completion;
+
+/**
+ 查询模型
+ 
+ @param obj 查询对象(必须保证主键 不为空)
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 结果
+ */
++ (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObject _Nullable)completion;
 
 /**
  查询模型数组
@@ -108,6 +174,15 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
+ 查询模型数组
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObjects _Nullable)completion;
+
+/**
  查询模型数组 - 自定义条件
  
  @param cls 模型类
@@ -115,6 +190,16 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
+
+/**
+ 查询模型数组 - 自定义条件
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param condition 条件
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 
 /**
@@ -128,6 +213,17 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
+ 查询模型数组 - 按某字段排序
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param sortColumn 排序字段
+ @param isOrderDesc 是否降序 (YES: 降序  NO: 升序)
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion;
+
+/**
  查询模型数组 - 自定义条件 + 按某字段排序
  
  @param cls 模型类
@@ -137,6 +233,18 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
+
+/**
+ 查询模型数组 - 自定义条件 + 按某字段排序
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param sortColumn 排序字段
+ @param isOrderDesc 是否降序
+ @param condition 条件
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 #pragma mark - 执行自定义SQL语句
 

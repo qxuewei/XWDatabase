@@ -10,7 +10,7 @@
 #import "XWPerson.h"
 #import "XWDatabase.h"
 #import "XWImage.h"
-
+#import "XWBook.h"
 @interface XWViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
 
@@ -25,8 +25,9 @@
     
     /// 增
 //    [self saveOnePerson];
-    [self saveModels];
+//    [self saveModels];
 //    [self addImages];
+    [self addIdentifyBooks];
 
     /// 删
 //    [self deleteModel];
@@ -39,9 +40,10 @@
 //    [self getOnePerson];
 //    [self getModels];
 //    [self getModelsSortAge];
-    [self getModelsCondition];
+//    [self getModelsCondition];
 //    [self getModelsConditionSort];
 //    [self getImage];
+    [self getIdentifyBook];
 }
 
 #pragma mark - 增
@@ -77,6 +79,22 @@
     }
     [XWDatabase saveModels:images completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> addImages (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 新增 "userID" 区分数据
+- (void)addIdentifyBooks {
+    NSMutableArray *books = [NSMutableArray array];
+    for (int i = 10; i < 20; i++) {
+        XWBook *book = [XWBook new];
+        book.userId = i;
+        book.name = [NSString stringWithFormat:@"bookName_%d",i];
+        book.author = @"极客学伟";
+        book.bookConcern = @"bookConcern";
+        [books addObject:book];
+    }
+    [XWDatabase saveModels:books completion:^(BOOL isSuccess) {
+        NSLog(@"addIdentifyBooks (%d)",isSuccess);
     }];
 }
 
@@ -193,6 +211,15 @@
     NSString *condition = @"name = 'name - 66'";
     [XWDatabase getModels:XWImage.class condition:condition completion:^(NSArray * _Nullable objs) {
          NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+    }];
+}
+
+/// 获取唯一标识做区分的数据
+- (void)getIdentifyBook {
+    XWBook *book = [XWBook new];
+    book.userId = 13;
+    [XWDatabase getModel:book completion:^(XWBook * obj) {
+        NSLog(@"getIdentifyBook  book.name:%@",obj.name);
     }];
 }
 

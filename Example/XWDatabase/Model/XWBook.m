@@ -9,8 +9,14 @@
 #import "XWBook.h"
 #import "NSObject+XWModel.h"
 
+
 @implementation XWBook
 
 XWCodingImplementation
+
++ (NSSet<NSString *> *)xw_ignoreColumnNames {
+    return [NSSet setWithObject:@"bookConcern"];
+}
+
 
 @end

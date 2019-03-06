@@ -28,9 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
  保存单个对象SQL
  
  @param obj 模型
+ @param identifier 标示符
  @return 保存单个对象SQL (insert into Person(cardID,age,gender,name) values('1','50','male','极客学伟'))
  */
-+ (NSString *)saveOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj;
++ (NSString *)insertOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier;
 
 /**
  批量更新主键SQLS
@@ -45,9 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
  删除表中某条数据
  
  @param obj 模型
+ @param identifier 标示符
  @return 是否删除成功
  */
-+ (NSString *)deleteColumn:(NSObject <XWDatabaseModelProtocol> *)obj;
++ (NSString *)deleteColumn:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier;
 
 /**
  清空表中所有字段
@@ -73,8 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
  @param obj 模型
  @return 保存单个对象SQL
  */
-+ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj;
-+ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys;
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier;
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> *)updatePropertys;
 
 /**
  更新字段值 SQL
@@ -99,9 +101,10 @@ NS_ASSUME_NONNULL_BEGIN
  查找某主键对象
  
  @param obj 模型
+ @param identifier 标示符
  @return 查找语句
  */
-+ (NSString *)searchSql:(NSObject <XWDatabaseModelProtocol> *)obj;
++ (NSString *)searchSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier;
 
 /**
  查找某条数据是否存在
@@ -109,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param obj 模型
  @return 是否存在 (SELECT COUNT(*) FROM Person WHERE age = '42' AND cardID = '1')
  */
-+ (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj;
++ (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier;
 
 /**
  查询表内所有数据 (可按照某字段排序)

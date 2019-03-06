@@ -43,9 +43,10 @@
  保存单个对象SQL
  
  @param obj 模型
+ @param identifier 标示符
  @return 保存单个对象SQL (insert into Person(cardID,age,gender,name) values('1','50','male','极客学伟'))
  */
-+ (NSString *)saveOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj {
++ (NSString *)insertOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
     NSArray *columnNames = [XWDatabaseModel classColumnIvarNameTypeDict:obj.class].allKeys;
     NSMutableDictionary *insertSqlDict = [NSMutableDictionary dictionary];
@@ -64,8 +65,12 @@
     if (insertSqlDict.count == 0) {
         return nil;
     }
-    NSString *saveOneObjSql = [NSString stringWithFormat:@"INSERT INTO  %@(%@) VALUES(%@)",tableName,[insertSqlDict.allKeys componentsJoinedByString:@","],[insertSqlDict.allValues componentsJoinedByString:@","]];
-    return saveOneObjSql;
+    if (identifier) {
+        /// 唯一标识赋值
+        [insertSqlDict setObject:identifier forKey:kXWDB_IDENTIFIER_COLUMNNAME];
+    }
+    NSString *insertOneObjSql = [NSString stringWithFormat:@"INSERT INTO  %@(%@) VALUES(%@)",tableName,[insertSqlDict.allKeys componentsJoinedByString:@","],[insertSqlDict.allValues componentsJoinedByString:@","]];
+    return insertOneObjSql;
 }
 
 /**
@@ -77,7 +82,7 @@
 + (NSArray *)insertPrimarys:(Class<XWDatabaseModelProtocol>)cls {
     NSString *tempTableName = [XWDatabaseModel tempTableName:cls];
     NSString *tableName = [XWDatabaseModel tableName:cls];
-    return @[[NSString stringWithFormat:@"INSERT INTO %@(xw_id) SELECT xw_id FROM %@",tempTableName,tableName]];
+    return @[[NSString stringWithFormat:@"INSERT INTO %@(%@) SELECT %@ FROM %@",tempTableName,kXWDB_PRIMARYKEY_COLUMNNAME,kXWDB_PRIMARYKEY_COLUMNNAME,tableName]];
 }
 
 #pragma mark - 删
@@ -87,10 +92,10 @@
  @param obj 模型
  @return 是否删除成功
  */
-+ (NSString *)deleteColumn:(NSObject <XWDatabaseModelProtocol> *)obj {
++ (NSString *)deleteColumn:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
     /// DELETE FROM COMPANY WHERE ID = 7
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSString *queryCondition = [self queryCondition:obj];
+    NSString *queryCondition = [self queryCondition:obj identifier:identifier];
     if (!queryCondition) {
         return nil;
     }
@@ -133,12 +138,12 @@
  @param obj 模型
  @return 保存单个对象SQL
  */
-+ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj {
-    return [self p_updateOneObjSql:obj customIvarNames:nil];
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
+    return [self p_updateOneObjSql:obj identifier:identifier customIvarNames:nil];
 }
 
-+ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> *)updatePropertys {
-    return [self p_updateOneObjSql:obj customIvarNames:updatePropertys];
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> *)updatePropertys {
+    return [self p_updateOneObjSql:obj identifier:identifier customIvarNames:updatePropertys];
 }
 
 /**
@@ -152,7 +157,7 @@
     //update tem_table set name = (select name from XWStuModel where tem_table.stuNum = XWStuModel.stuNum)
     NSString *tempTableName = [XWDatabaseModel tempTableName:cls];
     NSString *tableName = [XWDatabaseModel tableName:cls];
-    return [NSString stringWithFormat:@"UPDATE %@ SET %@ = (SELECT %@ FROM %@ WHERE %@.xw_id = %@.xw_id)",tempTableName,columName,columName,tableName,tempTableName,tableName];
+    return [NSString stringWithFormat:@"UPDATE %@ SET %@ = (SELECT %@ FROM %@ WHERE %@.%@ = %@.%@)",tempTableName,columName,columName,tableName,tempTableName,kXWDB_PRIMARYKEY_COLUMNNAME,tableName,kXWDB_PRIMARYKEY_COLUMNNAME];
     
 //    [NSString stringWithFormat:@"update %@ set %@ = (select %@ from %@ where %@.%@ = %@.%@)",tempTableName,columName,columName,tableName,tempTableName,primaryKey,tableName,primaryKey];
 }
@@ -179,10 +184,10 @@
  @param obj 模型
  @return 查找语句
  */
-+ (NSString *)searchSql:(NSObject <XWDatabaseModelProtocol> *)obj {
++ (NSString *)searchSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
     /// @"SELECT * FROM %@ WHERE %@ = '%@'"
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSString *queryCondition = [self queryCondition:obj];
+    NSString *queryCondition = [self queryCondition:obj identifier:identifier];
     if (!queryCondition) {
         return nil;
     }
@@ -193,11 +198,12 @@
  查找某条数据是否存在
  
  @param obj 模型
+ @param identifier 标示符
  @return 是否存在 (SELECT COUNT(*) FROM Person WHERE age = '42' AND cardID = '1')
  */
-+ (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj {
++ (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSString *queryCondition = [self queryCondition:obj];
+    NSString *queryCondition = [self queryCondition:obj identifier:identifier];
     if (queryCondition) {
         return [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@ WHERE %@",tableName,queryCondition];
     }
@@ -245,12 +251,11 @@
 }
 
 #pragma mark - private
-+ (NSString *)p_updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj customIvarNames:(NSArray <NSString *> *)customIvarNames {
-    if (!obj.xwdb_primaryKey && !obj.xwdb_unionPrimaryKey) {
-        NSLog(@"所处理的模型无主键!");
++ (NSString *)p_updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier customIvarNames:(NSArray <NSString *> *)customIvarNames {
+    if (!obj.xwdb_isUpdateQueryingCondition) {
         return nil;
     }
-    NSString *queryCondition = [self queryCondition:obj];
+    NSString *queryCondition = [self queryCondition:obj identifier:identifier];
     if (!queryCondition) {
         return nil;
     }
@@ -279,13 +284,14 @@
 }
 
 /// 根据主键查询条件
-+ (NSString *)queryCondition:(NSObject <XWDatabaseModelProtocol> *)obj {
++ (NSString *)queryCondition:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
+    NSString *sql;
     if (obj.xwdb_unionPrimaryKey) {
         NSMutableArray *unionArrayM = [[NSMutableArray alloc] init];
         for (NSString *subPrimaryKey in obj.xwdb_unionPrimaryKey) {
             NSString * ivar = [XWDatabaseModel ivarNameWithColumn:subPrimaryKey cls:obj.class];
             if (!ivar) {
-                return nil;
+                break;
             }
             NSString *valueString = [self stringWithObject:obj ivarName:ivar];
             if (!valueString) {
@@ -295,8 +301,7 @@
             [unionArrayM addObject:[NSString stringWithFormat:@"%@ = %@",subPrimaryKey,valueString]];
         }
         if (unionArrayM.count > 0) {
-            NSString *searchSql = [unionArrayM componentsJoinedByString:@" AND "];
-            return searchSql;
+            sql = [unionArrayM componentsJoinedByString:@" AND "];
         }
         
     } else if (obj.xwdb_primaryKey) {
@@ -307,11 +312,18 @@
         }
         NSString *valueString = [self stringWithObject:obj ivarName:ivar];
         if (valueString) {
-            return [NSString stringWithFormat:@"%@ = %@",primaryKey,valueString];
+            sql = [NSString stringWithFormat:@"%@ = %@",primaryKey,valueString];
         }
-        
     }
-    return nil;
+    if (identifier) {
+        if (sql) {
+            NSString *tempSql = [NSString stringWithFormat:@"AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifier];
+            sql = [sql stringByAppendingString:tempSql];
+        } else {
+            sql = [NSString stringWithFormat:@"%@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifier];
+        }
+    }
+    return sql;
 }
 
 /**

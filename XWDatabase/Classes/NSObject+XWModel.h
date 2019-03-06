@@ -27,17 +27,29 @@ return YES;\
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark 常量
+UIKIT_EXTERN NSString * const kXWDB_IDENTIFIER_COLUMNNAME;//    =   @"xw_identifier";   //唯一标识字段名称
+UIKIT_EXTERN NSString * const kXWDB_PRIMARYKEY_COLUMNNAME;//    =   @"xw_id";           //默认自增主键字段名称
+
+
 @interface NSObject (XWModel) <XWDatabaseModelProtocol>
+
+/**
+ 是否具备数据可 更新/查询 条件
+
+ @return 是否具备数据可 更新/查询 条件
+ */
+- (BOOL)xwdb_isUpdateQueryingCondition;
 
 /**
  默认主键 (自增)
  */
-@property (nonatomic, strong) NSNumber *xw_id;
+//@property (nonatomic, strong) NSNumber *xw_id;
 
 /**
  上次存储主键值
  */
-@property (nonatomic, strong) NSNumber *xw_lastPrimaryKeyId;
+//@property (nonatomic, strong) NSNumber *xw_lastPrimaryKeyId;
 
 /**
   模型中所有成员变量 (key: 成员变量名称  value: 成员变量类型)
@@ -54,6 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong) NSSet *xw_CustomModelSet;
 
+
+#pragma mark - 智能归解档
 /// 归档
 - (void)xw_decode:(NSCoder*)aDecoder;
 
@@ -109,21 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @return 自定义存储的属性数组
  */
-- (NSSet < NSString * > * _Nullable)xw_specificSaveColumnNames;
-
-/**
- 是否通过唯一标识将数据存储于不同数据库, 若为YES必须实现 "xw_databaseIdentifierColumnName" 协议, YES: 模型根据指定标识字段区分存储的数据库  NO(或不实现): 模型存储在通用数据库内
- 
- @return 是否通过唯一标识将数据存储于不同数据库
- */
-- (BOOL)xw_isDatabaseIdentifier;
-
-/**
- 数据库唯一标识属性名, 区分数据存储于不同数据库  ('xw_isDatabaseIdentifier' 返回 YES 时生效)
- 
- @return 数据库唯一标识
- */
-- (NSString * _Nullable)xw_databaseIdentifierColumnName;
+- (NSSet < NSString * > * _Nullable)xwdb_specificSaveColumnNames;
 
 @end
 
