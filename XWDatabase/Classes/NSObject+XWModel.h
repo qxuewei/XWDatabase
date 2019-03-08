@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark 常量
 UIKIT_EXTERN NSString * const kXWDB_IDENTIFIER_COLUMNNAME;//    =   @"xw_identifier";   //唯一标识字段名称
+UIKIT_EXTERN NSString * const kXWDB_IDENTIFIER_VALUE;//         =   @"xw_null";         //唯一标识字段值
 UIKIT_EXTERN NSString * const kXWDB_PRIMARYKEY_COLUMNNAME;//    =   @"xw_id";           //默认自增主键字段名称
 
 

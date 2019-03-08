@@ -12,6 +12,7 @@
 
 #pragma mark 常量
 NSString * const kXWDB_IDENTIFIER_COLUMNNAME    =   @"xw_identifier";   //唯一标识字段名称
+NSString * const kXWDB_IDENTIFIER_VALUE         =   @"xw_null";         //唯一标识字段值
 NSString * const kXWDB_PRIMARYKEY_COLUMNNAME    =   @"xw_id";           //默认自增主键字段名称
 
 @interface NSObject ()
@@ -28,7 +29,6 @@ NSString * const kXWDB_PRIMARYKEY_COLUMNNAME    =   @"xw_id";           //默认
  */
 - (BOOL)xwdb_isUpdateQueryingCondition {
     if (!self.xwdb_primaryKey && !self.xwdb_unionPrimaryKey) {
-        NSLog(@"所处理的模型无主键! 也无唯一标识字段");
         return NO;
     }
     return YES;

@@ -512,7 +512,9 @@
             /// 添加插入语句
             void(^appendInsertSql)(NSObject <XWDatabaseModelProtocol>*) = ^ (NSObject <XWDatabaseModelProtocol> *obj) {
                 NSString *insertSql = [XWDatabaseSQL insertOneObjSql:obj identifier:identifier];
-                [updateSqls addObject:insertSql];
+                if (insertSql) {                
+                    [updateSqls addObject:insertSql];
+                }
             };
             
             /// 添加更新语句

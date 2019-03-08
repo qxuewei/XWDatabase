@@ -26,14 +26,13 @@
 {
     [super viewDidLoad];
     
-    
     /// 增
     [self saveOnePerson];
     [self saveModels];
-    [self addImages];
-    [self addIdentifyBooks];
     [self saveOneBook];
     [self saveBooks];
+    [self addImages];
+    [self addIdentifyBooks];
 
     /// 删
     [self deleteModel];
@@ -117,6 +116,10 @@
     [XWDatabase saveModels:images completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> addImages (%@)",isSuccess?@"成功":@"失败");
     }];
+    
+    [XWDatabase saveModels:images identifier:kUser1ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> addImages identifier (%@)",isSuccess?@"成功":@"失败");
+    }];
 }
 
 /// 新增 "userID" 区分数据
@@ -140,7 +143,7 @@
 - (void)deleteModel
 {
     XWPerson *person = [XWPerson new];
-    person.cardID = @"1";
+    person.cardID = @"2";
     [XWDatabase deleteModel:person completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> deleteModel (%@)",isSuccess?@"成功":@"失败");
     }];

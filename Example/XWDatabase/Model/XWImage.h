@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *filePath;
 
+//@property (nonatomic, copy) NSString *temp;
+
 @end
 
 NS_ASSUME_NONNULL_END

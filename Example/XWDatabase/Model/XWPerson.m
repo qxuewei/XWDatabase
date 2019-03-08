@@ -72,7 +72,7 @@
 
 
 #pragma mark - Life Cycle
-+ (void)initialize {
++ (void)load {
     
     /// 数据迁移
     static dispatch_once_t onceToken;

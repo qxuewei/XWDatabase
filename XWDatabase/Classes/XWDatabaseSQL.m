@@ -65,10 +65,10 @@
     if (insertSqlDict.count == 0) {
         return nil;
     }
-    if (identifier) {
-        /// 唯一标识赋值
-        [insertSqlDict setObject:identifier forKey:kXWDB_IDENTIFIER_COLUMNNAME];
-    }
+    
+    NSString *identifierValue = identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE];
+    [insertSqlDict setObject:identifierValue forKey:kXWDB_IDENTIFIER_COLUMNNAME];
+    
     NSString *insertOneObjSql = [NSString stringWithFormat:@"INSERT INTO  %@(%@) VALUES(%@)",tableName,[insertSqlDict.allKeys componentsJoinedByString:@","],[insertSqlDict.allValues componentsJoinedByString:@","]];
     return insertOneObjSql;
 }
@@ -112,20 +112,14 @@
 + (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString *)condition {
     /// DELETE FROM COMPANY WHERE ID = 7
     NSString *tableName = [XWDatabaseModel tableName:cls];
+    NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
     if (condition && condition.length > 0) {
         NSString *sql = [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ ",tableName,condition];
-        if (identifier) {
-            return [sql stringByAppendingString:[NSString stringWithFormat:@" AND %@ = %@", kXWDB_IDENTIFIER_COLUMNNAME, identifier]];
-        } else {
-            return sql;
-        }
+        return [sql stringByAppendingString:[NSString stringWithFormat:@" AND %@ = %@", kXWDB_IDENTIFIER_COLUMNNAME, identifierValue]];
+        
     } else {
-         NSString *sql = [NSString stringWithFormat:@"DELETE FROM %@",tableName];
-        if (identifier) {
-            return [sql stringByAppendingString:[NSString stringWithFormat:@" WHERE %@ = %@", kXWDB_IDENTIFIER_COLUMNNAME, identifier]];
-        } else {
-            return sql;
-        }
+        NSString *sql = [NSString stringWithFormat:@"DELETE FROM %@",tableName];
+        return [sql stringByAppendingString:[NSString stringWithFormat:@" WHERE %@ = %@", kXWDB_IDENTIFIER_COLUMNNAME, identifierValue]];
     }
 }
 
@@ -212,15 +206,15 @@
  @return 是否存在 (SELECT COUNT(*) FROM Person WHERE age = '42' AND cardID = '1')
  */
 + (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
-    NSString *tableName = [XWDatabaseModel tableName:obj.class];
-    NSString *queryCondition = [self queryCondition:obj identifier:identifier];
     if (identifier && !obj.xwdb_isUpdateQueryingCondition) {
         return nil;
     }
-    if (queryCondition) {
-        return [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@ WHERE %@",tableName,queryCondition];
+    NSString *tableName = [XWDatabaseModel tableName:obj.class];
+    NSString *queryCondition = [self queryCondition:obj identifier:identifier];
+    if (!queryCondition) {
+        return nil;
     }
-    return nil;
+    return [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@ WHERE %@",tableName,queryCondition];
 }
 
 /**
@@ -242,9 +236,8 @@
         [searchSql appendFormat:@" WHERE %@",condition];
     }
 
-    if (identifier && identifier.length > 0) {
-        [searchSql appendFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifier];
-    }
+    NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+    [searchSql appendFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
     
     if (sortColumn && sortColumn.length > 0) {
         [searchSql appendString:[NSString stringWithFormat:@" ORDER BY %@",sortColumn]];
@@ -293,6 +286,7 @@
         }
         [updateArrM addObject:save];
     }
+    
     if (updateArrM.count == 0) {
         return nil;
     }
@@ -312,7 +306,7 @@
             }
             NSString *valueString = [self stringWithObject:obj ivarName:ivar];
             if (!valueString) {
-                /// 联合主键任意对象为空均不做操作!
+                /// 主键值为空不提供查询
                 return nil;
             }
             [unionArrayM addObject:[NSString stringWithFormat:@"%@ = %@",subPrimaryKey,valueString]];
@@ -324,21 +318,22 @@
     } else if (obj.xwdb_primaryKey) {
         NSString *primaryKey = [obj.class xwdb_primaryKey];
         NSString *ivar = [XWDatabaseModel ivarNameWithColumn:primaryKey cls:obj.class];
-        if (!ivar) {
-            return nil;
-        }
-        NSString *valueString = [self stringWithObject:obj ivarName:ivar];
-        if (valueString) {
+        if (ivar) {
+            NSString *valueString = [self stringWithObject:obj ivarName:ivar];
+            if (!valueString) {
+                /// 主键值为空不提供查询
+                return nil;
+            }
             sql = [NSString stringWithFormat:@"%@ = %@",primaryKey,valueString];
         }
     }
-    if (identifier) {
-        if (sql) {
-            NSString *tempSql = [NSString stringWithFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifier];
-            sql = [sql stringByAppendingString:tempSql];
-        } else {
-            sql = [NSString stringWithFormat:@"%@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifier];
-        }
+    
+    NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+    if (sql) {
+        NSString *tempSql = [NSString stringWithFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
+        sql = [sql stringByAppendingString:tempSql];
+    } else {
+        sql = [NSString stringWithFormat:@"%@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
     }
     return sql;
 }
