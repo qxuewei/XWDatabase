@@ -35,14 +35,15 @@
     [self addIdentifyBooks];
 
     /// 删
-    [self deleteModel];
-    [self deleteBook];
-    [self clearModel];
-    [self deleteBooks];
+//    [self deleteModel];
+//    [self deleteBook];
+//    [self clearModel];
+//    [self deleteBooks];
 
     /// 改
-//    [self updateModel];
-
+    [self updateModel];
+    [self updateBook];
+    
     /// 查
 //    [self getOnePerson];
 //    [self getModels];
@@ -187,19 +188,46 @@
 {
     XWPerson *person = [XWPerson new];
     person.cardID = @"2";
-    person.age = 20;
+    person.age = 200000;
     person.name = @"新名字";
     person.pDouble = 9.99;
     
     /// 自定义成员变量更新
-    [XWDatabase updateModel:person updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
-        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败`");
+    [XWDatabase updateModel:person updatePropertys:@[@"name",@"age"] completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    XWPerson *person2 = [XWPerson new];
+    person2.cardID = @"3";
+    [XWDatabase updateModel:person2 updatePropertys:nil completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel 全量更新 (%@)",isSuccess?@"成功":@"失败");
     }];
     
 //    /// 整个模型更新
 //    [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
 //        NSLog(@" <XWDatabase> updateModel (%@)",isSuccess?@"成功":@"失败");
 //    }];
+}
+
+/// 更新 指定用户 模型数据
+- (void)updateBook {
+    XWBook *book = [XWBook new];
+    book.bookId = 4;
+    book.name = @"新书";
+    [XWDatabase updateModel:book identifier:kUser2ID updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel book (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    XWBook *book2 = [XWBook new];
+    book2.bookId = 3;
+    book2.author = @"新作者";
+    [XWDatabase updateModel:book2 identifier:kUser2ID updatePropertys:nil completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel book (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+- (void)updatePersons {
+    
 }
 
 #pragma mark - 查
