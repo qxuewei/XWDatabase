@@ -23,7 +23,6 @@
 @property (nonatomic, strong) FMDatabase *dataBase;
 @property (nonatomic, strong) FMDatabase *dataDataBase;
 
-@property (nonatomic, copy) NSString *userDatabaseDirPath;  // 用户相关数据库存储文件夹
 @end
 
 @implementation XWDatabaseQueue
@@ -174,18 +173,11 @@ static XWDatabaseQueue *_defaultManager;
         _dataDB             = [FMDatabase databaseWithPath:self.dataDatabasePath];
         _queue              = [FMDatabaseQueue databaseQueueWithPath:self.databasePath];
         _dataDBQueue        = [FMDatabaseQueue databaseQueueWithPath:self.dataDatabasePath];
-        [self creatUserDatabaseDirPath];    /// 创建用户数据库文件夹
     }
     return self;
 }
 
 #pragma mark - Private
-- (void)creatUserDatabaseDirPath {
-    NSFileManager *manager = NSFileManager.defaultManager;
-    if (![manager isExecutableFileAtPath:self.userDatabaseDirPath]) {
-        [manager createDirectoryAtPath:self.userDatabaseDirPath withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-}
 
 #pragma mark - Getter
 - (NSString *)databasePath {
@@ -201,12 +193,5 @@ static XWDatabaseQueue *_defaultManager;
         _dataDatabasePath = [document stringByAppendingPathComponent:@"XWDataDatabase.sqlite"];
     }
     return _dataDatabasePath;
-}
-- (NSString *)userDatabaseDirPath {
-    if(!_userDatabaseDirPath){
-        NSString *document = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-        _userDatabaseDirPath = [document stringByAppendingPathComponent:@"XWUserDatabases"];
-    }
-    return _userDatabaseDirPath;
 }
 @end

@@ -13,11 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XWBook : NSObject <NSCoding, NSSecureCoding, XWDatabaseModelProtocol>
 
-@property (nonatomic, assign) int userId;
+@property (nonatomic, assign) int bookId;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *author;
 @property (nonatomic, copy) NSString *bookConcern;
-
+@property (nonatomic, copy) NSString *temp;
+//@property (nonatomic, copy) NSString *temp2;
 
 
 @end

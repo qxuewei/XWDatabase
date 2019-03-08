@@ -11,6 +11,10 @@
 #import "XWDatabase.h"
 #import "XWImage.h"
 #import "XWBook.h"
+
+#define kUser1ID @"10010"
+#define kUser2ID @"10086"
+
 @interface XWViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
 
@@ -24,14 +28,18 @@
     
     
     /// 增
-//    [self saveOnePerson];
-//    [self saveModels];
-//    [self addImages];
+    [self saveOnePerson];
+    [self saveModels];
+    [self addImages];
     [self addIdentifyBooks];
+    [self saveOneBook];
+    [self saveBooks];
 
     /// 删
-//    [self deleteModel];
-//    [self clearModel];
+    [self deleteModel];
+    [self deleteBook];
+    [self clearModel];
+    [self deleteBooks];
 
     /// 改
 //    [self updateModel];
@@ -43,7 +51,7 @@
 //    [self getModelsCondition];
 //    [self getModelsConditionSort];
 //    [self getImage];
-    [self getIdentifyBook];
+//    [self getIdentifyBook];
 }
 
 #pragma mark - 增
@@ -56,6 +64,18 @@
     }];
 }
 
+/// 保存模型 (用户区分)
+- (void)saveOneBook
+{
+    XWBook *book = [XWBook new];
+    book.name = @"iOS 从入门到放弃";
+    book.author = @"学伟";
+    book.bookId = 2;
+    [XWDatabase saveModel:book identifier:kUser1ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> saveOneBook identifier (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
 /// 保存模型数组
 - (void)saveModels
 {
@@ -65,6 +85,23 @@
     }
     [XWDatabase saveModels:persons completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> saveModels (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 保存模型数组 (用户区分)
+- (void)saveBooks
+{
+    NSMutableArray *books = [[NSMutableArray alloc] init];
+    for (int i = 0; i < 100; i++) {
+        XWBook *book = [XWBook new];
+        book.bookId = i;
+        book.name = [NSString stringWithFormat:@"bookName_%d",i];
+        book.author = @"极客学伟";
+        book.bookConcern = @"bookConcern";
+        [books addObject:book];
+    }
+    [XWDatabase saveModels:books identifier:kUser2ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> saveModels identifier (%@)",isSuccess?@"成功":@"失败");
     }];
 }
 
@@ -85,16 +122,16 @@
 /// 新增 "userID" 区分数据
 - (void)addIdentifyBooks {
     NSMutableArray *books = [NSMutableArray array];
-    for (int i = 10; i < 20; i++) {
+    for (int i = 0; i < 20; i++) {
         XWBook *book = [XWBook new];
-        book.userId = i;
+        book.bookId = i;
         book.name = [NSString stringWithFormat:@"bookName_%d",i];
         book.author = @"极客学伟";
         book.bookConcern = @"bookConcern";
         [books addObject:book];
     }
-    [XWDatabase saveModels:books completion:^(BOOL isSuccess) {
-        NSLog(@"addIdentifyBooks (%d)",isSuccess);
+    [XWDatabase saveModels:books identifier:@"101" completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> saveModels identifier (%@)",isSuccess?@"成功":@"失败");
     }];
 }
 
@@ -103,21 +140,41 @@
 - (void)deleteModel
 {
     XWPerson *person = [XWPerson new];
-    person.cardID = @"9998";
+    person.cardID = @"1";
     [XWDatabase deleteModel:person completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> deleteModel (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 根据主键删除 指定用户ID 的模型
+- (void)deleteBook {
+    XWBook *book = [XWBook new];
+    book.bookId = 2;
+    [XWDatabase deleteModel:book identifier:kUser1ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> deleteModel identifier (%@)",isSuccess?@"成功":@"失败");
     }];
 }
 
 /// 清空某模型所有数据 (整体删除/条件删除)
 - (void)clearModel
 {
-//    [XWDatabase clearModel:XWPerson.class completion:^(BOOL isSuccess) {
-//        NSLog(@" <XWDatabase> deleteModel (%@)",isSuccess?@"成功":@"失败");
-//    }];
+    [XWDatabase clearModel:XWImage.class completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> deleteModel (%@)",isSuccess?@"成功":@"失败");
+    }];
     
     [XWDatabase clearModel:XWPerson.class condition:@"age > '50'" completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> deleteModel (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 清楚指定标识符数据
+- (void)deleteBooks {
+    [XWDatabase clearModel:XWBook.class identifier:@"101" completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> deleteModel saveOneBook (%@)",isSuccess?@"成功":@"失败");
+    }];
+
+    [XWDatabase clearModel:XWBook.class identifier:kUser2ID condition:@"bookId < 10" completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> deleteModel saveOneBook (%@)",isSuccess?@"成功":@"失败");
     }];
 }
 
@@ -217,8 +274,8 @@
 /// 获取唯一标识做区分的数据
 - (void)getIdentifyBook {
     XWBook *book = [XWBook new];
-    book.userId = 13;
-    [XWDatabase getModel:book completion:^(XWBook * obj) {
+    book.bookId = 3;
+    [XWDatabase getModel:book identifier:@"101" completion:^(XWBook * obj) {
         NSLog(@"getIdentifyBook  book.name:%@",obj.name);
     }];
 }

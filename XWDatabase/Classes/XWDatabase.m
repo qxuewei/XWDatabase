@@ -25,15 +25,7 @@
  @param completion 保存 成功/失败
  */
 + (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion {
-    if (!obj) {
-        completion ? completion(NO) : nil;
-        return;
-    }
-    [XWLivingThread executeTaskInMain:^{
-        [self p_saveModel:obj identifier:nil completion:^(BOOL isSuccess) {
-            completion ? completion(isSuccess) : nil;
-        }];
-    }];
+    [self saveModel:obj identifier:nil completion:completion];
 }
 
 /**
@@ -62,15 +54,7 @@
  @param completion 保存 成功/失败
  */
 + (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion _Nullable)completion {
-    if (!objs || objs.count == 0) {
-        completion ? completion(NO) : nil;
-        return;
-    }
-    [XWLivingThread executeTaskInMain:^{
-        [self p_saveModels:objs identifier:nil completion:^(BOOL isSuccess) {
-            completion ? completion(isSuccess) : nil;
-        }];
-    }];
+    [self saveModels:objs identifier:nil completion:completion];
 }
 
 /**
@@ -86,7 +70,7 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        [self p_saveModels:objs identifier:nil completion:^(BOOL isSuccess) {
+        [self p_saveModels:objs identifier:identifier completion:^(BOOL isSuccess) {
             completion ? completion(isSuccess) : nil;
         }];
     }];
@@ -100,18 +84,7 @@
  @param completion 成功/失败
  */
 + (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion {
-    if (!obj) {
-        completion ? completion(NO) : nil;
-        return;
-    }
-    [XWLivingThread executeTaskInMain:^{
-        NSString *deleteColumnSql = [XWDatabaseSQL deleteColumn:obj identifier:nil];
-        if (!deleteColumnSql) {
-            completion ? completion(NO) : nil;
-            return;
-        }
-        [self p_executeUpdate:deleteColumnSql completion:completion];
-    }];
+    [self deleteModel:obj identifier:nil completion:completion];
 }
 
 /**
@@ -143,7 +116,7 @@
  @param completion 成功/失败
  */
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion {
-    [self clearModel:cls condition:nil completion:completion];
+    [self clearModel:cls identifier:nil condition:nil completion:completion];
 }
 
 /**
@@ -154,7 +127,7 @@
  @param completion 成功/失败
  */
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
-    [self clearModel:cls condition:nil completion:completion];
+    [self clearModel:cls identifier:identifier condition:nil completion:completion];
 }
 
 /**
@@ -165,14 +138,7 @@
  @param completion 成功/失败
  */
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion {
-    if (!cls) {
-        completion ? completion(NO) : nil;
-        return;
-    }
-    [XWLivingThread executeTaskInMain:^{
-        NSString *clearColumnSql = [XWDatabaseSQL clearColumn:cls condition:condition];
-        [self p_executeUpdate:clearColumnSql completion:completion];
-    }];
+    [self clearModel:cls identifier:nil condition:condition completion:completion];
 }
 
 /**
@@ -189,7 +155,7 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        NSString *clearColumnSql = [XWDatabaseSQL clearColumn:cls condition:condition];
+        NSString *clearColumnSql = [XWDatabaseSQL clearColumn:cls identifier:identifier condition:condition];
         [self p_executeUpdate:clearColumnSql completion:completion];
     }];
 }
@@ -219,18 +185,7 @@
  @param completion 保存 成功/失败
  */
 + (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion {
-    if (!obj) {
-        completion ? completion(NO) : nil;
-        return;
-    }
-    [XWLivingThread executeTaskInMain:^{
-        NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:nil updatePropertys:updatePropertys];
-        if (!updateModelSQL) {
-            completion ? completion(NO) : nil;
-            return ;
-        }
-        [self p_executeUpdate:updateModelSQL completion:completion];
-    }];
+    [self updateModel:obj identifier:nil updatePropertys:updatePropertys completion:completion];
 }
 
 /**
@@ -264,6 +219,18 @@
  @param completion 保存 成功/失败
  */
 + (void)updateModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion {
+    [self updateModels:objs identifier:nil updatePropertys:updatePropertys completion:completion];
+}
+
+/**
+ 更新模型数组 - 标示符区分
+ 
+ @param objs 模型数组
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
+ @param completion 保存 成功/失败
+ */
++ (void)updateModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion {
     if (!objs || !objs.count) {
         completion ? completion(NO) : nil;
         return;
@@ -271,7 +238,7 @@
     [XWLivingThread executeTaskInMain:^{
         NSMutableArray *sqls = [NSMutableArray array];
         for (NSObject *obj in objs) {
-            NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:nil updatePropertys:updatePropertys];
+            NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier updatePropertys:updatePropertys];
             if (updateModelSQL) {
                 [sqls addObject:updateModelSQL];
             }
@@ -279,6 +246,7 @@
         [self executeUpdateSqls:sqls completion:completion];
     }];
 }
+
 
 #pragma mark  查
 /**
@@ -288,16 +256,7 @@
  @param completion 结果
  */
 + (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject _Nullable)completion {
-    if (!completion) {
-        return;
-    }
-    if (!obj) {
-        completion ? completion(nil) : nil;
-        return;
-    }
-    [XWLivingThread executeTaskInMain:^{
-        [self p_getModel:obj identifier:nil completion:completion];
-    }];
+    [self getModel:obj identifier:nil completion:completion];
 }
 
 /**
@@ -315,6 +274,7 @@
         completion ? completion(nil) : nil;
         return;
     }
+    
     [XWLivingThread executeTaskInMain:^{
         [self p_getModel:obj identifier:identifier completion:completion];
     }];
@@ -399,16 +359,8 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
-    if (!completion) {
-        return;
-    }
-    if (!cls) {
-        completion ? completion(nil) : nil;
-        return;
-    }
-    [XWLivingThread executeTaskInMain:^{
-        [self p_getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition completion:completion];
-    }];
+    
+    [self getModels:cls identifier:nil sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition completion:completion];
 }
 
 /**
@@ -430,7 +382,7 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        [self p_getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition completion:completion];
+        [self p_getModels:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition completion:completion];
     }];
 }
 
@@ -634,7 +586,12 @@
         NSMutableArray *columnNamesSorted = [NSMutableArray array];
         for (NSString *nameTypeCase in nameTypeArr) {
             if ([nameTypeCase containsString:@"PRIMARY"]) {
+                /// 忽略主键
                 continue;
+            }
+            if ([nameTypeCase isEqualToString:[NSString stringWithFormat:@"%@ text",kXWDB_IDENTIFIER_COLUMNNAME]]) {
+                /// 忽略标识字段
+                continue;                
             }
             //age integer
             NSString *columName = [nameTypeCase componentsSeparatedByString:@" "][0];
@@ -665,6 +622,10 @@
             /// 更新主键
             NSArray *insertPrimarys = [XWDatabaseSQL insertPrimarys:cls];
             [sqls addObjectsFromArray:insertPrimarys];
+            
+            /// 更新标识字段
+            NSString *updateIdentifierColumSql = [XWDatabaseSQL updateColumn:cls columName:kXWDB_IDENTIFIER_COLUMNNAME];
+            [sqls addObject:updateIdentifierColumSql];
         
             /// 分别更新原有表字段
             for (NSString *ivar in ivarNamesSorted) {
@@ -701,6 +662,7 @@
 #pragma mark  查
 + (void)p_getModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObject _Nullable)completion {
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
+        
         NSString *isExistSql = [XWDatabaseSQL isExistSql:obj identifier:identifier];
         if (!isExistSql) {
             completion ? completion(nil) : nil;
@@ -729,12 +691,12 @@
     }];
 }
 
-+ (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
++ (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         @autoreleasepool {
-            
-            NSString *searchSql = [XWDatabaseSQL searchSql:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition];
+
+            NSString *searchSql = [XWDatabaseSQL searchSql:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition];
             if (!searchSql) {
                 completion ? completion(nil) : nil;
                 return ;

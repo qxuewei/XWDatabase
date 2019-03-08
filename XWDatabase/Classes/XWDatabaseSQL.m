@@ -74,7 +74,7 @@
 }
 
 /**
- 批量更新主键SQLS
+ 批量更新主键SQLS  INSERT INTO XWBook_temp(xw_id) SELECT xw_id FROM XWBook
  
  @param cls 模型
  @return 批量更新主键SQLS
@@ -109,13 +109,23 @@
  @param condition 条件
  @return 是否删除成功
  */
-+ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition {
++ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString *)condition {
     /// DELETE FROM COMPANY WHERE ID = 7
     NSString *tableName = [XWDatabaseModel tableName:cls];
     if (condition && condition.length > 0) {
-        return [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ ",tableName,condition];
+        NSString *sql = [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ ",tableName,condition];
+        if (identifier) {
+            return [sql stringByAppendingString:[NSString stringWithFormat:@" AND %@ = %@", kXWDB_IDENTIFIER_COLUMNNAME, identifier]];
+        } else {
+            return sql;
+        }
     } else {
-        return [NSMutableString stringWithFormat:@"DELETE FROM %@",tableName];
+         NSString *sql = [NSString stringWithFormat:@"DELETE FROM %@",tableName];
+        if (identifier) {
+            return [sql stringByAppendingString:[NSString stringWithFormat:@" WHERE %@ = %@", kXWDB_IDENTIFIER_COLUMNNAME, identifier]];
+        } else {
+            return sql;
+        }
     }
 }
 
@@ -204,6 +214,9 @@
 + (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
     NSString *queryCondition = [self queryCondition:obj identifier:identifier];
+    if (identifier && !obj.xwdb_isUpdateQueryingCondition) {
+        return nil;
+    }
     if (queryCondition) {
         return [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@ WHERE %@",tableName,queryCondition];
     }
@@ -219,14 +232,18 @@
  @param condition 自定义条件
  @return 符合条件的表内所有数据
  */
-+ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition {
++ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition {
     /// 查询语句：select * from 表名 where 条件子句 group by 分组字句 having ... order by 排序子句
     /// select * from person order by id desc
     NSString *tableName = [XWDatabaseModel tableName:cls];
     NSMutableString *searchSql = [NSMutableString stringWithFormat:@"SELECT * FROM %@",tableName];
     
     if (condition && condition.length > 0) {
-        [searchSql appendString:[NSString stringWithFormat:@" WHERE %@",condition]];
+        [searchSql appendFormat:@" WHERE %@",condition];
+    }
+
+    if (identifier && identifier.length > 0) {
+        [searchSql appendFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifier];
     }
     
     if (sortColumn && sortColumn.length > 0) {
@@ -317,7 +334,7 @@
     }
     if (identifier) {
         if (sql) {
-            NSString *tempSql = [NSString stringWithFormat:@"AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifier];
+            NSString *tempSql = [NSString stringWithFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifier];
             sql = [sql stringByAppendingString:tempSql];
         } else {
             sql = [NSString stringWithFormat:@"%@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifier];

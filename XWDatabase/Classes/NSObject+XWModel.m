@@ -207,12 +207,7 @@ NSString * const kXWDB_PRIMARYKEY_COLUMNNAME    =   @"xw_id";           //默认
         NSMutableDictionary *customColumnMapping = [self.class xw_customColumnMapping].mutableCopy;
         if (customColumnMapping && customColumnMapping.count > 0) {
             [customColumnMapping enumerateKeysAndObjectsUsingBlock:^(NSString * key, NSString * obj, BOOL * _Nonnull stop) {
-                NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:self.class];
-                if (![columns.allKeys containsObject:key]) {
-                    [customColumnMapping removeObjectForKey:key];
-                } else {
-                    obj = [key stringByReplacingOccurrencesOfString:@" " withString:@""];
-                }
+                obj = [key stringByReplacingOccurrencesOfString:@" " withString:@""];
             }];
             return customColumnMapping.copy;
         }

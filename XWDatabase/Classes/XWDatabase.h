@@ -29,10 +29,10 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
- 保存模型 (表中不存在插入, 已存在更新)
+ 保存模型 (表中不存在插入, 已存在更新) - 标示符区分
  
  @param obj 模型
- @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID), 若模型无主键或联合主键则会统一插入数据
  @param completion 保存 成功/失败
  */
 + (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
@@ -46,7 +46,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
- 保存模型数组
+ 保存模型数组 - 标示符区分
  
  @param objs 模型数组
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -57,7 +57,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 
 #pragma mark - 删
 /**
- 删除指定模型
+ 删除指定某个模型, 主键不能为空
  
  @param obj 模型 (主键不能为空)
  @param completion 成功/失败
@@ -65,7 +65,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)deleteModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
- 删除指定模型
+ 删除指定某个模型, 主键不能为空 - 标示符区分
  
  @param obj 模型
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -82,7 +82,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
- 删除指定模型所有数据
+ 删除指定模型所有数据 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -100,7 +100,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)clearModel:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
- 删除指定模型所有数据
+ 删除指定模型所有数据 - 自定义条件 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -128,7 +128,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)updateModel:(NSObject <XWDatabaseModelProtocol>*)obj updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
- 更新模型
+ 更新模型 - 标示符区分
  
  @param obj 模型
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -146,6 +146,16 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  */
 + (void)updateModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion;
 
+/**
+ 更新模型数组 - 标示符区分
+ 
+ @param objs 模型数组
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
+ @param completion 保存 成功/失败
+ */
++ (void)updateModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion;
+
 
 #pragma mark - 查
 /**
@@ -157,10 +167,11 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseReturnObject _Nullable)completion;
 
 /**
- 查询模型
+ 查询模型 - 标示符区分 (主键不可为空)
  
  @param obj 查询对象(必须保证主键 不为空)
- @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID), 若模型无 主键或联合主键 不会获取到任何结果 可使用 '
+ @selector(getModels:identifier:completion:)' 获取模型数组
  @param completion 结果
  */
 + (void)getModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObject _Nullable)completion;
@@ -174,7 +185,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
- 查询模型数组
+ 查询模型数组 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)

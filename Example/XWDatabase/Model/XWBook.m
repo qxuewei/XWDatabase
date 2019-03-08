@@ -8,14 +8,30 @@
 
 #import "XWBook.h"
 #import "NSObject+XWModel.h"
+#import "XWDatabase.h"
 
 
 @implementation XWBook
 
+#pragma mark - Life Cycle
++ (void)load {
+    /// 数据迁移
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
+            NSLog(@" <XWDatabase> updateTable (%@)",isSuccess?@"成功":@"失败");
+        }];
+    });
+}
+
 XWCodingImplementation
 
++ (NSString *)xw_primaryKey {
+    return @"bookId";
+}
+
 + (NSSet<NSString *> *)xw_ignoreColumnNames {
-    return [NSSet setWithObject:@"bookConcern"];
+    return [NSSet setWithObject:@""];
 }
 
 

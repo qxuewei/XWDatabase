@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param condition 条件
  @return 是否删除成功
  */
-+ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls condition:(NSString *)condition;
++ (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString *)condition;
 
 /**
  删除表 SQL
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param condition 自定义条件
  @return 符合条件的表内所有数据
  */
-+ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition;
++ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition;
 
 /**
  现有表 建表语句
