@@ -297,7 +297,7 @@
 }
 
 /**
- 查询模型
+ 查询模型 - 标示符区分
 
  @param obj 查询对象(必须保证主键 不为空)
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -324,18 +324,18 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:nil completion:completion];
+    [self getModels:cls identifier:nil sortColumn:nil isOrderDesc:NO condition:nil completion:completion];
 }
 
 /**
- 查询模型数组
+ 查询模型数组 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:nil completion:completion];
+    [self getModels:cls identifier:identifier sortColumn:nil isOrderDesc:NO condition:nil completion:completion];
 }
 
 /**
@@ -346,11 +346,11 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
+    [self getModels:cls identifier:nil sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
 }
 
 /**
- 查询模型数组 - 自定义条件
+ 查询模型数组 - 自定义条件 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -358,7 +358,7 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
+    [self getModels:cls identifier:identifier sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
 }
 
 /**
@@ -370,11 +370,11 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
+    [self getModels:cls identifier:nil sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
 }
 
 /**
- 查询模型数组 - 按某字段排序
+ 查询模型数组 - 按某字段排序 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -383,7 +383,7 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
+    [self getModels:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
 }
 
 /**
@@ -401,7 +401,7 @@
 }
 
 /**
- 查询模型数组 - 自定义条件 + 按某字段排序
+ 查询模型数组 - 自定义条件 + 按某字段排序 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)

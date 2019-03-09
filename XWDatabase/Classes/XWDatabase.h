@@ -224,7 +224,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
- 查询模型数组 - 自定义条件
+ 查询模型数组 - 自定义条件 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -245,7 +245,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
- 查询模型数组 - 按某字段排序
+ 查询模型数组 - 按某字段排序 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
@@ -267,7 +267,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
 
 /**
- 查询模型数组 - 自定义条件 + 按某字段排序
+ 查询模型数组 - 自定义条件 + 按某字段排序 - 标示符区分
  
  @param cls 模型类
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)

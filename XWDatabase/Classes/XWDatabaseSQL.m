@@ -238,7 +238,11 @@
     }
 
     NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
-    [searchSql appendFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
+    if ([searchSql containsString:@" WHERE "]) {
+        [searchSql appendFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
+    } else {
+        [searchSql appendFormat:@" WHERE %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
+    }
     
     if (sortColumn && sortColumn.length > 0) {
         [searchSql appendString:[NSString stringWithFormat:@" ORDER BY %@",sortColumn]];

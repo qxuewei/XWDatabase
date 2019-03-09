@@ -45,11 +45,13 @@
 //    [self updateBook];
 //    [self updatePersons];
 //    [self updateBooks];
-    [self updateImages];
+//    [self updateImages];
     
     /// 查
 //    [self getOnePerson];
+//    [self getOneBook];
 //    [self getModels];
+    [self getBookModels];
 //    [self getModelsSortAge];
 //    [self getModelsCondition];
 //    [self getModelsConditionSort];
@@ -291,12 +293,28 @@
     }];
 }
 
+/// 根据主键取数据库中数据 - 分用户
+- (void)getOneBook {
+    XWBook *book = [XWBook new];
+    book.bookId = 1;
+    [XWDatabase getModel:book identifier:kUser2ID completion:^(XWBook * obj) {
+        NSLog(@" <XWDatabase> getOneBook (%@) name: %@",obj,obj.name);
+    }];
+}
+
 /// 获取数据库中所有该模型存储的数据
 - (void)getModels
 {
     [XWDatabase getModels:XWPerson.class completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
-        
+    }];
+}
+
+/// 获取数据库中所有该模型存储的数据 - 指定用户 101
+- (void)getBookModels
+{
+    [XWDatabase getModels:XWBook.class identifier:@"101" completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
     }];
 }
 
