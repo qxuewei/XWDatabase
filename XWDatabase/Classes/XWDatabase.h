@@ -166,7 +166,6 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  */
 + (void)updateModels:(NSObject *)obj updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion;
 
-
 /**
  更新模型数组,自定义更新条件 - 标示符区分
  

@@ -51,10 +51,11 @@
 //    [self getOnePerson];
 //    [self getOneBook];
 //    [self getModels];
-    [self getBookModels];
-//    [self getModelsSortAge];
+//    [self getBookModels];
+//    [self getImages];
 //    [self getModelsCondition];
-//    [self getModelsConditionSort];
+//    [self getModelsSortAge];
+    [self getModelsConditionSort];
 //    [self getImage];
 //    [self getIdentifyBook];
 }
@@ -91,6 +92,14 @@
     [XWDatabase saveModels:persons completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> saveModels (%@)",isSuccess?@"成功":@"失败");
     }];
+    
+    NSMutableArray *persons2 = [[NSMutableArray alloc] init];
+    for (int i = 0; i < 20; i++) {
+        [persons2 addObject:[XWPerson testPerson:i]];
+    }
+    [XWDatabase saveModels:persons2 identifier:kUser2ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> saveModels identifier (%@)",isSuccess?@"成功":@"失败");
+    }];
 }
 
 /// 保存模型数组 (用户区分)
@@ -123,7 +132,14 @@
         NSLog(@" <XWDatabase> addImages (%@)",isSuccess?@"成功":@"失败");
     }];
     
-    [XWDatabase saveModels:images identifier:kUser1ID completion:^(BOOL isSuccess) {
+    NSMutableArray *images2 = [NSMutableArray array];
+    for (int i = 0; i < 50; i++) {
+        XWImage *image = [XWImage new];
+        image.name = [NSString stringWithFormat:@"name2 - %d",i];
+        image.filePath = [NSString stringWithFormat:@"filePath2 - %d",i];
+        [images2 addObject:image];
+    }
+    [XWDatabase saveModels:images2 identifier:kUser1ID completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> addImages identifier (%@)",isSuccess?@"成功":@"失败");
     }];
 }
@@ -297,7 +313,7 @@
 - (void)getOneBook {
     XWBook *book = [XWBook new];
     book.bookId = 1;
-    [XWDatabase getModel:book identifier:kUser2ID completion:^(XWBook * obj) {
+    [XWDatabase getModel:book identifier:kUser1ID completion:^(XWBook * obj) {
         NSLog(@" <XWDatabase> getOneBook (%@) name: %@",obj,obj.name);
     }];
 }
@@ -306,7 +322,11 @@
 - (void)getModels
 {
     [XWDatabase getModels:XWPerson.class completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        NSLog(@" <XWDatabase> getModels XWPerson (objs.count: %lu)",objs.count);
+    }];
+    
+    [XWDatabase getModels:XWImage.class completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels XWImage (objs.count: %lu)",objs.count);
     }];
 }
 
@@ -314,18 +334,19 @@
 - (void)getBookModels
 {
     [XWDatabase getModels:XWBook.class identifier:@"101" completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        NSLog(@" <XWDatabase> getModels XWBook (objs.count: %lu)",objs.count);
     }];
+    
 }
 
-/// 获取数据库中所有该模型存储的数据 - 按 age 字段降序排列
-- (void)getModelsSortAge
-{
-    [XWDatabase getModels:XWPerson.class sortColumn:@"age" isOrderDesc:YES completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
-        for (XWPerson *person in objs) {
-            NSLog(@"cardID : %@ -- age: %zd",person.cardID,person.age);
-        }
+/// 获取数据库中所有该模型存储的数据(无主键) - 指定用户
+- (void)getImages {
+    [XWDatabase getModels:XWImage.class completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels XWImage (objs.count: %lu)",objs.count);
+    }];
+    
+    [XWDatabase getModels:XWImage.class identifier:kUser1ID completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels XWImage identifier (objs.count: %lu)",objs.count);
     }];
 }
 
@@ -338,9 +359,16 @@
 //            NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
 //        }
 //    }];
+//    
+//    /// SQLite 模糊查询默认大小写不敏感
+//    [XWDatabase getModels:XWPerson.class condition:@"gender like '%m%' AND name like '%xue%'" completion:^(NSArray * _Nullable objs) {
+//        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+//        for (XWPerson *person in objs) {
+//            NSLog(@"cardID : %@ name : %@ -- age: %zd -- sex: %@",person.cardID,person.name,person.age,person.sex);
+//        }
+//    }];
     
-    /// SQLite 模糊查询默认大小写不敏感
-    [XWDatabase getModels:XWPerson.class condition:@"gender like '%m%' AND name like '%xue%'" completion:^(NSArray * _Nullable objs) {
+    [XWDatabase getModels:XWPerson.class identifier:kUser2ID condition:@"age < 30" completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ name : %@ -- age: %zd -- sex: %@",person.cardID,person.name,person.age,person.sex);
@@ -348,10 +376,43 @@
     }];
 }
 
+/// 获取数据库中所有该模型存储的数据 - 按 age 字段降序排列
+- (void)getModelsSortAge
+{
+    [XWDatabase getModels:XWPerson.class sortColumn:@"age" isOrderDesc:YES completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        for (XWPerson *person in objs) {
+            NSLog(@"cardID : %@ -- age: %zd",person.cardID,person.age);
+        }
+    }];
+    
+    [XWDatabase getModels:XWPerson.class identifier:kUser2ID sortColumn:@"age" isOrderDesc:NO completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        for (XWPerson *person in objs) {
+            NSLog(@"cardID : %@ -- age: %zd",person.cardID,person.age);
+        }
+    }];
+    
+    [XWDatabase getModels:XWPerson.class identifier:kUser2ID sortColumn:@"age" isOrderDesc:YES completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        for (XWPerson *person in objs) {
+            NSLog(@"cardID : %@ -- age: %zd",person.cardID,person.age);
+        }
+    }];
+}
+
+
 /// 获取数据库中所有该模型存储的数据 - 自定义查找条件可排序 (例如模糊查询 name 含 学伟 的数据, 并且按 age 升序排序)
 - (void)getModelsConditionSort
 {
     [XWDatabase getModels:XWPerson.class sortColumn:@"age" isOrderDesc:NO condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        for (XWPerson *person in objs) {
+            NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
+        }
+    }];
+    
+    [XWDatabase getModels:XWPerson.class identifier:kUser2ID sortColumn:@"age" isOrderDesc:NO condition:@"name like '%学伟'" completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
         for (XWPerson *person in objs) {
             NSLog(@"cardID : %@ name : %@ -- age: %zd",person.cardID,person.name,person.age);
