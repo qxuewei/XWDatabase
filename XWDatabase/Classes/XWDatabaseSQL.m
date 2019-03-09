@@ -143,11 +143,11 @@
  @return 保存单个对象SQL
  */
 + (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
-    return [self p_updateOneObjSql:obj identifier:identifier customIvarNames:nil];
+    return [self p_updateOneObjSql:obj identifier:identifier condition:nil isCustomCondition:NO customIvarNames:nil];
 }
 
-+ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> *)updatePropertys {
-    return [self p_updateOneObjSql:obj identifier:identifier customIvarNames:updatePropertys];
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition isCustomCondition:(BOOL)isCustomCondition updatePropertys:(NSArray <NSString *> *)updatePropertys {
+    return [self p_updateOneObjSql:obj identifier:identifier condition:condition isCustomCondition:isCustomCondition customIvarNames:updatePropertys];
 }
 
 /**
@@ -206,7 +206,8 @@
  @return 是否存在 (SELECT COUNT(*) FROM Person WHERE age = '42' AND cardID = '1')
  */
 + (NSString *)isExistSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier {
-    if (identifier && !obj.xwdb_isUpdateQueryingCondition) {
+    if (!obj.xwdb_isUpdateQueryingCondition) {
+        /// 只要无主键都视为不存在
         return nil;
     }
     NSString *tableName = [XWDatabaseModel tableName:obj.class];
@@ -261,11 +262,26 @@
 }
 
 #pragma mark - private
-+ (NSString *)p_updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier customIvarNames:(NSArray <NSString *> *)customIvarNames {
-    if (!obj.xwdb_isUpdateQueryingCondition) {
-        return nil;
++ (NSString *)p_updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition isCustomCondition:(BOOL)isCustomCondition customIvarNames:(NSArray <NSString *> *)customIvarNames {
+    
+    NSString *queryCondition; //更新条件
+    
+    if (isCustomCondition) {
+        NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+        if (condition && condition.length > 0) {
+            NSString *tempSql = [NSString stringWithFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
+            queryCondition = [condition stringByAppendingString:tempSql];
+        } else {
+            queryCondition = [NSString stringWithFormat:@"%@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
+        }
+        
+    } else {
+        if (!obj.xwdb_isUpdateQueryingCondition) {
+            return nil;
+        }
+        queryCondition = [self queryCondition:obj identifier:identifier];
     }
-    NSString *queryCondition = [self queryCondition:obj identifier:identifier];
+    
     if (!queryCondition) {
         return nil;
     }

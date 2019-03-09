@@ -180,7 +180,7 @@
 /**
  更新模型
  
- @param obj 模型
+ @param obj 模型 (主键(或联合主键)不能为空)
  @param updatePropertys 所更新的字段数组 (无自定义全量更新)
  @param completion 保存 成功/失败
  */
@@ -191,7 +191,7 @@
 /**
  更新模型
  
- @param obj 模型
+ @param obj 模型 (主键(或联合主键)不能为空)
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param updatePropertys 所更新的字段数组 (无自定义全量更新)
  @param completion 保存 成功/失败
@@ -202,7 +202,7 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier updatePropertys:updatePropertys];
+        NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier condition:nil isCustomCondition:NO updatePropertys:updatePropertys];
         if (!updateModelSQL) {
             completion ? completion(NO) : nil;
             return ;
@@ -214,7 +214,7 @@
 /**
  更新模型数组
  
- @param objs 模型数组
+ @param objs 模型数组 (主键(或联合主键)不能为空)
  @param updatePropertys 所更新的字段数组
  @param completion 保存 成功/失败
  */
@@ -225,7 +225,7 @@
 /**
  更新模型数组 - 标示符区分
  
- @param objs 模型数组
+ @param objs 模型数组 (主键(或联合主键)不能为空)
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
  @param completion 保存 成功/失败
@@ -238,12 +238,49 @@
     [XWLivingThread executeTaskInMain:^{
         NSMutableArray *sqls = [NSMutableArray array];
         for (NSObject *obj in objs) {
-            NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier updatePropertys:updatePropertys];
+            NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier condition:nil isCustomCondition:NO updatePropertys:updatePropertys];
             if (updateModelSQL) {
                 [sqls addObject:updateModelSQL];
             }
         }
         [self executeUpdateSqls:sqls completion:completion];
+    }];
+}
+
+/**
+ 更新模型数组,自定义更新条件
+ 
+ @param obj 模型
+ @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
+ @param condition 条件 (自定义条件不能为空!)
+ @param completion 保存 成功/失败
+ */
++ (void)updateModels:(NSObject *)obj updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion {
+    [self updateModels:obj identifier:nil updatePropertys:updatePropertys condition:condition completion:completion];
+}
+
+/**
+ 更新模型数组,自定义更新条件 - 标示符区分
+ 
+ @param obj 模型
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
+ @param condition 条件 (自定义条件不能为空!)
+ @param completion 保存 成功/失败
+ */
++ (void)updateModels:(NSObject *)obj identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion {
+    if (!completion) {
+        return;
+    }
+    if (!obj) {
+        completion ? completion(NO) : nil;
+        return;
+    }
+    [XWLivingThread executeTaskInMain:^{
+        NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier condition:condition isCustomCondition:YES updatePropertys:updatePropertys];
+        if (updateModelSQL) {
+            [self executeUpdateSql:updateModelSQL completion:completion];
+        }
     }];
 }
 
@@ -544,7 +581,10 @@
                     }
                 }];
             }
-            
+            if (!updateSqls || updateSqls.count == 0) {
+                completion ? completion(NO) : nil;
+                return;
+            }
             [updateSqls enumerateObjectsUsingBlock:^(NSString * sql, NSUInteger idx, BOOL * _Nonnull stop) {
                 if (![database executeUpdate:sql]) {
                     completion ? completion(NO) : nil;
@@ -645,6 +685,11 @@
             /// 重命名临时表
             NSString *renameTableSql = [XWDatabaseSQL renameTable:cls];
             [sqls addObject:renameTableSql];
+            
+            if (!sqls || sqls.count == 0) {
+                completion ? completion(NO) : nil;
+                return;
+            }
             
             [sqls enumerateObjectsUsingBlock:^(NSString * sql, NSUInteger idx, BOOL * _Nonnull stop) {
                 if (![database executeUpdate:sql]) {

@@ -121,7 +121,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 /**
  更新模型
  
- @param obj 模型
+ @param obj 模型 (主键(或联合主键)不能为空)
  @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
  @param completion 保存 成功/失败
  */
@@ -130,7 +130,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 /**
  更新模型 - 标示符区分
  
- @param obj 模型
+ @param obj 模型 (主键(或联合主键)不能为空)
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param updatePropertys 所更新的字段数组 (无自定义全量更新)
  @param completion 保存 成功/失败
@@ -140,7 +140,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 /**
  更新模型数组
  
- @param objs 模型数组
+ @param objs 模型数组 (主键(或联合主键)不能为空)
  @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
  @param completion 保存 成功/失败
  */
@@ -149,13 +149,34 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 /**
  更新模型数组 - 标示符区分
  
- @param objs 模型数组
+ @param objs 模型数组 (主键(或联合主键)不能为空)
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
  @param completion 保存 成功/失败
  */
 + (void)updateModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys completion:(XWDatabaseCompletion _Nullable)completion;
 
+/**
+ 更新模型数组,自定义更新条件
+ 
+ @param obj 模型
+ @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
+ @param condition 条件 (自定义条件不能为空!)
+ @param completion 保存 成功/失败
+ */
++ (void)updateModels:(NSObject *)obj updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion;
+
+
+/**
+ 更新模型数组,自定义更新条件 - 标示符区分
+ 
+ @param obj 模型
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param updatePropertys 所更新的字段数组 (若为 nil -> 全量更新)
+ @param condition 条件 (自定义条件不能为空!)
+ @param completion 保存 成功/失败
+ */
++ (void)updateModels:(NSObject *)obj identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> * _Nullable)updatePropertys condition:(NSString * _Nullable)condition completion:(XWDatabaseCompletion _Nullable)completion;
 
 #pragma mark - 查
 /**

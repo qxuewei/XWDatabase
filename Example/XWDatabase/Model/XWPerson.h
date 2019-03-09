@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGRect pRect;
 @property (nonatomic, assign) CGSize pSize;
 
-@property (nonatomic, copy) NSString *temp;
+//@property (nonatomic, copy) NSString *temp;
 
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) NSURL *URL;

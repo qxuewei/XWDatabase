@@ -27,12 +27,12 @@
     [super viewDidLoad];
     
     /// 增
-    [self saveOnePerson];
-    [self saveModels];
-    [self saveOneBook];
-    [self saveBooks];
-    [self addImages];
-    [self addIdentifyBooks];
+//    [self saveOnePerson];
+//    [self saveModels];
+//    [self saveOneBook];
+//    [self saveBooks];
+//    [self addImages];
+//    [self addIdentifyBooks];
 
     /// 删
 //    [self deleteModel];
@@ -41,8 +41,11 @@
 //    [self deleteBooks];
 
     /// 改
-    [self updateModel];
-    [self updateBook];
+//    [self updateModel];
+//    [self updateBook];
+//    [self updatePersons];
+//    [self updateBooks];
+    [self updateImages];
     
     /// 查
 //    [self getOnePerson];
@@ -226,8 +229,52 @@
     }];
 }
 
+/// 批量更新无标示符模型
 - (void)updatePersons {
+    NSMutableArray *persons = [NSMutableArray array];
+    for (int i = 0; i < 50; i++) {
+        XWPerson *person = [XWPerson new];
+        person.cardID = [NSString stringWithFormat:@"%d",i];
+        person.age = 100;
+        person.name = @"阿里巴巴";
+        person.sex = @"Male";
+        person.girls = @[@"小可可",@"小慧慧",@"小baby"].mutableCopy;
+        [persons addObject:person];
+    }
+    [XWDatabase updateModels:persons updatePropertys:nil completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels persons (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 批量更新有标示符模型
+- (void)updateBooks {
+    NSMutableArray *books = [NSMutableArray array];
+    for (int i = 0; i < 30; i++) {
+        XWBook *book = [XWBook new];
+        book.bookId = i;
+        book.name = [NSString stringWithFormat:@"批量名称(%d)",i];
+        book.author = [NSString stringWithFormat:@"作者(%d)",i];
+        [books addObject:book];
+    }
+    [XWDatabase updateModels:books identifier:kUser2ID updatePropertys:nil completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels books (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 批量更新无主键模型
+- (void)updateImages {
+    XWImage *image = [XWImage new];
+    image.name = @"XXOO";
+    [XWDatabase updateModels:image updatePropertys:nil condition:nil completion:^(BOOL isSuccess) {
+       NSLog(@" <XWDatabase> uodateImages (%@)",isSuccess?@"成功":@"失败");
+    }];
     
+    XWImage *image2 = [XWImage new];
+    image2.name = @"批量更新";
+    image2.filePath = @"批量";
+    [XWDatabase updateModels:image2 identifier:kUser1ID updatePropertys:nil condition:nil completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> uodateImages (%@)",isSuccess?@"成功":@"失败");
+    }];
 }
 
 #pragma mark - 查

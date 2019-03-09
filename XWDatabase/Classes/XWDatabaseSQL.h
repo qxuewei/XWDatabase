@@ -76,7 +76,18 @@ NS_ASSUME_NONNULL_BEGIN
  @return 保存单个对象SQL
  */
 + (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier;
-+ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier updatePropertys:(NSArray <NSString *> *)updatePropertys;
+
+/**
+ 更新单个对象SQL
+
+ @param obj 模型
+ @param identifier 唯一标识
+ @param condition 自定义更新条件
+ @param isCustomCondition 是否自定义更新条件
+ @param updatePropertys 所更新的属性 s
+ @return 更新单个对象SQL语句
+ */
++ (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition isCustomCondition:(BOOL)isCustomCondition updatePropertys:(NSArray <NSString *> *)updatePropertys;
 
 /**
  更新字段值 SQL
