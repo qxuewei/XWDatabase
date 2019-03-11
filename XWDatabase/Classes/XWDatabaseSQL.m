@@ -150,6 +150,59 @@
     return [self p_updateOneObjSql:obj identifier:identifier condition:condition isCustomCondition:isCustomCondition customIvarNames:updatePropertys];
 }
 
++ (NSString *)updateConditionObjsSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition customIvarNames:(NSArray <NSString *> *)customIvarNames {
+    
+    NSString *queryCondition; //更新条件
+    
+    NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+    if (condition && condition.length > 0) {
+        NSString *tempSql = [NSString stringWithFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
+        queryCondition = [condition stringByAppendingString:tempSql];
+    } else {
+        queryCondition = [NSString stringWithFormat:@"%@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
+    }
+    
+    NSString *tableName = [XWDatabaseModel tableName:obj.class];
+    NSArray *columnNames = ( customIvarNames && customIvarNames.count > 0) ? customIvarNames : [XWDatabaseModel classColumnIvarNameTypeDict:obj.class].allKeys;
+    NSMutableArray *updateArrM = [[NSMutableArray alloc] init];
+    
+    NSString *primaryKey = obj.xwdb_primaryKey;
+    NSArray *unionPrimaryKey = obj.xwdb_unionPrimaryKey;
+    
+    for (NSString *column in columnNames) {
+        NSString *ivar = [XWDatabaseModel ivarNameWithColumn:column cls:obj.class];
+        if (!ivar) {
+            continue;
+        }
+        NSLog(@"%@",ivar);
+        if (primaryKey) {
+            if ([primaryKey isEqualToString:ivar]) {
+                /// 主键不更新
+                continue;
+            }
+        } else if (unionPrimaryKey) {
+            if ([unionPrimaryKey containsObject:ivar]) {
+                /// 联合主键不更新
+                continue;
+            }
+        }
+        NSString *valueString = [self stringWithObject:obj ivarName:ivar];
+        NSString *save;
+        if (valueString) {
+            save = [NSString stringWithFormat:@"%@ = %@",column, valueString];
+        } else {
+            save = [NSString stringWithFormat:@"%@ = %@",column, @"''"];
+        }
+        [updateArrM addObject:save];
+    }
+    
+    if (updateArrM.count == 0) {
+        return nil;
+    }
+    NSString *updateSql = [NSString stringWithFormat:@"UPDATE %@ SET %@ WHERE %@ ",tableName,[updateArrM componentsJoinedByString:@","],queryCondition];
+    return updateSql;
+}
+
 /**
  更新字段值 SQL
  

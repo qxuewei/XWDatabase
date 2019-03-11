@@ -4,7 +4,7 @@
 //
 //  Created by 邱学伟 on 2018/11/29.
 //  Copyright © 2018 邱学伟. All rights reserved.
-//  V 1.1
+//
 
 #import <Foundation/Foundation.h>
 #import "XWDatabaseModelProtocol.h"
@@ -26,7 +26,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param obj 模型
  @param completion 保存 成功/失败
  */
-+ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion;
++ (void)saveModel:(NSObject *)obj completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  保存模型 (表中不存在插入, 已存在更新) - 标示符区分
@@ -35,7 +35,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param identifier 唯一标识,用于区分不同数据组 (如: userID), 若模型无主键或联合主键则会统一插入数据
  @param completion 保存 成功/失败
  */
-+ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
++ (void)saveModel:(NSObject *)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  保存模型数组
@@ -43,7 +43,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param objs 模型数组
  @param completion 保存 成功/失败
  */
-+ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion _Nullable)completion;
++ (void)saveModels:(NSArray *)objs completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  保存模型数组 - 标示符区分
@@ -52,7 +52,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param completion 保存 成功/失败
  */
-+ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
++ (void)saveModels:(NSArray *)objs identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
 
 
 #pragma mark - 删
@@ -67,7 +67,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
 /**
  删除指定某个模型, 主键不能为空 - 标示符区分
  
- @param obj 模型
+ @param obj 模型 (主键不能为空)
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param completion 成功/失败
  */
@@ -79,7 +79,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param cls 模型类
  @param completion 成功/失败
  */
-+ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion;
++ (void)clearModel:(Class)cls completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  删除指定模型所有数据 - 标示符区分
@@ -88,7 +88,7 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param completion 成功/失败
  */
-+ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
++ (void)clearModel:(Class)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion;
 
 /**
  删除指定模型所有数据 - 自定义条件

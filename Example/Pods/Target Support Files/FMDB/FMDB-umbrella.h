@@ -14,7 +14,7 @@
 #import "FMDatabaseAdditions.h"
 #import "FMDatabasePool.h"
 #import "FMDatabaseQueue.h"
-#import <FMDB/FMDB.h>
+#import "FMDB.h"
 #import "FMResultSet.h"
 
 FOUNDATION_EXPORT double FMDBVersionNumber;

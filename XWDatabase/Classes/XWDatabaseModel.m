@@ -389,6 +389,8 @@ static NSNumberFormatter *_numberFormatter;
         return nil;
     }
     NSData *data;
+    
+    /// 若保存的模型中含有自定义模型属性,需要对自定义模型需要遵循 <NSCoding, NSSecureCoding> 协议,对齐进行归解档!!!! (NSObject+XWModel.h 有智能归解档的宏)
     if (@available(iOS 11.0, *)) {
         data = [NSKeyedArchiver archivedDataWithRootObject:customModel requiringSecureCoding:YES error:nil];
     } else {

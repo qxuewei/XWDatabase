@@ -89,6 +89,18 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSString *)updateOneObjSql:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition isCustomCondition:(BOOL)isCustomCondition updatePropertys:(NSArray <NSString *> *)updatePropertys;
 
+
+/**
+ 更新指定约束对象SQL
+
+ @param obj 对象
+ @param identifier 唯一标识
+ @param condition 更新条件
+ @param customIvarNames 所更新的属性 s
+ @return 更新指定约束对象SQL
+ */
++ (NSString *)updateConditionObjsSql:(NSObject <XWDatabaseModelProtocol> *)obj identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition customIvarNames:(NSArray <NSString *> *)customIvarNames;
+
 /**
  更新字段值 SQL
  

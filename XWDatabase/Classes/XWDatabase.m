@@ -24,7 +24,7 @@
  @param obj 模型
  @param completion 保存 成功/失败
  */
-+ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj completion:(XWDatabaseCompletion _Nullable)completion {
++ (void)saveModel:(NSObject *)obj completion:(XWDatabaseCompletion _Nullable)completion {
     [self saveModel:obj identifier:nil completion:completion];
 }
 
@@ -35,7 +35,7 @@
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param completion 保存 成功/失败
  */
-+ (void)saveModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
++ (void)saveModel:(NSObject *)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
     if (!obj) {
         completion ? completion(NO) : nil;
         return;
@@ -53,7 +53,7 @@
  @param objs 模型数组
  @param completion 保存 成功/失败
  */
-+ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs completion:(XWDatabaseCompletion _Nullable)completion {
++ (void)saveModels:(NSArray *)objs completion:(XWDatabaseCompletion _Nullable)completion {
     [self saveModels:objs identifier:nil completion:completion];
 }
 
@@ -64,7 +64,7 @@
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param completion 保存 成功/失败
  */
-+ (void)saveModels:(NSArray < NSObject <XWDatabaseModelProtocol>* > *)objs identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
++ (void)saveModels:(NSArray *)objs identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
     if (!objs || objs.count == 0) {
         completion ? completion(NO) : nil;
         return;
@@ -115,7 +115,7 @@
  @param cls 模型类
  @param completion 成功/失败
  */
-+ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion {
++ (void)clearModel:(Class)cls completion:(XWDatabaseCompletion _Nullable)completion {
     [self clearModel:cls identifier:nil condition:nil completion:completion];
 }
 
@@ -126,7 +126,7 @@
  @param identifier 唯一标识,用于区分不同数据组 (如: userID)
  @param completion 成功/失败
  */
-+ (void)clearModel:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
++ (void)clearModel:(Class)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseCompletion _Nullable)completion {
     [self clearModel:cls identifier:identifier condition:nil completion:completion];
 }
 
@@ -277,7 +277,7 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        NSString *updateModelSQL = [XWDatabaseSQL updateOneObjSql:obj identifier:identifier condition:condition isCustomCondition:YES updatePropertys:updatePropertys];
+        NSString *updateModelSQL = [XWDatabaseSQL updateConditionObjsSql:obj identifier:identifier condition:condition customIvarNames:updatePropertys];
         if (updateModelSQL) {
             [self executeUpdateSql:updateModelSQL completion:completion];
         }

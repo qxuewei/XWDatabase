@@ -11,6 +11,8 @@
 #import "XWDatabase.h"
 #import "XWImage.h"
 #import "XWBook.h"
+#import "XWTestModel.h"
+#import "XWTestSubModel.h"
 
 #define kUser1ID @"10010"
 #define kUser2ID @"10086"
@@ -30,15 +32,20 @@
 //    [self saveOnePerson];
 //    [self saveModels];
 //    [self saveOneBook];
-    [self saveBooks];
+//    [self saveBooks];
 //    [self addImages];
 //    [self addIdentifyBooks];
+//    [self testSaveModel];
+    [self testSaveModels];
 
     /// 删
 //    [self deleteModel];
 //    [self deleteBook];
 //    [self clearModel];
 //    [self deleteBooks];
+//    [self testDeleteModel];
+//    [self testClearModels];
+//    [self testClearModels2];
 
     /// 改
 //    [self updateModel];
@@ -46,10 +53,12 @@
 //    [self updatePersons];
 //    [self updateBooks];
 //    [self updateImages];
+//    [self testUpdateModel];
+//    [self testUpdateCondition];
     
     /// 查
 //    [self getOnePerson];
-    [self getOneBook];
+//    [self getOneBook];
 //    [self getModels];
 //    [self getBookModels];
 //    [self getImages];
@@ -58,6 +67,7 @@
 //    [self getModelsConditionSort];
 //    [self getImage];
 //    [self getIdentifyBook];
+    [self testGetModel];
 }
 
 #pragma mark - 增
@@ -160,6 +170,74 @@
     }];
 }
 
+/// 保存模型
+- (void)testSaveModel {
+    
+    XWTestModel *model = [XWTestModel testModel:1];
+    /// 保存有主键模型
+    [XWDatabase saveModel:model completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> saveModel  (%@)",isSuccess?@"成功":@"失败");
+    }];
+    /// 保存有主键模型 (指定用户)
+    [XWDatabase saveModel:model identifier:kUser1ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> saveModel (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    XWTestSubModel *subModel = [XWTestSubModel testTestSubModel];
+    /// 保存无主键模型
+    [XWDatabase saveModel:subModel completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> saveModel (%@)",isSuccess?@"成功":@"失败");
+    }];
+    /// 保存无主键模型 (指定用户)
+    [XWDatabase saveModel:subModel identifier:kUser1ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> saveModel (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 保存多个模型
+- (void)testSaveModels {
+    NSMutableArray *models = [NSMutableArray array];
+    for (int i = 0; i < 10; i++) {
+        XWTestModel *model = [XWTestModel testModel:i];
+        [models addObject:model];
+    }
+    /// 保存有主键模型
+    [XWDatabase saveModels:models completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> testSaveModels  (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    NSMutableArray *models2 = [NSMutableArray array];
+    for (int i = 0; i < 10; i++) {
+        XWTestModel *model = [XWTestModel testModel:i];
+        [models2 addObject:model];
+    }
+    /// 保存有主键模型 (指定用户)
+    [XWDatabase saveModels:models2 identifier:kUser2ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> testSaveModels (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    NSMutableArray *subModels = [NSMutableArray array];
+    for (int i = 0; i < 10; i++) {
+        XWTestSubModel *subModel = [XWTestSubModel testTestSubModel];
+        [subModels addObject:subModel];
+    }
+    /// 保存无主键模型
+    [XWDatabase saveModels:subModels completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> testSaveModels (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    NSMutableArray *subModels2 = [NSMutableArray array];
+    for (int i = 0; i < 10; i++) {
+        XWTestSubModel *subModel = [XWTestSubModel testTestSubModel];
+        [subModels2 addObject:subModel];
+    }
+    /// 保存无主键模型 (指定用户)
+    [XWDatabase saveModels:subModels2 identifier:kUser2ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> testSaveModels (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+
 #pragma mark - 删
 /// 根据主键删除模型
 - (void)deleteModel
@@ -200,6 +278,42 @@
 
     [XWDatabase clearModel:XWBook.class identifier:kUser2ID condition:@"bookId < 10" completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> deleteModel saveOneBook (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 删除指定主键模型
+- (void)testDeleteModel {
+    XWTestModel *model = [XWTestModel new];
+    model.cardID = @"1";
+    /// 删除通用模型 , 主键 ID 为 1
+    [XWDatabase deleteModel:model completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> deleteModel saveOneBook (%@)",isSuccess?@"成功":@"失败");
+    }];
+    /// 删除指定用户模型 , 主键 ID 为 1
+    [XWDatabase deleteModel:model identifier:kUser1ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> deleteModel saveOneBook (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 删除指定模型
+- (void)testClearModels {
+    [XWDatabase clearModel:XWTestModel.class completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> clearModel (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    [XWDatabase clearModel:XWTestSubModel.class identifier:kUser2ID completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> clearModel (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 删除符合条件的模型
+- (void)testClearModels2 {
+    [XWDatabase clearModel:XWTestModel.class condition:@"name = '极客学伟'" completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> clearModel (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    [XWDatabase clearModel:XWTestModel.class identifier:kUser2ID condition:@"age > 30" completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> clearModel (%@)",isSuccess?@"成功":@"失败");
     }];
 }
 
@@ -295,6 +409,108 @@
     }];
 }
 
+/// 更新指定主键模型
+- (void)testUpdateModel {
+    XWTestModel *model = [XWTestModel new];
+    model.cardID = @"1";
+    model.name = @"新名字";
+    [XWDatabase updateModel:model updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel 指定属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    XWTestModel *model2 = [XWTestModel new];
+    model2.cardID = @"2";
+    model2.name = @"CCTV";
+    model2.age = 99;
+    [XWDatabase updateModel:model2 updatePropertys:nil completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel 全部属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    XWTestModel *model3 = [XWTestModel new];
+    model3.cardID = @"1";
+    model3.name = @"新名字-10086";
+    [XWDatabase updateModel:model3 identifier:kUser2ID updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel 指定属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    XWTestModel *model4 = [XWTestModel new];
+    model4.cardID = @"2";
+    model4.name = @"白说";
+    model4.age = 199;
+    [XWDatabase updateModel:model4 identifier:kUser2ID updatePropertys:nil completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModel 全部属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    NSMutableArray *models = [NSMutableArray array];
+    for (int i = 0; i < 5; i++) {
+        XWTestModel *model = [XWTestModel testModel:i];
+        model.name = @"陪我欢乐";
+        [models addObject:model];
+    }
+    [XWDatabase updateModels:models updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels 全部属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    NSMutableArray *models2 = [NSMutableArray array];
+    for (int i = 5; i < 10; i++) {
+        XWTestModel *model = [XWTestModel new];
+        model.cardID = [NSString stringWithFormat:@"%d",i];
+        model.name = @"波场";
+        [models2 addObject:model];
+    }
+    [XWDatabase updateModels:models2 updatePropertys: nil completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels 部分属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    NSMutableArray *models3 = [NSMutableArray array];
+    for (int i = 0; i < 5; i++) {
+        XWTestModel *model = [XWTestModel testModel:i];
+        model.name = @"兰雄传媒";
+        [models3 addObject:model];
+    }
+    [XWDatabase updateModels:models3 identifier:kUser2ID updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels 全部属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    NSMutableArray *models4 = [NSMutableArray array];
+    for (int i = 5; i < 10; i++) {
+        XWTestModel *model = [XWTestModel new];
+        model.cardID = [NSString stringWithFormat:@"%d",i];
+        model.name = @"疯火科技";
+        [models4 addObject:model];
+    }
+    [XWDatabase updateModels:models4 identifier:kUser2ID updatePropertys: nil completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels 全部属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
+/// 指定条件更新
+- (void)testUpdateCondition {
+    XWTestModel *model5 = [XWTestModel new];
+    model5.name = @"腾讯";
+    [XWDatabase updateModels:model5 updatePropertys:@[@"name"] condition:@"age < 40" completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels 部分属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    XWTestModel *model6 = [XWTestModel new];
+    model6.name = @"百度";
+    [XWDatabase updateModels:model6 updatePropertys:nil condition:@"age > 40" completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels 部分属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    XWTestModel *model7 = [XWTestModel new];
+    model7.name = @"阿里巴巴";
+    [XWDatabase updateModels:model7 identifier:kUser2ID updatePropertys:@[@"name"] condition:@"age < 40" completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels 部分属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    XWTestModel *model8 = [XWTestModel new];
+    model8.name = @"美团";
+    [XWDatabase updateModels:model8 identifier:kUser2ID updatePropertys:nil condition:@"age > 40" completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> updateModels 部分属性 (%@)",isSuccess?@"成功":@"失败");
+    }];
+}
+
 #pragma mark - 查
 /// 根据主键取数据库中数据
 - (void)getOnePerson
@@ -347,6 +563,69 @@
     
     [XWDatabase getModels:XWImage.class identifier:kUser1ID completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels XWImage identifier (objs.count: %lu)",objs.count);
+    }];
+}
+
+/// 获取模型
+- (void)testGetModel {
+    XWTestModel *model = [XWTestModel new];
+    model.cardID = @"1";
+    [XWDatabase getModel:model completion:^(XWTestModel * obj) {
+        NSLog(@" <XWDatabase> getModel name:%@",obj.name);
+    }];
+    
+    [XWDatabase getModel:model identifier:kUser2ID completion:^(XWTestModel * obj) {
+        NSLog(@" <XWDatabase> getModel identifier name:%@",obj.name);
+    }];
+    
+    [XWDatabase getModels:XWTestModel.class completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+    }];
+    
+    [XWDatabase getModels:XWTestModel.class identifier:kUser2ID completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+    }];
+    
+    [XWDatabase getModels:XWTestModel.class condition:@"age > 40" completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        for (XWTestModel *model in objs) {
+            NSLog(@"model.age: %ld",(long)model.age);
+        }
+    }];
+    
+    [XWDatabase getModels:XWTestModel.class identifier:kUser2ID condition:@"age < 40" completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels (objs.count: %lu)",objs.count);
+        for (XWTestModel *model in objs) {
+            NSLog(@"model.age: %ld",(long)model.age);
+        }
+    }];
+    
+    [XWDatabase getModels:XWTestModel.class sortColumn:@"age" isOrderDesc:YES completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels sortColumn (objs.count: %lu)",objs.count);
+        for (XWTestModel *model in objs) {
+            NSLog(@"model.age: %ld",(long)model.age);
+        }
+    }];
+    
+    [XWDatabase getModels:XWTestModel.class identifier:kUser2ID sortColumn:@"age" isOrderDesc:NO completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels sortColumn (objs.count: %lu)",objs.count);
+        for (XWTestModel *model in objs) {
+            NSLog(@"model.age: %ld",(long)model.age);
+        }
+    }];
+    
+    [XWDatabase getModels:XWTestModel.class sortColumn:@"age" isOrderDesc:YES condition:@"age > 40" completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels sortColumn condition (objs.count: %lu)",objs.count);
+        for (XWTestModel *model in objs) {
+            NSLog(@"model.age: %ld",(long)model.age);
+        }
+    }];
+    
+    [XWDatabase getModels:XWTestModel.class identifier:kUser2ID sortColumn:@"age" isOrderDesc:NO condition:@"age < 40" completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels sortColumn condition (objs.count: %lu)",objs.count);
+        for (XWTestModel *model in objs) {
+            NSLog(@"model.age: %ld",(long)model.age);
+        }
     }];
 }
 
