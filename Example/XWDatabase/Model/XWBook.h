@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *author;
 @property (nonatomic, copy) NSString *bookConcern;
-@property (nonatomic, copy) NSString *temp;
+//@property (nonatomic, copy) NSString *temp;
 //@property (nonatomic, copy) NSString *temp2;
 
 

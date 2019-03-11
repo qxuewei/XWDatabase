@@ -55,6 +55,7 @@ static NSNumberFormatter *_numberFormatter;
         NSMutableDictionary *dictM = [[NSMutableDictionary alloc] init];
         unsigned int count = 0;
         Ivar *ivarList = class_copyIvarList(cls, &count);
+        NSSet *customSaveCoulumn = cls.xwdb_specificSaveColumnNames;
         for (int i = 0; i < count; i++) {
             Ivar ivar = ivarList[i];
             /// 成员变量名称
@@ -65,13 +66,22 @@ static NSNumberFormatter *_numberFormatter;
             if (cls.xwdb_ignoreColumnNames && [cls.xwdb_ignoreColumnNames containsObject:ivarName]) {
                 continue;
             }
+            
             /// 成员变量类型
             NSString *ivarType = [NSString stringWithUTF8String:ivar_getTypeEncoding(ivar)];
             ivarType = [ivarType stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"@\""]];
             if (cls.xwdb_customColumnMapping && [cls.xwdb_customColumnMapping.allKeys containsObject:ivarName]) {
                 ivarName = cls.xwdb_customColumnMapping[ivarName];
             }
-            [dictM setObject:ivarType forKey:ivarName];
+            if (customSaveCoulumn && customSaveCoulumn.count > 0) {
+                /// 自定义存储字段
+                if ([customSaveCoulumn containsObject:ivarName]) {
+                    [dictM setObject:ivarType forKey:ivarName];
+                }
+            } else {
+                /// 默认全部存储字段
+                [dictM setObject:ivarType forKey:ivarName];
+            }
         }
         free(ivarList);
         cls.xw_classIvarNameTypeDict = dictM.copy;

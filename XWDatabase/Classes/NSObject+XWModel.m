@@ -238,13 +238,6 @@ NSString * const kXWDB_PRIMARYKEY_COLUMNNAME    =   @"xw_id";           //默认
 - (NSSet < NSString * > * _Nullable)xwdb_specificSaveColumnNames {
     if ([self.class respondsToSelector:@selector(xw_specificSaveColumnNames)]) {
         NSMutableSet *specificSaveColumnNames = [self.class xw_specificSaveColumnNames].mutableCopy;
-        [specificSaveColumnNames enumerateObjectsUsingBlock:^(NSString * obj, BOOL * _Nonnull stop) {
-            NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:self.class];
-            if (![columns.allKeys containsObject:obj]) {
-                /// 不存在自定义存储的属性
-                [specificSaveColumnNames removeObject:obj];
-            }
-        }];
         if (specificSaveColumnNames && specificSaveColumnNames.count) {
             return specificSaveColumnNames.copy;
         }

@@ -30,7 +30,7 @@
 //    [self saveOnePerson];
 //    [self saveModels];
 //    [self saveOneBook];
-//    [self saveBooks];
+    [self saveBooks];
 //    [self addImages];
 //    [self addIdentifyBooks];
 
@@ -49,13 +49,13 @@
     
     /// 查
 //    [self getOnePerson];
-//    [self getOneBook];
+    [self getOneBook];
 //    [self getModels];
 //    [self getBookModels];
 //    [self getImages];
 //    [self getModelsCondition];
 //    [self getModelsSortAge];
-    [self getModelsConditionSort];
+//    [self getModelsConditionSort];
 //    [self getImage];
 //    [self getIdentifyBook];
 }
@@ -313,7 +313,7 @@
 - (void)getOneBook {
     XWBook *book = [XWBook new];
     book.bookId = 1;
-    [XWDatabase getModel:book identifier:kUser1ID completion:^(XWBook * obj) {
+    [XWDatabase getModel:book identifier:kUser2ID completion:^(XWBook * obj) {
         NSLog(@" <XWDatabase> getOneBook (%@) name: %@",obj,obj.name);
     }];
 }
