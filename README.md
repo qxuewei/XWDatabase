@@ -37,6 +37,7 @@ qxuewei@yeah.net, qiuxuewei@peiwo.cn
 - 数据操作是耗时操作，所以你无需手动开启异步线程操作数据库操作，她会统一在一个保活的异步线程中执行；
 - 她支持存储常见的数据类型(int、long、signed、float、double、NSInteger、CGFloat、BOOL、NSString、NSMutableString、NSNumber、NSArray、NSMutableArray、NSDictionary、NSMutableDictionary、NSData、NSMutableData、UIImage、NSDate、NSURL、NSRange、CGRect、CGSize、CGPoint、自定义对象等的存储）； 
 - 她还对二进制文件的存储做了优化，比如同一张图片表中所有数据都持有这张图片对象，她在数据库中只会有一份拷贝，竭尽她所能优化存储空间。
+- 若保存的模型中含有自定义模型的属性, 注意模型需要实现 'xw_customModelMapping' 协议声明所指向的自定义模型 并且 自定义模型需要遵循 <NSCoding> 协议, 对其进行归解档!!!! -> 可使用 'XWCodingImplementation' 宏 快速实现 或 自行实现 '- (instancetype)initWithCoder:(NSCoder *)aDecoder' 和 '- (void)encodeWithCoder:(NSCoder *)aCoder' 方法
 
  笔锋一转，V1.0 版本会存在很多不足，希望各位前辈和大牛多多指正，多提 `issues`
 
