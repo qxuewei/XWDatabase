@@ -7,7 +7,7 @@
 //
 
 #import "XWDatabaseQueue.h"
-#import <FMDB/FMDB.h>
+#import <fmdb/FMDB.h>
 
 #define WS(weakSelf)  __weak __typeof(self) weakSelf = self;
 #define TS(strongSelf)  __strong __typeof(weakSelf) strongSelf = weakSelf;

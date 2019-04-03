@@ -8,7 +8,7 @@
 
 #import "XWDatabaseDataModel.h"
 #import "XWDatabaseQueue.h"
-#import <FMDB/FMDB.h>
+#import <fmdb/FMDB.h>
 
 @interface XWDatabaseDataModel ()
 @end

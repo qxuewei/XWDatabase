@@ -6,7 +6,7 @@
 //  Copyright © 2018 邱学伟. All rights reserved.
 //
 
-#import <FMDB/FMDB.h>
+#import <fmdb/FMDB.h>
 #import "XWDatabase.h"
 #import "XWDatabaseSQL.h"
 #import "XWLivingThread.h"
