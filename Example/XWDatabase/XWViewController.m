@@ -14,7 +14,7 @@
 #import "XWTestModel.h"
 #import "XWTestSubModel.h"
 
-#define kUser1ID @"10010"
+#define kUser1ID @"10010a"
 #define kUser2ID @"10086"
 
 @interface XWViewController ()
@@ -31,12 +31,12 @@
     /// 增
 //    [self saveOnePerson];
 //    [self saveModels];
-//    [self saveOneBook];
+    [self saveOneBook];
 //    [self saveBooks];
 //    [self addImages];
 //    [self addIdentifyBooks];
 //    [self testSaveModel];
-    [self testSaveModels];
+//    [self testSaveModels];
 
     /// 删
 //    [self deleteModel];
@@ -67,7 +67,7 @@
 //    [self getModelsConditionSort];
 //    [self getImage];
 //    [self getIdentifyBook];
-    [self testGetModel];
+//    [self testGetModel];
 }
 
 #pragma mark - 增

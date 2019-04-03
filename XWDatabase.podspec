@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XWDatabase'
-  s.version          = '1.1.0'
+  s.version          = '1.1.1'
   s.summary          = '数据库工具类，直接操作模型读写数据库，FMDB封装'
 
 # This description is used to generate tags and improve search results.

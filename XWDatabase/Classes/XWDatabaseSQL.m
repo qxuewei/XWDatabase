@@ -66,7 +66,7 @@
         return nil;
     }
     
-    NSString *identifierValue = identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE];
+    NSString *identifierValue = identifier ? [NSString stringWithFormat:@"'%@'",identifier] : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE];
     [insertSqlDict setObject:identifierValue forKey:kXWDB_IDENTIFIER_COLUMNNAME];
     
     NSString *insertOneObjSql = [NSString stringWithFormat:@"INSERT INTO  %@(%@) VALUES(%@)",tableName,[insertSqlDict.allKeys componentsJoinedByString:@","],[insertSqlDict.allValues componentsJoinedByString:@","]];
@@ -112,7 +112,7 @@
 + (NSString *)clearColumn:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString *)condition {
     /// DELETE FROM COMPANY WHERE ID = 7
     NSString *tableName = [XWDatabaseModel tableName:cls];
-    NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+    NSString *identifierValue = (identifier ? [NSString stringWithFormat:@"'%@'",identifier] : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
     if (condition && condition.length > 0) {
         NSString *sql = [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ ",tableName,condition];
         return [sql stringByAppendingString:[NSString stringWithFormat:@" AND %@ = %@", kXWDB_IDENTIFIER_COLUMNNAME, identifierValue]];
@@ -154,7 +154,7 @@
     
     NSString *queryCondition; //更新条件
     
-    NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+    NSString *identifierValue = (identifier ? [NSString stringWithFormat:@"'%@'",identifier] : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
     if (condition && condition.length > 0) {
         NSString *tempSql = [NSString stringWithFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
         queryCondition = [condition stringByAppendingString:tempSql];
@@ -290,7 +290,7 @@
         [searchSql appendFormat:@" WHERE %@",condition];
     }
 
-    NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+    NSString *identifierValue = (identifier ? [NSString stringWithFormat:@"'%@'",identifier] : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
     if ([searchSql containsString:@" WHERE "]) {
         [searchSql appendFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
     } else {
@@ -324,7 +324,7 @@
     NSString *queryCondition; //更新条件
     
     if (isCustomCondition) {
-        NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+        NSString *identifierValue = (identifier ? [NSString stringWithFormat:@"'%@'",identifier] : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
         if (condition && condition.length > 0) {
             NSString *tempSql = [NSString stringWithFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
             queryCondition = [condition stringByAppendingString:tempSql];
@@ -401,7 +401,7 @@
         }
     }
     
-    NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+    NSString *identifierValue = (identifier ? [NSString stringWithFormat:@"'%@'",identifier] : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
     if (sql) {
         NSString *tempSql = [NSString stringWithFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
         sql = [sql stringByAppendingString:tempSql];
