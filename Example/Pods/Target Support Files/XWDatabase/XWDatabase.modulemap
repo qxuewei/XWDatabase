@@ -1,0 +1,6 @@
+framework module XWDatabase {
+  umbrella header "XWDatabase-umbrella.h"
+
+  export *
+  module * { export * }
+}
