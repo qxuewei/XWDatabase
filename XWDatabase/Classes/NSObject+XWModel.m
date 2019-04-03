@@ -10,13 +10,7 @@
 #import <objc/runtime.h>
 #import "XWDatabaseModel.h"
 
-#pragma mark 常量
-NSString * const kXWDB_IDENTIFIER_COLUMNNAME    =   @"xw_identifier";   //唯一标识字段名称
-NSString * const kXWDB_IDENTIFIER_VALUE         =   @"xw_null";         //唯一标识字段值
-NSString * const kXWDB_PRIMARYKEY_COLUMNNAME    =   @"xw_id";           //默认自增主键字段名称
-
 @interface NSObject ()
-@property (nonatomic, copy) NSString *abc;
 @end
 
 @implementation NSObject (XWModel)
@@ -156,27 +150,6 @@ NSString * const kXWDB_PRIMARYKEY_COLUMNNAME    =   @"xw_id";           //默认
                 return nil;
             }
             return unionPrimaryKey;
-        }
-    }
-    return nil;
-}
-
-/**
- 自定义对象映射  (key: 成员变量名称 value: 对象类)
- 
- @return 自定义对象映射
- */
-- (NSDictionary * _Nullable)xwdb_customModelMapping {
-    if ([self.class respondsToSelector:@selector(xw_customModelMapping)]) {
-        NSMutableDictionary *customModelMapping = [self.class xw_customModelMapping].mutableCopy;
-        [customModelMapping enumerateKeysAndObjectsUsingBlock:^(NSString * key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-           NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:self.class];
-            if (![columns.allKeys containsObject:key]) {
-                [customModelMapping removeObjectForKey:key];
-            }
-        }];
-        if (customModelMapping && customModelMapping.count > 0) {
-            return customModelMapping.copy;
         }
     }
     return nil;

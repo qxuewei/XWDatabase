@@ -5,9 +5,12 @@
 //  Created by 邱学伟 on 2018/11/29.
 //  Copyright © 2018 邱学伟. All rights reserved.
 //
+// 若保存的模型中含有自定义模型的属性, 注意模型需要实现 'xw_customModelMapping' 协议声明所指向的自定义模型 并且 自定义模型需要遵循 <NSCoding> 协议, 对其进行归解档!!!! -> 可使用 'XWCodingImplementation' 宏 快速实现或自行实现 '- (instancetype)initWithCoder:(NSCoder *)aDecoder' 和 '- (void)encodeWithCoder:(NSCoder *)aCoder' 方法
 
 #import <Foundation/Foundation.h>
 #import "XWDatabaseModelProtocol.h"
+#import "NSObject+XWModel.h"
+
 @class FMResultSet;
 
 NS_ASSUME_NONNULL_BEGIN

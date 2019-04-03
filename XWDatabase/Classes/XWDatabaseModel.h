@@ -7,6 +7,7 @@
 //  对于模型的操作
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import "XWDatabaseModelProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -84,6 +85,15 @@ NS_ASSUME_NONNULL_BEGIN
  @return 模型中自定义对象
  */
 + (NSSet *)customModelSet:(Class)cls;
+
+/**
+ 自定义对象映射  (key: 成员变量名称 value: 对象类)
+ 
+ @return 自定义对象映射
+ */
++ (NSDictionary * _Nullable)xwdb_customModelMappingCls:(Class)cls;
+
+#pragma mark - 魔性转换
 
 /// NSAarray -> NSString
 + (NSString *)stringWithArray:(NSArray *)array;

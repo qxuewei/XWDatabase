@@ -11,6 +11,7 @@
 
 @implementation XWTestSubModel
 
+/// 快速归解档的宏
 XWCodingImplementation
 
 + (instancetype)testTestSubModel {
