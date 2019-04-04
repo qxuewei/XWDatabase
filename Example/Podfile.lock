@@ -2,11 +2,10 @@ PODS:
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
-  - XWDatabase (1.1.0):
+  - XWDatabase (1.1.1):
     - FMDB
 
 DEPENDENCIES:
-  - FMDB
   - XWDatabase (from `../`)
 
 SPEC REPOS:
@@ -19,8 +18,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
-  XWDatabase: 49b6b7e80a589caa3334a944891a5bb3c0b5a57b
+  XWDatabase: 45bbf4c0bba7a266bb1d582096bd7c54957dcfbc
 
-PODFILE CHECKSUM: b1796a09aa888cfc988bf80e2dafbde48b99ce27
+PODFILE CHECKSUM: 11c5117edfd86896c51e753cec058d6ccf55f127
 
-COCOAPODS: 1.7.0.beta.1
+COCOAPODS: 1.7.0.beta.3

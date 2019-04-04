@@ -196,14 +196,37 @@ static NSNumberFormatter *_numberFormatter;
  @return 模型中自定义对象
  */
 + (NSSet *)customModelSet:(Class)cls {
-    if (!cls.xwdb_customModelMapping) {
+    if (![self xwdb_customModelMappingCls:cls]) {
         return nil;
     }
     if (!cls.xw_CustomModelSet) {
-        cls.xw_CustomModelSet = [NSSet setWithArray:cls.xwdb_customModelMapping.allKeys];
+        cls.xw_CustomModelSet = [NSSet setWithArray:[self xwdb_customModelMappingCls:cls].allKeys];
     }
     return cls.xw_CustomModelSet;
 }
+
+/**
+ 自定义对象映射  (key: 成员变量名称 value: 对象类)
+ 
+ @return 自定义对象映射
+ */
++ (NSDictionary * _Nullable)xwdb_customModelMappingCls:(Class)cls {
+    if ([cls respondsToSelector:@selector(xw_customModelMapping)]) {
+        NSMutableDictionary *customModelMapping = [cls xw_customModelMapping].mutableCopy;
+        [customModelMapping enumerateKeysAndObjectsUsingBlock:^(NSString * key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            NSDictionary *columns = [XWDatabaseModel classColumnIvarNameTypeDict:cls];
+            if (![columns.allKeys containsObject:key]) {
+                [customModelMapping removeObjectForKey:key];
+            }
+        }];
+        if (customModelMapping && customModelMapping.count > 0) {
+            return customModelMapping.copy;
+        }
+    }
+    return nil;
+}
+
+#pragma mark - 模型转换
 
 /// NSAarray -> NSString
 + (NSString *)stringWithArray:(NSArray *)array {
@@ -326,12 +349,7 @@ static NSNumberFormatter *_numberFormatter;
     if (!indexPath) {
         return nil;
     }
-    NSData *data;
-    if (@available(iOS 11.0, *)) {
-        data = [NSKeyedArchiver archivedDataWithRootObject:indexPath requiringSecureCoding:YES error:nil];
-    } else {
-        data = [NSKeyedArchiver archivedDataWithRootObject:indexPath];
-    }
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:indexPath];
     return [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 /// NSString -> NSIndexPath
@@ -340,12 +358,7 @@ static NSNumberFormatter *_numberFormatter;
         return nil;
     }
     NSData *data = [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
-    NSIndexPath *indexPath;
-    if (@available(iOS 11.0, *)) {
-        indexPath = [NSKeyedUnarchiver unarchivedObjectOfClass:NSIndexPath.class fromData:data error:nil];
-    } else {
-        indexPath = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-    }
+    NSIndexPath *indexPath = [NSKeyedUnarchiver unarchiveObjectWithData:data];;
     return indexPath;
 }
 
@@ -388,14 +401,8 @@ static NSNumberFormatter *_numberFormatter;
     if (!customModel) {
         return nil;
     }
-    NSData *data;
-    
-    /// 若保存的模型中含有自定义模型属性,需要对自定义模型需要遵循 <NSCoding, NSSecureCoding> 协议,对齐进行归解档!!!! (NSObject+XWModel.h 有智能归解档的宏)
-    if (@available(iOS 11.0, *)) {
-        data = [NSKeyedArchiver archivedDataWithRootObject:customModel requiringSecureCoding:YES error:nil];
-    } else {
-        data = [NSKeyedArchiver archivedDataWithRootObject:customModel];
-    }
+    /// 若保存的模型中含有自定义模型属性,需要对自定义模型需要遵循 <NSCoding> 协议,对其进行归解档!!!! (NSObject+XWModel.h 有智能归解档的宏)
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:customModel];;
     NSString *dataString = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
     NSString *cls = NSStringFromClass([customModel class]);
     NSString *saveString = [NSString stringWithFormat:@"%@<xwdatabase>%@",cls,dataString];
@@ -407,15 +414,9 @@ static NSNumberFormatter *_numberFormatter;
         return nil;
     }
     NSRange range = [string rangeOfString:@"<xwdatabase>"];
-    NSString *cls = [string substringToIndex:range.location];
     NSString *dataString = [string substringFromIndex:range.location + range.length];
     NSData *data = [[NSData alloc] initWithBase64EncodedString:dataString options:NSDataBase64DecodingIgnoreUnknownCharacters];
-    id customModel;
-    if (@available(iOS 11.0, *)) {
-        customModel = [NSKeyedUnarchiver unarchivedObjectOfClass:NSClassFromString(cls) fromData:data error:nil];
-    } else {
-        customModel = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-    }
+    id customModel = [NSKeyedUnarchiver unarchiveObjectWithData:data];
     return customModel;
 }
 

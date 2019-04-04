@@ -794,7 +794,8 @@
     }
     
      /// 自定义模型
-    if (cls.xwdb_customModelMapping && [cls.xwdb_customModelMapping.allKeys containsObject:ivarName]) {
+    
+    if ([XWDatabaseModel xwdb_customModelMappingCls:cls] && [[XWDatabaseModel xwdb_customModelMappingCls:cls].allKeys containsObject:ivarName]) {
         NSString *string = [resultSet stringForColumn:columnIvarName];
         id customModel = [XWDatabaseModel customModelWithString:string];
         [model setValue:customModel forKey:ivarName];

@@ -7,9 +7,8 @@
 //
 
 #import "XWBook.h"
-#import "NSObject+XWModel.h"
 #import "XWDatabase.h"
-
+#import "XWTestSubModel.h"
 
 @implementation XWBook
 
@@ -24,7 +23,14 @@
     });
 }
 
+/// 快速归解档的宏
 XWCodingImplementation
+
++ (NSDictionary *)xw_customModelMapping {
+    return @{
+             @"subModel":[XWTestSubModel class]
+             };
+}
 
 + (NSString *)xw_primaryKey {
     return @"bookId";
@@ -36,7 +42,7 @@ XWCodingImplementation
 
 
 + (NSSet<NSString *> *)xw_specificSaveColumnNames {
-    return [NSSet setWithObjects:@"name",@"bookId",@"author", nil];
+    return [NSSet setWithObjects:@"name",@"bookId",@"author",@"subModel", nil];
 }
 
 

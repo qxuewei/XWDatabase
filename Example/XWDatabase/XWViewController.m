@@ -16,6 +16,7 @@
 
 #define kUser1ID @"10010a"
 #define kUser2ID @"10086"
+#define kUser3ID @"jsjhshshkaass"
 
 @interface XWViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
@@ -58,7 +59,7 @@
     
     /// 查
 //    [self getOnePerson];
-//    [self getOneBook];
+    [self getOneBook];
 //    [self getModels];
 //    [self getBookModels];
 //    [self getImages];
@@ -86,8 +87,13 @@
     XWBook *book = [XWBook new];
     book.name = @"iOS 从入门到放弃";
     book.author = @"学伟";
-    book.bookId = 2;
-    [XWDatabase saveModel:book identifier:kUser1ID completion:^(BOOL isSuccess) {
+    book.bookId = 546;
+    XWTestSubModel *subModel = [[XWTestSubModel alloc] init];
+    subModel.uuid = 110;
+    subModel.name = @"XWTestSubModel Name";
+    subModel.icon = [UIImage imageNamed:@"icon"];
+    book.subModel = subModel;
+    [XWDatabase saveModel:book identifier:kUser3ID completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> saveOneBook identifier (%@)",isSuccess?@"成功":@"失败");
     }];
 }
@@ -528,8 +534,8 @@
 /// 根据主键取数据库中数据 - 分用户
 - (void)getOneBook {
     XWBook *book = [XWBook new];
-    book.bookId = 1;
-    [XWDatabase getModel:book identifier:kUser2ID completion:^(XWBook * obj) {
+    book.bookId = 546;
+    [XWDatabase getModel:book identifier:kUser3ID completion:^(XWBook * obj) {
         NSLog(@" <XWDatabase> getOneBook (%@) name: %@",obj,obj.name);
     }];
 }

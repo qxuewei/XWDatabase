@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "XWDatabaseModelProtocol.h"
 
+@class XWTestSubModel;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface XWBook : NSObject <NSCoding, NSSecureCoding, XWDatabaseModelProtocol>
@@ -17,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *author;
 @property (nonatomic, copy) NSString *bookConcern;
+
+@property (nonatomic, strong) XWTestSubModel *subModel;
 //@property (nonatomic, copy) NSString *temp;
 //@property (nonatomic, copy) NSString *temp2;
 

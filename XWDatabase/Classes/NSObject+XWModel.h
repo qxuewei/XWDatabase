@@ -28,10 +28,9 @@ return YES;\
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark 常量
-UIKIT_EXTERN NSString * const kXWDB_IDENTIFIER_COLUMNNAME;//    =   @"xw_identifier";   //唯一标识字段名称
-UIKIT_EXTERN NSString * const kXWDB_IDENTIFIER_VALUE;//         =   @"xw_null";         //唯一标识字段值
-UIKIT_EXTERN NSString * const kXWDB_PRIMARYKEY_COLUMNNAME;//    =   @"xw_id";           //默认自增主键字段名称
-
+#define kXWDB_IDENTIFIER_COLUMNNAME     @"xw_identifier"    //唯一标识字段名称
+#define kXWDB_IDENTIFIER_VALUE          @"xw_null"          //唯一标识字段值
+#define kXWDB_PRIMARYKEY_COLUMNNAME     @"xw_id"            //默认自增主键字段名称
 
 @interface NSObject (XWModel) <XWDatabaseModelProtocol>
 
@@ -90,13 +89,6 @@ UIKIT_EXTERN NSString * const kXWDB_PRIMARYKEY_COLUMNNAME;//    =   @"xw_id";   
  @return 联合主键成员变量数组
  */
 - (NSArray < NSString * > * _Nullable)xwdb_unionPrimaryKey;
-
-/**
- 自定义对象映射  (key: 成员变量名称 value: 对象类)
- 
- @return 自定义对象映射
- */
-- (NSDictionary * _Nullable)xwdb_customModelMapping;
 
 /**
  忽略不保存数据库的属性

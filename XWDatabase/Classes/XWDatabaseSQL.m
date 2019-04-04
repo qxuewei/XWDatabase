@@ -36,7 +36,8 @@
  */
 + (NSString *)createTableSql:(Class<XWDatabaseModelProtocol>)cls isTtemporary:(BOOL)isTtemporary {
     NSString *tableName = isTtemporary ? [XWDatabaseModel tempTableName:cls] : [XWDatabaseModel tableName:cls];
-    return [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@(%@)",tableName,[XWDatabaseModel sqlWithCreatTable:cls]];
+    NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@(%@)",tableName,[XWDatabaseModel sqlWithCreatTable:cls]];
+    return sql;
 }
 
 /**
@@ -315,7 +316,8 @@
  */
 + (NSString *)queryCreateTableSql:(Class<XWDatabaseModelProtocol>)cls {
     NSString *tableName = [XWDatabaseModel tableName:cls];
-    return [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type = 'table' AND name = '%@'",tableName];
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type = 'table' AND name = '%@'",tableName];
+    return sql;
 }
 
 #pragma mark - private
@@ -423,7 +425,7 @@
     NSString *string;
     id value = [obj valueForKey:ivarName];
     
-    if (obj.xwdb_customModelMapping && [obj.xwdb_customModelMapping.allKeys containsObject:ivarName]) {
+    if ([XWDatabaseModel xwdb_customModelMappingCls:obj.class] && [[XWDatabaseModel xwdb_customModelMappingCls:obj.class].allKeys containsObject:ivarName]) {
         /// 自定义模型
         string = [XWDatabaseModel stringWithCustomModel:value];
         if (string) {
