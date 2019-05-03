@@ -465,6 +465,9 @@
     } else if ([value isKindOfClass:[NSURL class]]) {
         string = [XWDatabaseModel stringWithURL:value];
         
+    } else if ([value isKindOfClass:[NSString class]]) {
+        string = [XWDatabaseModel base64WithString:value];
+        
     } else {
         string = [NSString stringWithFormat:@"%@",value];
         

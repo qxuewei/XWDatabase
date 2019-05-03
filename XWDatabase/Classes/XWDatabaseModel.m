@@ -227,6 +227,19 @@ static NSNumberFormatter *_numberFormatter;
 }
 
 #pragma mark - 模型转换
+/// NSString -> Base64 String
++ (NSString *)base64WithString:(NSString *)string {
+    NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *base64 = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    return base64;
+}
+
+/// Base64 String -> NSString
++ (NSString *)stringWithBase64:(NSString *)base64 {
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:base64 options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return string;
+}
 
 /// NSAarray -> NSString
 + (NSString *)stringWithArray:(NSArray *)array {

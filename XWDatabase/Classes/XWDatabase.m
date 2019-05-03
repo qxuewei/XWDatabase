@@ -803,11 +803,13 @@
     }
     
     if ([ivarType isEqualToString:@"NSString"]) {
-        NSString *string = [resultSet stringForColumn:columnIvarName];
+        NSString *base64 = [resultSet stringForColumn:columnIvarName];
+        NSString *string = [XWDatabaseModel stringWithBase64:base64];
         [model setValue:string forKey:ivarName];
         
     } else if ([ivarType isEqualToString:@"NSMutableString"]) {
-        NSString *string = [resultSet stringForColumn:columnIvarName];
+        NSString *base64 = [resultSet stringForColumn:columnIvarName];
+        NSString *string = [XWDatabaseModel stringWithBase64:base64];
         NSMutableString *stringM = [NSMutableString stringWithString:string];
         [model setValue:stringM forKey:ivarName];
         

@@ -84,16 +84,22 @@
 /// 保存模型 (用户区分)
 - (void)saveOneBook
 {
+    
     XWBook *book = [XWBook new];
-    book.name = @"iOS 从入门到放弃";
-    book.author = @"学伟";
-    book.bookId = 546;
+    book.bookId = 1;
+    NSString *author = @"Abe's Crazy English \\ ' & $ ^ ' '  * & & | } {' : > ? < ,@ ! ~ ` HAHAHA";
+    book.name = [NSString stringWithFormat:@"bookName \\ ' & $ ^ @ ! ~ `"];
+    book.author = author;
+    book.bookConcern = author;
+//    book.array = @[@" ' ' ' ",author];
+//    book.dictionary = @{@" ' ' ' ":author};
+    
     XWTestSubModel *subModel = [[XWTestSubModel alloc] init];
     subModel.uuid = 110;
     subModel.name = @"XWTestSubModel Name";
     subModel.icon = [UIImage imageNamed:@"icon"];
     book.subModel = subModel;
-    [XWDatabase saveModel:book identifier:kUser3ID completion:^(BOOL isSuccess) {
+    [XWDatabase saveModel:book identifier:kUser2ID completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> saveOneBook identifier (%@)",isSuccess?@"成功":@"失败");
     }];
 }
@@ -122,12 +128,16 @@
 - (void)saveBooks
 {
     NSMutableArray *books = [[NSMutableArray alloc] init];
+    NSString *author = @"Abe's Crazy English ";
     for (int i = 0; i < 100; i++) {
         XWBook *book = [XWBook new];
         book.bookId = i;
         book.name = [NSString stringWithFormat:@"bookName_%d",i];
-        book.author = @"极客学伟";
+        book.author = author;
         book.bookConcern = @"bookConcern";
+        book.array = @[@" ' ' ' ",author];
+        book.dictionary = @{@" ' ' ' ":author};
+        
         [books addObject:book];
     }
     [XWDatabase saveModels:books identifier:kUser2ID completion:^(BOOL isSuccess) {
@@ -259,7 +269,7 @@
 - (void)deleteBook {
     XWBook *book = [XWBook new];
     book.bookId = 2;
-    [XWDatabase deleteModel:book identifier:kUser1ID completion:^(BOOL isSuccess) {
+    [XWDatabase deleteModel:book identifier:kUser2ID completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> deleteModel identifier (%@)",isSuccess?@"成功":@"失败");
     }];
 }
@@ -534,8 +544,8 @@
 /// 根据主键取数据库中数据 - 分用户
 - (void)getOneBook {
     XWBook *book = [XWBook new];
-    book.bookId = 546;
-    [XWDatabase getModel:book identifier:kUser3ID completion:^(XWBook * obj) {
+    book.bookId = 1;
+    [XWDatabase getModel:book identifier:kUser2ID completion:^(XWBook * obj) {
         NSLog(@" <XWDatabase> getOneBook (%@) name: %@",obj,obj.name);
     }];
 }

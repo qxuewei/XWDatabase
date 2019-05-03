@@ -36,14 +36,13 @@ XWCodingImplementation
     return @"bookId";
 }
 
-+ (NSSet<NSString *> *)xw_ignoreColumnNames {
-    return [NSSet setWithObject:@"author"];
-}
+//+ (NSSet<NSString *> *)xw_ignoreColumnNames {
+//    return [NSSet setWithObject:@"author"];
+//}
 
-
-+ (NSSet<NSString *> *)xw_specificSaveColumnNames {
-    return [NSSet setWithObjects:@"name",@"bookId",@"author",@"subModel", nil];
-}
+//+ (NSSet<NSString *> *)xw_specificSaveColumnNames {
+//    return [NSSet setWithObjects:@"name",@"bookId",@"author",@"subModel", nil];
+//}
 
 
 @end

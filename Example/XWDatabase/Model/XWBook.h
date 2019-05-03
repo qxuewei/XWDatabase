@@ -16,11 +16,19 @@ NS_ASSUME_NONNULL_BEGIN
 @interface XWBook : NSObject <NSCoding, NSSecureCoding, XWDatabaseModelProtocol>
 
 @property (nonatomic, assign) int bookId;
-@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSMutableString *name;
 @property (nonatomic, copy) NSString *author;
 @property (nonatomic, copy) NSString *bookConcern;
 
+@property (nonatomic, strong) NSDictionary *dictionary;
+@property (nonatomic, strong) NSDictionary *dictionaryM;
+
+@property (nonatomic, strong) NSArray *array;
+@property (nonatomic, strong) NSArray *arrayM;
+
+
 @property (nonatomic, strong) XWTestSubModel *subModel;
+
 //@property (nonatomic, copy) NSString *temp;
 //@property (nonatomic, copy) NSString *temp2;
 
