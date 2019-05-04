@@ -70,15 +70,14 @@
 
 
 #pragma mark - Life Cycle
-+ (void)load {
-    
++ (void)initialize {
     /// 数据迁移
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
-//            NSLog(@" <XWDatabase> updateTable (%@)",isSuccess?@"成功":@"失败");
-//        }];
-//    });
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
+            NSLog(@" <XWDatabase> updateTable (%@)",isSuccess?@"成功":@"失败");
+        }];
+    });
 }
 
 #pragma mark - XWDatabaseModelProtocol

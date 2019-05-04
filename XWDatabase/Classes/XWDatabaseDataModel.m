@@ -17,14 +17,11 @@
 static NSString * const cTableName = @"XWDatabaseDataModelTable";
 
 + (void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [[XWDatabaseQueue shareInstance] inDataDatabase:^(FMDatabase * _Nonnull database) {
-            /// hashID : 二进制唯一标识   data : 二进制文件(bas64字符串形式存储)   referenceCount : 引用计数 (每次insert + 1  delete - 1)
-            NSString *creatTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@(hashID INTEGER PRIMARY KEY ,data BLOB, referenceCount INTEGER)",cTableName];
-            [database executeUpdate:creatTableSql];
-        }];
-    });
+    [[XWDatabaseQueue shareInstance] inDataDatabase:^(FMDatabase * _Nonnull database) {
+        /// hashID : 二进制唯一标识   data : 二进制文件(bas64字符串形式存储)   referenceCount : 引用计数 (每次insert + 1  delete - 1)
+        NSString *creatTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@(hashID INTEGER PRIMARY KEY ,data BLOB, referenceCount INTEGER)",cTableName];
+        [database executeUpdate:creatTableSql];
+    }];
 }
 
 + (void)saveData:(NSData *)data completion:(void(^)(BOOL, NSUInteger))completion {

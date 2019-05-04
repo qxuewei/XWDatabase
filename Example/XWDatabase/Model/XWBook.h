@@ -21,10 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *bookConcern;
 
 @property (nonatomic, strong) NSDictionary *dictionary;
-@property (nonatomic, strong) NSDictionary *dictionaryM;
+@property (nonatomic, strong) NSMutableDictionary *dictionaryM;
 
 @property (nonatomic, strong) NSArray *array;
-@property (nonatomic, strong) NSArray *arrayM;
+@property (nonatomic, strong) NSMutableArray *arrayM;
 
 
 @property (nonatomic, strong) XWTestSubModel *subModel;

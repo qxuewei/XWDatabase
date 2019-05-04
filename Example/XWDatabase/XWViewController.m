@@ -20,6 +20,7 @@
 
 @interface XWViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
+@property (weak, nonatomic) IBOutlet UILabel *label;
 
 @end
 
@@ -30,9 +31,9 @@
     [super viewDidLoad];
     
     /// 增
-//    [self saveOnePerson];
+    [self saveOnePerson];
 //    [self saveModels];
-    [self saveOneBook];
+//    [self saveOneBook];
 //    [self saveBooks];
 //    [self addImages];
 //    [self addIdentifyBooks];
@@ -58,8 +59,8 @@
 //    [self testUpdateCondition];
     
     /// 查
-//    [self getOnePerson];
-    [self getOneBook];
+    [self getOnePerson];
+//    [self getOneBook];
 //    [self getModels];
 //    [self getBookModels];
 //    [self getImages];
@@ -76,7 +77,12 @@
 - (void)saveOnePerson
 {
     XWPerson *person = [XWPerson testPerson:2];
+    
     [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
+        NSLog(@" <XWDatabase> saveOnePerson (%@)",isSuccess?@"成功":@"失败");
+    }];
+    
+    [XWDatabase saveModel:person identifier:@"abc" completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> saveOnePerson (%@)",isSuccess?@"成功":@"失败");
     }];
 }
@@ -88,11 +94,15 @@
     XWBook *book = [XWBook new];
     book.bookId = 1;
     NSString *author = @"Abe's Crazy English \\ ' & $ ^ ' '  * & & | } {' : > ? < ,@ ! ~ ` HAHAHA";
-    book.name = [NSString stringWithFormat:@"bookName \\ ' & $ ^ @ ! ~ `"];
+    book.name = [NSString stringWithFormat:@"bookName \\ ' & $ ^ @ ! ~ `"].mutableCopy;
+    
     book.author = author;
     book.bookConcern = author;
-//    book.array = @[@" ' ' ' ",author];
-//    book.dictionary = @{@" ' ' ' ":author};
+    book.array = @[author,author];
+    book.arrayM = @[author,author].mutableCopy;
+    
+    book.dictionary = @{@" ' ' ' ":author};
+    book.dictionaryM = @{@" ' ' ' ":author}.mutableCopy;
     
     XWTestSubModel *subModel = [[XWTestSubModel alloc] init];
     subModel.uuid = 110;
@@ -132,7 +142,7 @@
     for (int i = 0; i < 100; i++) {
         XWBook *book = [XWBook new];
         book.bookId = i;
-        book.name = [NSString stringWithFormat:@"bookName_%d",i];
+        book.name = [NSString stringWithFormat:@"bookName_%d",i].mutableCopy;
         book.author = author;
         book.bookConcern = @"bookConcern";
         book.array = @[@" ' ' ' ",author];
@@ -364,7 +374,7 @@
 - (void)updateBook {
     XWBook *book = [XWBook new];
     book.bookId = 4;
-    book.name = @"新书";
+    book.name = [NSMutableString stringWithString:@"新书"];
     [XWDatabase updateModel:book identifier:kUser2ID updatePropertys:@[@"name"] completion:^(BOOL isSuccess) {
         NSLog(@" <XWDatabase> updateModel book (%@)",isSuccess?@"成功":@"失败");
     }];
@@ -400,7 +410,7 @@
     for (int i = 0; i < 30; i++) {
         XWBook *book = [XWBook new];
         book.bookId = i;
-        book.name = [NSString stringWithFormat:@"批量名称(%d)",i];
+        book.name = [NSString stringWithFormat:@"批量名称(%d)",i].mutableCopy;
         book.author = [NSString stringWithFormat:@"作者(%d)",i];
         [books addObject:book];
     }
@@ -537,6 +547,7 @@
         NSLog(@" <XWDatabase> getOnePerson (%@) name: %@",obj,obj.name);
         dispatch_async(dispatch_get_main_queue(), ^{
             self.iconView.image = obj.image;
+            self.label.attributedText = obj.pAttributedString;
         });
     }];
 }

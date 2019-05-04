@@ -23,13 +23,16 @@
 /// 测试数据
 + (XWPerson *)testPerson:(int)index {
     XWPerson *person = [[XWPerson alloc] init];
+    
+    NSString *testString = @"Abe's Crazy English \\ ' & $ ^ ' '  * & & | } {' : > ? < ,@ ! ~ ` HAHAHA";
+    
     person.cardID = [NSString stringWithFormat:@"%d",index];
     person.age = 18 + arc4random_uniform(100);
-    person.name = person.age % 2 == 0 ? @"极客学伟" : @"www.qiuxuewei.com";
+    person.name = person.age % 2 == 0 ? @"极客学伟" : testString;
     person.sex = arc4random_uniform(2) == 1 ? @"Male" : @"male";
     person.birthday = [NSDate date];
-    person.girls = @[@"小妹",@"校花",@"小baby"].mutableCopy;
-    person.books = @{@"name":@"iOS 从入门到掉头发"}.mutableCopy;
+    person.girls = @[@"小妹",@"校花",@"小baby",testString].mutableCopy;
+    person.books = @{@"name":@"iOS 从入门到掉头发",@"test":testString}.mutableCopy;
     person.number = [NSNumber numberWithBool:YES];
     person.floatNumber = [NSNumber numberWithFloat:3.1415926];
     
@@ -53,8 +56,16 @@
     person.pSize = CGSizeMake(200, 300);
     person.pSet = [NSSet setWithObjects:@"Set",@(123),nil];
     person.pSetM = [NSMutableSet setWithObjects:@"MutableSet",@(456), nil];
-    person.pAttributedString = [[NSAttributedString alloc] initWithString:@"NSAttributedString"];
-    person.pMutableAttributedString = [[NSMutableAttributedString alloc] initWithString:@"NSMutableAttributedString"];
+    
+    NSMutableAttributedString *attri = [[NSMutableAttributedString alloc] initWithString:testString];
+    NSTextAttachment *imageAttach = [[NSTextAttachment alloc] init];
+    imageAttach.image = [UIImage imageNamed:@"icon_comment_owner"];
+    imageAttach.bounds = CGRectMake(4, -2, 10, 5);
+    NSAttributedString *imageAttri = [NSAttributedString attributedStringWithAttachment:imageAttach];
+    [attri appendAttributedString:imageAttri];
+    person.pAttributedString = attri;
+    person.pMutableAttributedString = attri.mutableCopy;
+    
     person.URL = [NSURL URLWithString:@"www.qiuxuewei.com"];
     person.pRange = NSMakeRange(0, 99);
     person.indexPath = [NSIndexPath indexPathForItem:1 inSection:2];
@@ -72,15 +83,14 @@
 
 
 #pragma mark - Life Cycle
-+ (void)load {
-    
++ (void)initialize {
     /// 数据迁移
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
-//            NSLog(@" <XWDatabase> updateTable (%@)",isSuccess?@"成功":@"失败");
-//        }];
-//    });
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
+            NSLog(@" <XWDatabase> updateTable (%@)",isSuccess?@"成功":@"失败");
+        }];
+    });
 }
 
 #pragma mark - XWDatabaseModelProtocol

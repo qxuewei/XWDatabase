@@ -247,14 +247,16 @@ static NSNumberFormatter *_numberFormatter;
         return nil;
     }
     NSData *data = [NSJSONSerialization dataWithJSONObject:array options:NSJSONWritingPrettyPrinted error:nil];
-    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return [self base64WithString:string];
 }
 /// NSString -> NSArray
 + (NSArray *)arrayWithString:(NSString *)string {
     if (!string || string.length == 0) {
         return nil;
     }
-    NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *stringEncoding = [self stringWithBase64:string];
+    NSData *data = [stringEncoding dataUsingEncoding:NSUTF8StringEncoding];
     return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
 }
 
@@ -264,14 +266,16 @@ static NSNumberFormatter *_numberFormatter;
         return nil;
     }
     NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
-    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return [self base64WithString:string];
 }
 /// NSDictionary -> NSArray
 + (NSDictionary *)dictWithString:(NSString *)string {
     if (!string || string.length == 0) {
         return nil;
     }
-    NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *stringEncoding = [self stringWithBase64:string];
+    NSData *data = [stringEncoding dataUsingEncoding:NSUTF8StringEncoding];
     return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
 }
 
