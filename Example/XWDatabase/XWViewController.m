@@ -31,7 +31,7 @@
     [super viewDidLoad];
     
     /// 增
-    [self saveOnePerson];
+//    [self saveOnePerson];
 //    [self saveModels];
 //    [self saveOneBook];
 //    [self saveBooks];
@@ -61,7 +61,7 @@
     /// 查
     [self getOnePerson];
 //    [self getOneBook];
-//    [self getModels];
+    [self getModels];
 //    [self getBookModels];
 //    [self getImages];
 //    [self getModelsCondition];
@@ -186,7 +186,7 @@
     for (int i = 0; i < 20; i++) {
         XWBook *book = [XWBook new];
         book.bookId = i;
-        book.name = [NSString stringWithFormat:@"bookName_%d",i];
+        book.name = [NSString stringWithFormat:@"bookName_%d",i].mutableCopy;
         book.author = @"极客学伟";
         book.bookConcern = @"bookConcern";
         [books addObject:book];

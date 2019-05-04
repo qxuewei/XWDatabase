@@ -120,6 +120,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 查
 
+
+/**
+ 查询当前类对应的表是否存在
+ 
+ @param cls 类
+ @return 查询语句
+ */
++ (NSString *)isExistTableCls:(Class<XWDatabaseModelProtocol>)cls;
+
 /**
  查找某主键对象
  

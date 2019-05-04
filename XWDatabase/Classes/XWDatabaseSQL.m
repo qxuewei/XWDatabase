@@ -237,6 +237,18 @@
 #pragma mark - 查
 
 /**
+ 查询当前类对应的表是否存在
+
+ @param cls 类
+ @return 查询语句
+ */
++ (NSString *)isExistTableCls:(Class<XWDatabaseModelProtocol>)cls {
+    /// SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_NAME="表名"
+    NSString *tableName = [XWDatabaseModel tableName:cls];
+    return [NSString stringWithFormat:@"SELECT count(*) FROM sqlite_master WHERE type=\"table\" AND name = \"%@\"",tableName];
+}
+
+/**
  查找某主键对象
  
  @param obj 模型

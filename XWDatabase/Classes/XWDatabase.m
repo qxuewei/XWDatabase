@@ -708,61 +708,88 @@
 
 #pragma mark  查
 + (void)p_getModel:(NSObject <XWDatabaseModelProtocol>*)obj identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObject _Nullable)completion {
+    
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         
-        NSString *isExistSql = [XWDatabaseSQL isExistSql:obj identifier:identifier];
-        if (!isExistSql) {
-            completion ? completion(nil) : nil;
-            return ;
-        }
-        [XWDatabaseQueue executeStatementQuerySql:isExistSql database:database completion:^(int count) {
+        NSString *isExistTable = [XWDatabaseSQL isExistTableCls:obj.class];
+        [XWDatabaseQueue executeStatementQuerySql:isExistTable database:database completion:^(int count) {
             if (count > 0) {
-                NSString *searchSql = [XWDatabaseSQL searchSql:obj identifier:identifier];
-                if (!searchSql) {
+                /// 表已存在
+                NSString *isExistSql = [XWDatabaseSQL isExistSql:obj identifier:identifier];
+                if (!isExistSql) {
                     completion ? completion(nil) : nil;
                     return ;
                 }
-                FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
-                Class modelClass = obj.class;
-                id model = [[modelClass alloc] init];
-                while (resultSet.next) {
-                    [[XWDatabaseModel classColumnIvarNameTypeDict:modelClass] enumerateKeysAndObjectsUsingBlock:^(NSString * columnIvarName, NSString * ivarType, BOOL * _Nonnull stop) {
-                        [self p_setModel:model cls:modelClass resultSet:resultSet columnIvarName:columnIvarName ivarType:ivarType];
-                    }];
-                }
-                completion ? completion(model) : nil;
+                [XWDatabaseQueue executeStatementQuerySql:isExistSql database:database completion:^(int count) {
+                    if (count > 0) {
+                        NSString *searchSql = [XWDatabaseSQL searchSql:obj identifier:identifier];
+                        if (!searchSql) {
+                            completion ? completion(nil) : nil;
+                            return ;
+                        }
+                        FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
+                        Class modelClass = obj.class;
+                        id model = [[modelClass alloc] init];
+                        while (resultSet.next) {
+                            [[XWDatabaseModel classColumnIvarNameTypeDict:modelClass] enumerateKeysAndObjectsUsingBlock:^(NSString * columnIvarName, NSString * ivarType, BOOL * _Nonnull stop) {
+                                [self p_setModel:model cls:modelClass resultSet:resultSet columnIvarName:columnIvarName ivarType:ivarType];
+                            }];
+                        }
+                        completion ? completion(model) : nil;
+                    } else {
+                        completion ? completion(nil) : nil;
+                    }
+                }];
+                
             } else {
+                /// 不存在此表
                 completion ? completion(nil) : nil;
+                
             }
+            
         }];
+        
     }];
 }
 
 + (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
-        @autoreleasepool {
-
-            NSString *searchSql = [XWDatabaseSQL searchSql:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition];
-            if (!searchSql) {
-                completion ? completion(nil) : nil;
-                return ;
-            }
-            FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
-            Class modelClass = cls;
-            NSMutableArray *models = [[NSMutableArray alloc] init];
-            while (resultSet.next) {
-                id model = [[modelClass alloc] init];
-                [[XWDatabaseModel classColumnIvarNameTypeDict:cls] enumerateKeysAndObjectsUsingBlock:^(NSString * columnIvarName, NSString * ivarType, BOOL * _Nonnull stop) {
-                    [self p_setModel:model cls:modelClass resultSet:resultSet columnIvarName:columnIvarName ivarType:ivarType];
-                }];
-                if (model) {
-                    [models addObject:model];
+        
+        NSString *isExistTable = [XWDatabaseSQL isExistTableCls:cls];
+        [XWDatabaseQueue executeStatementQuerySql:isExistTable database:database completion:^(int count) {
+            if (count > 0) {
+                /// 表已存在
+                NSString *searchSql = [XWDatabaseSQL searchSql:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition];
+                if (!searchSql) {
+                    completion ? completion(nil) : nil;
+                    return ;
                 }
+                
+                @autoreleasepool {
+                    FMResultSet *resultSet = [XWDatabaseQueue executeQuerySql:searchSql database:database];
+                    Class modelClass = cls;
+                    NSMutableArray *models = [[NSMutableArray alloc] init];
+                    while (resultSet.next) {
+                        id model = [[modelClass alloc] init];
+                        [[XWDatabaseModel classColumnIvarNameTypeDict:cls] enumerateKeysAndObjectsUsingBlock:^(NSString * columnIvarName, NSString * ivarType, BOOL * _Nonnull stop) {
+                            [self p_setModel:model cls:modelClass resultSet:resultSet columnIvarName:columnIvarName ivarType:ivarType];
+                        }];
+                        if (model) {
+                            [models addObject:model];
+                        }
+                    }
+                    completion ? completion(models) : nil;
+                }
+                
+            } else {
+                /// 不存在此表
+                completion ? completion(nil) : nil;
+                
             }
-            completion ? completion(models) : nil;
             
-        }
+        }];
+        
     }];
 }
 
