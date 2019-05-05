@@ -14,13 +14,13 @@
 
 #pragma mark - Life Cycle
 + (void)initialize {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        /// 数据迁移
-        [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
-            NSLog(@" <XWDatabase> updateTable (%@)",isSuccess?@"成功":@"失败");
-        }];
-    });
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        /// 数据迁移
+//        [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
+//            NSLog(@" <XWDatabase> updateTable (%@)",isSuccess?@"成功":@"失败");
+//        }];
+//    });
 }
 
 /// 快速归解档的宏

@@ -280,6 +280,19 @@ typedef void(^XWDatabaseReturnResultSet)(FMResultSet * _Nullable resultSet);/// 
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion;
 
+/**
+ 查询模型数组 - 自定义条件 + 按某字段排序 + 限制个数 - 标示符区分
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param sortColumn 排序字段
+ @param isOrderDesc 是否降序
+ @param condition 条件
+ @param limitCount 个数
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition limitCount:(NSUInteger)limitCount completion:(XWDatabaseReturnObjects _Nullable)completion;
+
 #pragma mark - 执行自定义SQL语句
 
 /**

@@ -153,9 +153,10 @@ NS_ASSUME_NONNULL_BEGIN
  @param sortColumn 排序字段
  @param isOrderDesc 是否降序
  @param condition 自定义条件
+ @param limitCount 限制个数
  @return 符合条件的表内所有数据
  */
-+ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition;
++ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition limitCount:(NSUInteger)limitCount;
 
 /**
  现有表 建表语句

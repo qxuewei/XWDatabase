@@ -32,7 +32,7 @@
     
     /// 增
 //    [self saveOnePerson];
-//    [self saveModels];
+    [self saveModels];
 //    [self saveOneBook];
 //    [self saveBooks];
 //    [self addImages];
@@ -59,7 +59,7 @@
 //    [self testUpdateCondition];
     
     /// 查
-    [self getOnePerson];
+//    [self getOnePerson];
 //    [self getOneBook];
     [self getModels];
 //    [self getBookModels];
@@ -568,9 +568,16 @@
         NSLog(@" <XWDatabase> getModels XWPerson (objs.count: %lu)",objs.count);
     }];
     
-    [XWDatabase getModels:XWImage.class completion:^(NSArray * _Nullable objs) {
-        NSLog(@" <XWDatabase> getModels XWImage (objs.count: %lu)",objs.count);
+    [XWDatabase getModels:XWPerson.class identifier:nil sortColumn:@"age" isOrderDesc:NO condition:nil limitCount:10 completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels XWPerson (objs.count: %lu)",objs.count);
+        for (XWPerson *person in objs) {
+            NSLog(@"name:%@  age:%ld",person.name,(long)person.age);
+        }
     }];
+    
+//    [XWDatabase getModels:XWImage.class completion:^(NSArray * _Nullable objs) {
+//        NSLog(@" <XWDatabase> getModels XWImage (objs.count: %lu)",objs.count);
+//    }];
 }
 
 /// 获取数据库中所有该模型存储的数据 - 指定用户 101
@@ -578,6 +585,11 @@
 {
     [XWDatabase getModels:XWBook.class identifier:@"101" completion:^(NSArray * _Nullable objs) {
         NSLog(@" <XWDatabase> getModels XWBook (objs.count: %lu)",objs.count);
+    }];
+    
+    [XWDatabase getModels:XWBook.class identifier:kUser2ID sortColumn:nil isOrderDesc:NO condition:nil limitCount:10 completion:^(NSArray * _Nullable objs) {
+        NSLog(@" <XWDatabase> getModels XWBook (objs.count: %lu)",objs.count);
+        
     }];
     
 }

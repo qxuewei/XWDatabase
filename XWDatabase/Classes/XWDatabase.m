@@ -105,7 +105,7 @@
             completion ? completion(NO) : nil;
             return;
         }
-        [self p_executeUpdate:deleteColumnSql completion:completion];
+        [self p_executeUpdate:deleteColumnSql cls:obj.class completion:completion];
     }];
 }
 
@@ -156,7 +156,7 @@
     }
     [XWLivingThread executeTaskInMain:^{
         NSString *clearColumnSql = [XWDatabaseSQL clearColumn:cls identifier:identifier condition:condition];
-        [self p_executeUpdate:clearColumnSql completion:completion];
+        [self p_executeUpdate:clearColumnSql cls:cls completion:completion];
     }];
 }
 
@@ -207,7 +207,7 @@
             completion ? completion(NO) : nil;
             return ;
         }
-        [self p_executeUpdate:updateModelSQL completion:completion];
+        [self p_executeUpdate:updateModelSQL cls:obj.class completion:completion];
     }];
 }
 
@@ -276,7 +276,9 @@
         completion ? completion(NO) : nil;
         return;
     }
+    
     [XWLivingThread executeTaskInMain:^{
+        
         NSString *updateModelSQL = [XWDatabaseSQL updateConditionObjsSql:obj identifier:identifier condition:condition customIvarNames:updatePropertys];
         if (updateModelSQL) {
             [self executeUpdateSql:updateModelSQL completion:completion];
@@ -324,7 +326,7 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls identifier:nil sortColumn:nil isOrderDesc:NO condition:nil completion:completion];
+    [self getModels:cls identifier:nil sortColumn:nil isOrderDesc:NO condition:nil limitCount:0 completion:completion];
 }
 
 /**
@@ -335,7 +337,7 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls identifier:identifier sortColumn:nil isOrderDesc:NO condition:nil completion:completion];
+    [self getModels:cls identifier:identifier sortColumn:nil isOrderDesc:NO condition:nil limitCount:0 completion:completion];
 }
 
 /**
@@ -346,7 +348,7 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls identifier:nil sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
+    [self getModels:cls identifier:nil sortColumn:nil isOrderDesc:NO condition:condition limitCount:0 completion:completion];
 }
 
 /**
@@ -358,7 +360,7 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls identifier:identifier sortColumn:nil isOrderDesc:NO condition:condition completion:completion];
+    [self getModels:cls identifier:identifier sortColumn:nil isOrderDesc:NO condition:condition limitCount:0 completion:completion];
 }
 
 /**
@@ -370,7 +372,7 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls identifier:nil sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
+    [self getModels:cls identifier:nil sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil limitCount:0 completion:completion];
 }
 
 /**
@@ -383,7 +385,7 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc completion:(XWDatabaseReturnObjects _Nullable)completion {
-    [self getModels:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil completion:completion];
+    [self getModels:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:nil limitCount:0 completion:completion];
 }
 
 /**
@@ -397,7 +399,7 @@
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
     
-    [self getModels:cls identifier:nil sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition completion:completion];
+    [self getModels:cls identifier:nil sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition limitCount:0 completion:completion];
 }
 
 /**
@@ -411,6 +413,21 @@
  @param completion 结果
  */
 + (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
+    [self getModels:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition limitCount:0 completion:completion];
+}
+
+/**
+ 查询模型数组 - 自定义条件 + 按某字段排序 + 限制个数 - 标示符区分
+ 
+ @param cls 模型类
+ @param identifier 唯一标识,用于区分不同数据组 (如: userID)
+ @param sortColumn 排序字段
+ @param isOrderDesc 是否降序
+ @param condition 条件
+ @param limitCount 个数
+ @param completion 结果
+ */
++ (void)getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition limitCount:(NSUInteger)limitCount completion:(XWDatabaseReturnObjects _Nullable)completion {
     if (!completion) {
         return;
     }
@@ -419,7 +436,7 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        [self p_getModels:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition completion:completion];
+        [self p_getModels:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition limitCount:limitCount completion:completion];
     }];
 }
 
@@ -437,7 +454,7 @@
         return;
     }
     [XWLivingThread executeTaskInMain:^{
-        [self p_executeUpdate:sql completion:completion];
+        [self p_executeUpdate:sql cls:nil completion:completion];
     }];
 }
 
@@ -711,9 +728,8 @@
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         
-        NSString *isExistTable = [XWDatabaseSQL isExistTableCls:obj.class];
-        [XWDatabaseQueue executeStatementQuerySql:isExistTable database:database completion:^(int count) {
-            if (count > 0) {
+        [self p_isExistTableCls:obj.class database:database completion:^(BOOL isSuccess) {
+            if (isSuccess) {
                 /// 表已存在
                 NSString *isExistSql = [XWDatabaseSQL isExistSql:obj identifier:identifier];
                 if (!isExistSql) {
@@ -746,21 +762,19 @@
                 completion ? completion(nil) : nil;
                 
             }
-            
         }];
         
     }];
 }
 
-+ (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition completion:(XWDatabaseReturnObjects _Nullable)completion {
++ (void)p_getModels:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString * _Nullable)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString * _Nullable)condition limitCount:(NSUInteger)limitCount completion:(XWDatabaseReturnObjects _Nullable)completion {
     
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
         
-        NSString *isExistTable = [XWDatabaseSQL isExistTableCls:cls];
-        [XWDatabaseQueue executeStatementQuerySql:isExistTable database:database completion:^(int count) {
-            if (count > 0) {
+        [self p_isExistTableCls:cls database:database completion:^(BOOL isSuccess) {
+            if (isSuccess) {
                 /// 表已存在
-                NSString *searchSql = [XWDatabaseSQL searchSql:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition];
+                NSString *searchSql = [XWDatabaseSQL searchSql:cls identifier:identifier sortColumn:sortColumn isOrderDesc:isOrderDesc condition:condition limitCount:limitCount];
                 if (!searchSql) {
                     completion ? completion(nil) : nil;
                     return ;
@@ -787,9 +801,17 @@
                 completion ? completion(nil) : nil;
                 
             }
-            
         }];
-        
+
+    }];
+}
+
+/// 判断表是否存在
++ (void)p_isExistTableCls:(Class<XWDatabaseModelProtocol>)cls database:(FMDatabase * _Nonnull)database completion:(XWDatabaseCompletion _Nullable)completion {
+
+    NSString *isExistTable = [XWDatabaseSQL isExistTableCls:cls];
+    [XWDatabaseQueue executeStatementQuerySql:isExistTable database:database completion:^(int count) {
+        completion(count > 0);
     }];
 }
 
@@ -800,10 +822,26 @@
     return [XWDatabaseQueue executeUpdateSql:creatTableSql database:database];
 }
 
-+ (void)p_executeUpdate:(NSString *)sql completion:(XWDatabaseCompletion _Nullable)completion {
+/// 执行更新语句
++ (void)p_executeUpdate:(NSString *)sql cls:(Class<XWDatabaseModelProtocol>)cls completion:(XWDatabaseCompletion _Nullable)completion {
     [[XWDatabaseQueue shareInstance] inDatabase:^(FMDatabase * _Nonnull database) {
-        BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:sql database:database];
-        completion ? completion(isSuccess) : nil;
+        
+        if (cls == nil) {
+            BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:sql database:database];
+            completion ? completion(isSuccess) : nil;
+            
+        } else {
+            [self p_isExistTableCls:cls database:database completion:^(BOOL isSuccess) {
+                if (isSuccess) {
+                    BOOL isSuccess = [XWDatabaseQueue executeUpdateSql:sql database:database];
+                    completion ? completion(isSuccess) : nil;
+                } else {
+                    completion ? completion(NO) : nil;
+                }
+            }];
+            
+        }
+        
     }];
 }
 

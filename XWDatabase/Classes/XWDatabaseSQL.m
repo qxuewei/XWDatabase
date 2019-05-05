@@ -291,9 +291,10 @@
  @param sortColumn 排序字段
  @param isOrderDesc 是否降序
  @param condition 自定义条件
+ @param limitCount 限制个数
  @return 符合条件的表内所有数据
  */
-+ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition {
++ (NSString *)searchSql:(Class<XWDatabaseModelProtocol>)cls identifier:(NSString * _Nullable)identifier sortColumn:(NSString *)sortColumn isOrderDesc:(BOOL)isOrderDesc condition:(NSString *)condition limitCount:(NSUInteger)limitCount {
     /// 查询语句：select * from 表名 where 条件子句 group by 分组字句 having ... order by 排序子句
     /// select * from person order by id desc
     NSString *tableName = [XWDatabaseModel tableName:cls];
@@ -302,8 +303,8 @@
     if (condition && condition.length > 0) {
         [searchSql appendFormat:@" WHERE %@",condition];
     }
-
-    NSString *identifierValue = (identifier ? [NSString stringWithFormat:@"'%@'",identifier] : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
+    
+    NSString *identifierValue = (identifier ? identifier : [NSString stringWithFormat:@"'%@'",kXWDB_IDENTIFIER_VALUE]);
     if ([searchSql containsString:@" WHERE "]) {
         [searchSql appendFormat:@" AND %@ = %@",kXWDB_IDENTIFIER_COLUMNNAME,identifierValue];
     } else {
@@ -316,8 +317,14 @@
             [searchSql appendString:@" DESC"];
         }
     }
+    
+    if (limitCount > 0) {
+        [searchSql appendFormat:@" LIMIT %ld",(long)limitCount];
+    }
+    
     return searchSql;
 }
+
 
 /**
  现有表 建表语句
