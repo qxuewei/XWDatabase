@@ -859,7 +859,6 @@
     }
     
      /// 自定义模型
-    
     if ([XWDatabaseModel xwdb_customModelMappingCls:cls] && [[XWDatabaseModel xwdb_customModelMappingCls:cls].allKeys containsObject:ivarName]) {
         NSString *string = [resultSet stringForColumn:columnIvarName];
         id customModel = [XWDatabaseModel customModelWithString:string];
@@ -868,13 +867,11 @@
     }
     
     if ([ivarType isEqualToString:@"NSString"]) {
-        NSString *base64 = [resultSet stringForColumn:columnIvarName];
-        NSString *string = [XWDatabaseModel stringWithBase64:base64];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         [model setValue:string forKey:ivarName];
         
     } else if ([ivarType isEqualToString:@"NSMutableString"]) {
-        NSString *base64 = [resultSet stringForColumn:columnIvarName];
-        NSString *string = [XWDatabaseModel stringWithBase64:base64];
+        NSString *string = [resultSet stringForColumn:columnIvarName];
         NSMutableString *stringM = [NSMutableString stringWithString:string];
         [model setValue:stringM forKey:ivarName];
         

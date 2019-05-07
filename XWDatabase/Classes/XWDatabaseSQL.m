@@ -485,7 +485,9 @@
         string = [XWDatabaseModel stringWithURL:value];
         
     } else if ([value isKindOfClass:[NSString class]]) {
-        string = [XWDatabaseModel base64WithString:value];
+        /// 避免字符串中出现单引号 SQL 语句执行错误,进行一次转化
+        NSString *str = [value stringByReplacingOccurrencesOfString:@"'" withString:@"\'\'"];
+        string = str;
         
     } else {
         string = [NSString stringWithFormat:@"%@",value];

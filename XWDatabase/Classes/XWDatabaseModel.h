@@ -94,11 +94,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary * _Nullable)xwdb_customModelMappingCls:(Class)cls;
 
 #pragma mark - 模型转换
-/// NSString -> Base64 String
-+ (NSString *)base64WithString:(NSString *)string;
-/// Base64 String -> NSString
-+ (NSString *)stringWithBase64:(NSString *)base64;
-
 /// NSAarray -> NSString
 + (NSString *)stringWithArray:(NSArray *)array;
 /// NSString -> NSArray
